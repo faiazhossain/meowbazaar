@@ -1,84 +1,84 @@
-@import 'tailwindcss';
-@import 'tw-animate-css';
+@import "tailwindcss";
+@import "tw-animate-css";
 
 @custom-variant dark (&:is(.dark *));
 
 /* MeowBazaar Design System */
 :root {
   /* Brand Colors */
-  --brand-orange: #FF8C42;
-  --brand-orange-light: #FFB466;
-  --brand-orange-dark: #E67A2E;
-  --cream: #FFF3E6;
-  --mint: #4ECDC4;
-  --error: #FF6B6B;
-  
+  --brand-orange: #ff8c42;
+  --brand-orange-light: #ffb466;
+  --brand-orange-dark: #e67a2e;
+  --cream: #fff3e6;
+  --mint: #4ecdc4;
+  --error: #ff6b6b;
+
   /* Gray Scale */
-  --gray-50: #F5F5F5;
-  --gray-100: #E0E0E0;
-  --gray-200: #BDBDBD;
-  --gray-300: #9E9E9E;
+  --gray-50: #f5f5f5;
+  --gray-100: #e0e0e0;
+  --gray-200: #bdbdbd;
+  --gray-300: #9e9e9e;
   --gray-400: #757575;
   --gray-500: #616161;
   --gray-600: #424242;
   --gray-700: #212121;
-  
+
   /* Semantic Tokens */
-  --background: #FFF3E6;
+  --background: #fff3e6;
   --foreground: #212121;
-  --card: #FFFFFF;
+  --card: #ffffff;
   --card-foreground: #212121;
-  --popover: #FFFFFF;
+  --popover: #ffffff;
   --popover-foreground: #212121;
-  --primary: #FF8C42;
-  --primary-foreground: #FFFFFF;
-  --secondary: #FFFFFF;
-  --secondary-foreground: #FF8C42;
-  --muted: #F5F5F5;
+  --primary: #ff8c42;
+  --primary-foreground: #ffffff;
+  --secondary: #ffffff;
+  --secondary-foreground: #ff8c42;
+  --muted: #f5f5f5;
   --muted-foreground: #757575;
-  --accent: #4ECDC4;
-  --accent-foreground: #FFFFFF;
-  --destructive: #FF6B6B;
-  --destructive-foreground: #FFFFFF;
-  --border: #E0E0E0;
-  --input: #E0E0E0;
-  --ring: #FF8C42;
-  --success: #4ECDC4;
-  --success-foreground: #FFFFFF;
-  
+  --accent: #4ecdc4;
+  --accent-foreground: #ffffff;
+  --destructive: #ff6b6b;
+  --destructive-foreground: #ffffff;
+  --border: #e0e0e0;
+  --input: #e0e0e0;
+  --ring: #ff8c42;
+  --success: #4ecdc4;
+  --success-foreground: #ffffff;
+
   /* Charts */
-  --chart-1: #FF8C42;
-  --chart-2: #4ECDC4;
-  --chart-3: #FFB466;
-  --chart-4: #FF6B6B;
-  --chart-5: #E67A2E;
-  
+  --chart-1: #ff8c42;
+  --chart-2: #4ecdc4;
+  --chart-3: #ffb466;
+  --chart-4: #ff6b6b;
+  --chart-5: #e67a2e;
+
   /* Radius */
   --radius: 0.5rem;
   --radius-sm: 0.25rem;
   --radius-lg: 0.75rem;
   --radius-full: 9999px;
-  
+
   /* Shadows */
-  --shadow-card: 0 2px 8px rgba(0,0,0,0.08);
-  --shadow-dropdown: 0 4px 12px rgba(0,0,0,0.12);
-  --shadow-modal: 0 8px 24px rgba(0,0,0,0.16);
-  
+  --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --shadow-dropdown: 0 4px 12px rgba(0, 0, 0, 0.12);
+  --shadow-modal: 0 8px 24px rgba(0, 0, 0, 0.16);
+
   /* Sidebar */
-  --sidebar: #FFFFFF;
+  --sidebar: #ffffff;
   --sidebar-foreground: #212121;
-  --sidebar-primary: #FF8C42;
-  --sidebar-primary-foreground: #FFFFFF;
-  --sidebar-accent: #FFF3E6;
+  --sidebar-primary: #ff8c42;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #fff3e6;
   --sidebar-accent-foreground: #212121;
-  --sidebar-border: #E0E0E0;
-  --sidebar-ring: #FF8C42;
+  --sidebar-border: #e0e0e0;
+  --sidebar-ring: #ff8c42;
 }
 
 @theme inline {
-  --font-sans: 'Poppins', 'Hind Siliguri', sans-serif;
-  --font-serif: 'Hind Siliguri', serif;
-  --font-mono: 'Geist Mono', 'Geist Mono Fallback';
+  --font-sans: "Poppins", "Hind Siliguri", sans-serif;
+  --font-serif: "Hind Siliguri", serif;
+  --font-mono: "Geist Mono", "Geist Mono Fallback";
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -135,5 +135,16 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+/* Cat Loader Animations */
+@keyframes wiggle {
+  0%,
+  100% {
+    transform: rotate(-5deg);
+  }
+  50% {
+    transform: rotate(10deg);
   }
 }

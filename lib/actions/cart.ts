@@ -36,6 +36,19 @@ export async function addToCart(productId: string, quantity: number = 1) {
   }
 
   try {
+    // Verify user exists in database
+    const user = await db.user.findUnique({
+      where: { id: session.user.id },
+      select: { id: true },
+    });
+
+    if (!user) {
+      return {
+        success: false,
+        error: "ব্যবহারকারী পাওয়া যায়নি, আবার লগইন করুন",
+      };
+    }
+
     // Get or create cart
     let cart = await db.cart.findUnique({
       where: { userId: session.user.id },

@@ -129,9 +129,7 @@ export default function CustomersPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">কাস্টমার ম্যানেজমেন্ট</h1>
-          <p className="text-muted-foreground">
-            মোট {total} জন কাস্টমার
-          </p>
+          <p className="text-muted-foreground">মোট {total} জন কাস্টমার</p>
         </div>
       </div>
 
@@ -175,7 +173,9 @@ export default function CustomersPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {formatCurrency(customers.reduce((sum, c) => sum + c.totalSpent, 0))}
+              {formatCurrency(
+                customers.reduce((sum, c) => sum + c.totalSpent, 0)
+              )}
             </div>
           </CardContent>
         </Card>
@@ -205,7 +205,9 @@ export default function CustomersPage() {
             <User className="h-12 w-12 text-muted-foreground mb-4" />
             <p className="text-lg font-medium">কোন কাস্টমার পাওয়া যায়নি</p>
             <p className="text-muted-foreground">
-              {search ? "অন্য কিছু দিয়ে খুঁজুন" : "কাস্টমার রেজিস্ট্রেশন হলে এখানে দেখাবে"}
+              {search
+                ? "অন্য কিছু দিয়ে খুঁজুন"
+                : "কাস্টমার রেজিস্ট্রেশন হলে এখানে দেখাবে"}
             </p>
           </div>
         ) : (
@@ -238,7 +240,9 @@ export default function CustomersPage() {
                         )}
                       </div>
                       <div>
-                        <p className="font-medium">{customer.name || "নাম নেই"}</p>
+                        <p className="font-medium">
+                          {customer.name || "নাম নেই"}
+                        </p>
                         <p className="text-sm text-muted-foreground flex items-center gap-1">
                           <Mail className="h-3 w-3" />
                           {customer.email}
@@ -269,7 +273,9 @@ export default function CustomersPage() {
                     {formatCurrency(customer.totalSpent)}
                   </TableCell>
                   <TableCell>
-                    <Badge variant={customer.isActive ? "default" : "secondary"}>
+                    <Badge
+                      variant={customer.isActive ? "default" : "secondary"}
+                    >
                       {customer.isActive ? "অ্যাক্টিভ" : "নিষ্ক্রিয়"}
                     </Badge>
                   </TableCell>
@@ -284,7 +290,11 @@ export default function CustomersPage() {
                   <TableCell>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon" disabled={isPending}>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          disabled={isPending}
+                        >
                           <MoreHorizontal className="h-4 w-4" />
                         </Button>
                       </DropdownMenuTrigger>

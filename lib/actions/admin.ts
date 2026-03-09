@@ -484,7 +484,9 @@ export async function getCustomers(options?: {
           select: { total: true },
         },
       },
-      orderBy: { [options?.sortBy || "createdAt"]: options?.sortOrder || "desc" },
+      orderBy: {
+        [options?.sortBy || "createdAt"]: options?.sortOrder || "desc",
+      },
       take: options?.limit || 20,
       skip: options?.offset || 0,
     }),
@@ -541,7 +543,10 @@ export async function getCustomerById(customerId: string) {
   if (!customer) return null;
 
   // Calculate total spent
-  const totalSpent = customer.orders.reduce((sum, order) => sum + order.total, 0);
+  const totalSpent = customer.orders.reduce(
+    (sum, order) => sum + order.total,
+    0
+  );
 
   return {
     ...customer,
@@ -624,7 +629,9 @@ export async function getOrders(options?: {
           orderBy: { createdAt: "desc" },
         },
       },
-      orderBy: { [options?.sortBy || "createdAt"]: options?.sortOrder || "desc" },
+      orderBy: {
+        [options?.sortBy || "createdAt"]: options?.sortOrder || "desc",
+      },
       take: options?.limit || 20,
       skip: options?.offset || 0,
     }),
@@ -667,7 +674,13 @@ export async function getOrderById(orderId: string) {
 // Update order status
 export async function updateOrderStatus(
   orderId: string,
-  status: "PENDING" | "CONFIRMED" | "PROCESSING" | "SHIPPED" | "DELIVERED" | "CANCELLED",
+  status:
+    | "PENDING"
+    | "CONFIRMED"
+    | "PROCESSING"
+    | "SHIPPED"
+    | "DELIVERED"
+    | "CANCELLED",
   note?: string
 ) {
   const session = await auth();

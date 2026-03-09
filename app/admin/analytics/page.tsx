@@ -18,7 +18,13 @@ import {
   LogIn,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Select,
@@ -130,7 +136,9 @@ export default function AnalyticsPage() {
     return (
       <div className="flex flex-col items-center justify-center py-20">
         <TrendingUp className="h-16 w-16 text-muted-foreground mb-4" />
-        <h2 className="text-xl font-semibold mb-2">অ্যানালিটিক্স লোড করতে সমস্যা হয়েছে</h2>
+        <h2 className="text-xl font-semibold mb-2">
+          অ্যানালিটিক্স লোড করতে সমস্যা হয়েছে
+        </h2>
         <Button onClick={fetchData}>
           <RefreshCw className="mr-2 h-4 w-4" />
           আবার চেষ্টা করুন
@@ -175,7 +183,9 @@ export default function AnalyticsPage() {
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{formatCurrency(data.totalRevenue)}</div>
+            <div className="text-2xl font-bold">
+              {formatCurrency(data.totalRevenue)}
+            </div>
             <p className="text-xs text-muted-foreground flex items-center gap-1">
               <ArrowUpRight className="h-3 w-3 text-green-500" />
               আজ {formatCurrency(data.revenueToday)}
@@ -188,7 +198,9 @@ export default function AnalyticsPage() {
             <Package className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{formatNumber(data.totalOrders)}</div>
+            <div className="text-2xl font-bold">
+              {formatNumber(data.totalOrders)}
+            </div>
             <p className="text-xs text-muted-foreground flex items-center gap-1">
               <ArrowUpRight className="h-3 w-3 text-green-500" />
               আজ {formatNumber(data.ordersToday)} টি
@@ -201,7 +213,9 @@ export default function AnalyticsPage() {
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{formatNumber(data.totalUsers)}</div>
+            <div className="text-2xl font-bold">
+              {formatNumber(data.totalUsers)}
+            </div>
             <p className="text-xs text-muted-foreground flex items-center gap-1">
               <ArrowUpRight className="h-3 w-3 text-green-500" />
               আজ {formatNumber(data.newUsersToday)} জন নতুন
@@ -214,10 +228,10 @@ export default function AnalyticsPage() {
             <ShoppingCart className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{formatNumber(data.totalProducts)}</div>
-            <p className="text-xs text-muted-foreground">
-              অ্যাক্টিভ প্রোডাক্ট
-            </p>
+            <div className="text-2xl font-bold">
+              {formatNumber(data.totalProducts)}
+            </div>
+            <p className="text-xs text-muted-foreground">অ্যাক্টিভ প্রোডাক্ট</p>
           </CardContent>
         </Card>
       </div>
@@ -242,10 +256,19 @@ export default function AnalyticsPage() {
                   <span className="text-center">নতুন ইউজার</span>
                 </div>
                 {data.dailyStats.slice(0, 7).map((day) => (
-                  <div key={day.date.toString()} className="grid grid-cols-4 text-sm py-2 border-b border-dashed">
-                    <span>{format(new Date(day.date), "dd MMM", { locale: bn })}</span>
-                    <span className="text-center font-medium">{day.orders}</span>
-                    <span className="text-center font-medium">{formatCurrency(day.revenue)}</span>
+                  <div
+                    key={day.date.toString()}
+                    className="grid grid-cols-4 text-sm py-2 border-b border-dashed"
+                  >
+                    <span>
+                      {format(new Date(day.date), "dd MMM", { locale: bn })}
+                    </span>
+                    <span className="text-center font-medium">
+                      {day.orders}
+                    </span>
+                    <span className="text-center font-medium">
+                      {formatCurrency(day.revenue)}
+                    </span>
                     <span className="text-center font-medium">{day.users}</span>
                   </div>
                 ))}
@@ -263,7 +286,8 @@ export default function AnalyticsPage() {
           <CardContent>
             <div className="space-y-4">
               {Object.entries(data.ordersByStatus).map(([status, count]) => {
-                const percentage = data.totalOrders > 0 ? (count / data.totalOrders) * 100 : 0;
+                const percentage =
+                  data.totalOrders > 0 ? (count / data.totalOrders) * 100 : 0;
                 const statusLabels: Record<string, string> = {
                   PENDING: "পেন্ডিং",
                   CONFIRMED: "কনফার্মড",
@@ -284,7 +308,9 @@ export default function AnalyticsPage() {
                   <div key={status} className="space-y-2">
                     <div className="flex justify-between text-sm">
                       <span>{statusLabels[status] || status}</span>
-                      <span className="font-medium">{count} ({percentage.toFixed(1)}%)</span>
+                      <span className="font-medium">
+                        {count} ({percentage.toFixed(1)}%)
+                      </span>
                     </div>
                     <div className="h-2 bg-muted rounded-full overflow-hidden">
                       <div
@@ -325,12 +351,20 @@ export default function AnalyticsPage() {
                     <TableRow key={product.id}>
                       <TableCell>
                         <div className="flex items-center gap-2">
-                          <span className="text-muted-foreground">#{index + 1}</span>
-                          <span className="font-medium line-clamp-1">{product.name}</span>
+                          <span className="text-muted-foreground">
+                            #{index + 1}
+                          </span>
+                          <span className="font-medium line-clamp-1">
+                            {product.name}
+                          </span>
                         </div>
                       </TableCell>
-                      <TableCell className="text-center">{product.totalSold}</TableCell>
-                      <TableCell className="text-right">{formatCurrency(product.revenue)}</TableCell>
+                      <TableCell className="text-center">
+                        {product.totalSold}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        {formatCurrency(product.revenue)}
+                      </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -353,7 +387,9 @@ export default function AnalyticsPage() {
               </TabsList>
               <TabsContent value="activities">
                 {data.recentActivities.length === 0 ? (
-                  <p className="text-muted-foreground text-center py-8">কোন অ্যাক্টিভিটি নেই</p>
+                  <p className="text-muted-foreground text-center py-8">
+                    কোন অ্যাক্টিভিটি নেই
+                  </p>
                 ) : (
                   <div className="space-y-3 max-h-[300px] overflow-y-auto">
                     {data.recentActivities.map((activity) => {
@@ -367,9 +403,15 @@ export default function AnalyticsPage() {
                             <Icon className="h-4 w-4" />
                           </div>
                           <div className="flex-1 min-w-0">
-                            <p className="line-clamp-1">{activity.description}</p>
+                            <p className="line-clamp-1">
+                              {activity.description}
+                            </p>
                             <p className="text-xs text-muted-foreground">
-                              {format(new Date(activity.createdAt), "dd MMM, hh:mm a", { locale: bn })}
+                              {format(
+                                new Date(activity.createdAt),
+                                "dd MMM, hh:mm a",
+                                { locale: bn }
+                              )}
                             </p>
                           </div>
                         </div>
@@ -380,7 +422,9 @@ export default function AnalyticsPage() {
               </TabsContent>
               <TabsContent value="logins">
                 {data.recentLogins.length === 0 ? (
-                  <p className="text-muted-foreground text-center py-8">কোন লগইন নেই</p>
+                  <p className="text-muted-foreground text-center py-8">
+                    কোন লগইন নেই
+                  </p>
                 ) : (
                   <div className="space-y-3 max-h-[300px] overflow-y-auto">
                     {data.recentLogins.map((login) => (
@@ -390,14 +434,22 @@ export default function AnalyticsPage() {
                       >
                         <div className="flex items-center gap-2">
                           {login.success ? (
-                            <Badge variant="default" className="h-6">সফল</Badge>
+                            <Badge variant="default" className="h-6">
+                              সফল
+                            </Badge>
                           ) : (
-                            <Badge variant="destructive" className="h-6">ব্যর্থ</Badge>
+                            <Badge variant="destructive" className="h-6">
+                              ব্যর্থ
+                            </Badge>
                           )}
                           <span className="font-medium">{login.email}</span>
                         </div>
                         <span className="text-muted-foreground">
-                          {format(new Date(login.createdAt), "dd MMM, hh:mm a", { locale: bn })}
+                          {format(
+                            new Date(login.createdAt),
+                            "dd MMM, hh:mm a",
+                            { locale: bn }
+                          )}
                         </span>
                       </div>
                     ))}

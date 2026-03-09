@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Poppins, Hind_Siliguri } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { AuthProvider } from "@/components/auth-provider";
+import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
 
 const poppins = Poppins({
@@ -70,6 +71,7 @@ export default function RootLayout({
         className={`${poppins.variable} ${hindSiliguri.variable} font-sans antialiased bg-background text-foreground`}
       >
         <AuthProvider>{children}</AuthProvider>
+        <Toaster position="top-center" richColors closeButton />
         <Analytics />
       </body>
     </html>

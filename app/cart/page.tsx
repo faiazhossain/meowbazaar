@@ -9,7 +9,7 @@ import { Footer } from "@/components/layout/footer";
 import { Section } from "@/components/ui/section";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Skeleton } from "@/components/ui/skeleton";
+import { CatLoader } from "@/components/ui/cat-loader";
 import { Minus, Plus, X, ShoppingBag, ArrowRight, LogIn } from "lucide-react";
 import { useCart } from "@/hooks/use-cart";
 
@@ -59,25 +59,8 @@ export default function CartPage() {
     return (
       <div className="min-h-screen bg-background">
         <Navbar />
-        <main className="container mx-auto px-4 py-16">
-          <Skeleton className="h-10 w-64 mb-8" />
-          <div className="grid lg:grid-cols-3 gap-8">
-            <div className="lg:col-span-2 space-y-4">
-              {[1, 2].map((i) => (
-                <div key={i} className="flex gap-4 p-4 bg-card rounded-lg">
-                  <Skeleton className="w-24 h-24 md:w-32 md:h-32 rounded-lg" />
-                  <div className="flex-1 space-y-2">
-                    <Skeleton className="h-5 w-3/4" />
-                    <Skeleton className="h-6 w-24" />
-                    <Skeleton className="h-10 w-32 mt-4" />
-                  </div>
-                </div>
-              ))}
-            </div>
-            <div className="lg:col-span-1">
-              <Skeleton className="h-80 w-full rounded-lg" />
-            </div>
-          </div>
+        <main className="min-h-[60vh] flex items-center justify-center">
+          <CatLoader text="কার্ট লোড হচ্ছে..." size="lg" />
         </main>
         <Footer />
       </div>

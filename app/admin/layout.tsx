@@ -1,24 +1,24 @@
-"use client"
+"use client";
 
-import Link from "next/link"
-import { usePathname } from "next/navigation"
-import { 
-  LayoutDashboard, 
-  Package, 
-  ShoppingCart, 
-  Users, 
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import {
+  LayoutDashboard,
+  Package,
+  ShoppingCart,
+  Users,
   FolderTree,
   Truck,
   BarChart3,
   Settings,
   LogOut,
   Menu,
-  Bell
-} from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
-import { Badge } from "@/components/ui/badge"
-import { cn } from "@/lib/utils"
+  Bell,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
 
 const sidebarLinks = [
   { href: "/admin", label: "ড্যাশবোর্ড", icon: LayoutDashboard },
@@ -28,21 +28,22 @@ const sidebarLinks = [
   { href: "/admin/customers", label: "কাস্টমার", icon: Users },
   { href: "/admin/analytics", label: "অ্যানালিটিক্স", icon: BarChart3 },
   { href: "/admin/settings", label: "সেটিংস", icon: Settings },
-]
+];
 
 export default function AdminLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
-  const pathname = usePathname()
+  const pathname = usePathname();
 
   const SidebarContent = () => (
     <nav className="space-y-1">
       {sidebarLinks.map((link) => {
-        const Icon = link.icon
-        const isActive = pathname === link.href || 
-          (link.href !== "/admin" && pathname.startsWith(link.href))
+        const Icon = link.icon;
+        const isActive =
+          pathname === link.href ||
+          (link.href !== "/admin" && pathname.startsWith(link.href));
         return (
           <Link
             key={link.href}
@@ -59,14 +60,14 @@ export default function AdminLayout({
               <span className="font-medium">{link.label}</span>
             </div>
           </Link>
-        )
+        );
       })}
       <button className="flex items-center gap-3 px-4 py-3 rounded-lg transition-colors text-destructive hover:bg-destructive/10 w-full">
         <LogOut className="h-5 w-5" />
         <span className="font-medium">লগআউট</span>
       </button>
     </nav>
-  )
+  );
 
   return (
     <div className="min-h-screen bg-muted/30">
@@ -83,11 +84,18 @@ export default function AdminLayout({
               </SheetTrigger>
               <SheetContent side="left" className="w-72 bg-card">
                 <div className="py-6">
-                  <Link href="/admin" className="flex items-center gap-2 px-4 mb-6">
+                  <Link
+                    href="/admin"
+                    className="flex items-center gap-2 px-4 mb-6"
+                  >
                     <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-                      <span className="text-primary-foreground font-bold">M</span>
+                      <span className="text-primary-foreground font-bold">
+                        M
+                      </span>
                     </div>
-                    <span className="text-lg font-bold text-foreground">Admin Panel</span>
+                    <span className="text-lg font-bold text-foreground">
+                      Admin Panel
+                    </span>
                   </Link>
                   <SidebarContent />
                 </div>
@@ -98,7 +106,9 @@ export default function AdminLayout({
               <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
                 <span className="text-primary-foreground font-bold">M</span>
               </div>
-              <span className="text-lg font-bold text-foreground hidden sm:inline">MeowBazaar Admin</span>
+              <span className="text-lg font-bold text-foreground hidden sm:inline">
+                MeowBazaar Admin
+              </span>
             </Link>
           </div>
 
@@ -111,7 +121,9 @@ export default function AdminLayout({
               <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
                 <span className="text-primary font-medium text-sm">আ</span>
               </div>
-              <span className="text-sm font-medium text-foreground hidden sm:inline">Admin</span>
+              <span className="text-sm font-medium text-foreground hidden sm:inline">
+                Admin
+              </span>
             </div>
           </div>
         </div>
@@ -126,10 +138,8 @@ export default function AdminLayout({
         </aside>
 
         {/* Main Content */}
-        <main className="flex-1 p-4 lg:p-6">
-          {children}
-        </main>
+        <main className="flex-1 p-4 lg:p-6">{children}</main>
       </div>
     </div>
-  )
+  );
 }

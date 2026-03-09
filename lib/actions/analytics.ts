@@ -422,7 +422,10 @@ export async function getAnalyticsData(period: string = "30d") {
       db.user.count({ where: { createdAt: { gte: today, lt: tomorrow } } }),
       db.order.count({ where: { createdAt: { gte: today, lt: tomorrow } } }),
       db.order.aggregate({
-        where: { createdAt: { gte: today, lt: tomorrow }, status: { not: "CANCELLED" } },
+        where: {
+          createdAt: { gte: today, lt: tomorrow },
+          status: { not: "CANCELLED" },
+        },
         _sum: { total: true },
       }),
     ]);

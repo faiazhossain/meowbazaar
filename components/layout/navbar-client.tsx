@@ -3,18 +3,9 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import {
-  Search,
-  Heart,
-  User,
-  Menu,
-  LogOut,
-  Settings,
-  Package,
-} from "lucide-react";
+import { Search, User, Menu, LogOut, Settings, Package } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
 import {
   Sheet,
   SheetContent,
@@ -30,6 +21,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { signOut } from "next-auth/react";
 import { CartButton } from "@/components/cart/cart-button";
+import { WishlistButton } from "@/components/wishlist/wishlist-button";
 
 const navLinks = [
   { href: "/products", label: "সব পণ্য", labelEn: "All Products" },
@@ -235,21 +227,7 @@ export function NavbarClient({
               </SheetContent>
             </Sheet>
 
-            <Link href="/account/wishlist">
-              <Button
-                variant="ghost"
-                size="icon"
-                className="relative text-foreground"
-              >
-                <Heart className="h-5 w-5" />
-                {wishlistCount > 0 && (
-                  <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 bg-accent text-accent-foreground text-xs">
-                    {wishlistCount}
-                  </Badge>
-                )}
-                <span className="sr-only">Wishlist</span>
-              </Button>
-            </Link>
+            <WishlistButton serverWishlistCount={wishlistCount} />
 
             <CartButton serverCartCount={cartCount} />
 

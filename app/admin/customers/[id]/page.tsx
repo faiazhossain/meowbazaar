@@ -23,7 +23,13 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -99,7 +105,13 @@ interface CustomerDetails {
   };
 }
 
-const ORDER_STATUS_MAP: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
+const ORDER_STATUS_MAP: Record<
+  string,
+  {
+    label: string;
+    variant: "default" | "secondary" | "destructive" | "outline";
+  }
+> = {
   PENDING: { label: "পেন্ডিং", variant: "secondary" },
   CONFIRMED: { label: "কনফার্মড", variant: "default" },
   PROCESSING: { label: "প্রসেসিং", variant: "default" },
@@ -259,9 +271,13 @@ export default function CustomerDetailPage() {
                   <Clock className="h-4 w-4 text-muted-foreground" />
                   সর্বশেষ লগইন:{" "}
                   {customer.lastLoginAt
-                    ? format(new Date(customer.lastLoginAt), "dd MMM yyyy, hh:mm a", {
-                        locale: bn,
-                      })
+                    ? format(
+                        new Date(customer.lastLoginAt),
+                        "dd MMM yyyy, hh:mm a",
+                        {
+                          locale: bn,
+                        }
+                      )
                     : "কখনো না"}
                 </div>
               </div>
@@ -324,9 +340,7 @@ export default function CustomerDetailPage() {
           <TabsTrigger value="wishlist">
             উইশলিস্ট ({customer.wishlist.length})
           </TabsTrigger>
-          <TabsTrigger value="activity">
-            অ্যাক্টিভিটি
-          </TabsTrigger>
+          <TabsTrigger value="activity">অ্যাক্টিভিটি</TabsTrigger>
         </TabsList>
 
         {/* Orders Tab */}
@@ -365,8 +379,14 @@ export default function CustomerDetailPage() {
                       <TableCell>{order.items.length} টি</TableCell>
                       <TableCell>{formatCurrency(order.total)}</TableCell>
                       <TableCell>
-                        <Badge variant={ORDER_STATUS_MAP[order.status]?.variant || "secondary"}>
-                          {ORDER_STATUS_MAP[order.status]?.label || order.status}
+                        <Badge
+                          variant={
+                            ORDER_STATUS_MAP[order.status]?.variant ||
+                            "secondary"
+                          }
+                        >
+                          {ORDER_STATUS_MAP[order.status]?.label ||
+                            order.status}
                         </Badge>
                       </TableCell>
                       <TableCell>
@@ -397,7 +417,9 @@ export default function CustomerDetailPage() {
                 <Card key={address.id}>
                   <CardHeader>
                     <div className="flex items-center justify-between">
-                      <CardTitle className="text-base">{address.fullName}</CardTitle>
+                      <CardTitle className="text-base">
+                        {address.fullName}
+                      </CardTitle>
                       {address.isDefault && (
                         <Badge variant="outline">ডিফল্ট</Badge>
                       )}
@@ -435,7 +457,9 @@ export default function CustomerDetailPage() {
                       alt={item.product.name}
                       className="aspect-square w-full rounded-lg object-cover mb-3"
                     />
-                    <p className="font-medium line-clamp-2">{item.product.name}</p>
+                    <p className="font-medium line-clamp-2">
+                      {item.product.name}
+                    </p>
                     <p className="text-primary font-semibold">
                       {formatCurrency(item.product.price)}
                     </p>
@@ -472,23 +496,26 @@ export default function CustomerDetailPage() {
                         LOGIN: "লগইন করেছে",
                       };
                       return (
-                      <div
-                        key={activity.id}
-                        className="flex items-start gap-3 text-sm"
-                      >
-                        <div className="h-2 w-2 mt-2 rounded-full bg-primary" />
-                        <div>
-                          <p>{activityLabels[activity.type] || activity.type}</p>
-                          <p className="text-xs text-muted-foreground">
-                            {format(
-                              new Date(activity.createdAt),
-                              "dd MMM yyyy, hh:mm a",
-                              { locale: bn }
-                            )}
-                          </p>
+                        <div
+                          key={activity.id}
+                          className="flex items-start gap-3 text-sm"
+                        >
+                          <div className="h-2 w-2 mt-2 rounded-full bg-primary" />
+                          <div>
+                            <p>
+                              {activityLabels[activity.type] || activity.type}
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                              {format(
+                                new Date(activity.createdAt),
+                                "dd MMM yyyy, hh:mm a",
+                                { locale: bn }
+                              )}
+                            </p>
+                          </div>
                         </div>
-                      </div>
-                    );})}
+                      );
+                    })}
                   </div>
                 )}
               </CardContent>
@@ -517,9 +544,7 @@ export default function CustomerDetailPage() {
                           ) : (
                             <Ban className="h-4 w-4 text-red-500" />
                           )}
-                          <span>
-                            {attempt.success ? "সফল" : "ব্যর্থ"}
-                          </span>
+                          <span>{attempt.success ? "সফল" : "ব্যর্থ"}</span>
                         </div>
                         <span className="text-muted-foreground">
                           {format(

@@ -59,15 +59,22 @@ interface UseCartReturn {
 export function useCart(): UseCartReturn {
   const { data: session, status } = useSession();
   const isAuthenticated = status === "authenticated" && !!session?.user;
-  const isLoading = status === "loading";
+  const isSessionLoading = status === "loading";
 
   const [isPending, startTransition] = useTransition();
   const [dbCartItems, setDbCartItems] = useState<CartItem[]>([]);
+  const [dbCartLoaded, setDbCartLoaded] = useState(false);
   const [hasMerged, setHasMerged] = useState(false);
 
-  // Guest cart from Zustand
-  const guestCart = useGuestCartStore();
-  const isHydrated = guestCart.isHydrated;
+  // Guest cart from Zustand - use selectors for proper reactivity
+  const guestItems = useGuestCartStore((state) => state.items);
+  const guestAddItem = useGuestCartStore((state) => state.addItem);
+  const guestRemoveItem = useGuestCartStore((state) => state.removeItem);
+  const guestUpdateQuantity = useGuestCartStore(
+    (state) => state.updateQuantity
+  );
+  const guestClearCart = useGuestCartStore((state) => state.clearCart);
+  const isHydrated = useGuestCartStore((state) => state.isHydrated);
 
   // Convert DB cart items to our CartItem format
   const convertDbItems = (items: DbCartItem[]): CartItem[] => {
@@ -92,9 +99,13 @@ export function useCart(): UseCartReturn {
       const cart = await getCart();
       if (cart?.items) {
         setDbCartItems(convertDbItems(cart.items as unknown as DbCartItem[]));
+      } else {
+        setDbCartItems([]);
       }
     } catch (error) {
       console.error("Error fetching cart:", error);
+    } finally {
+      setDbCartLoaded(true);
     }
   }, [isAuthenticated]);
 
@@ -105,19 +116,19 @@ export function useCart(): UseCartReturn {
         isAuthenticated &&
         isHydrated &&
         !hasMerged &&
-        guestCart.items.length > 0
+        guestItems.length > 0
       ) {
         try {
           // Send guest cart items to merge
-          const guestItems = guestCart.items.map((item) => ({
+          const itemsToMerge = guestItems.map((item) => ({
             productId: item.productId,
             quantity: item.quantity,
           }));
 
-          await mergeGuestCartOnLogin(guestItems);
+          await mergeGuestCartOnLogin(itemsToMerge);
 
           // Clear guest cart after successful merge
-          guestCart.clearCart();
+          guestClearCart();
           setHasMerged(true);
 
           // Refresh cart from database
@@ -129,17 +140,28 @@ export function useCart(): UseCartReturn {
     };
 
     mergeCart();
-  }, [isAuthenticated, isHydrated, hasMerged, guestCart, fetchDbCart]);
+  }, [
+    isAuthenticated,
+    isHydrated,
+    hasMerged,
+    guestItems,
+    guestClearCart,
+    fetchDbCart,
+  ]);
 
   // Fetch cart on mount for authenticated users
   useEffect(() => {
     if (isAuthenticated && isHydrated) {
       fetchDbCart();
+    } else if (!isAuthenticated) {
+      // Reset db cart state when user logs out
+      setDbCartItems([]);
+      setDbCartLoaded(false);
     }
   }, [isAuthenticated, isHydrated, fetchDbCart]);
 
   // Determine which items to show
-  const items = isAuthenticated ? dbCartItems : guestCart.items;
+  const items = isAuthenticated ? dbCartItems : guestItems;
   const itemCount = items.reduce((total, item) => total + item.quantity, 0);
   const subtotal = items.reduce(
     (total, item) => total + item.price * item.quantity,
@@ -172,7 +194,7 @@ export function useCart(): UseCartReturn {
         });
       } else {
         // Guest cart - add to local storage
-        guestCart.addItem({
+        guestAddItem({
           id: product.id,
           productId: product.id,
           name: product.name,
@@ -186,7 +208,7 @@ export function useCart(): UseCartReturn {
         return { success: true };
       }
     },
-    [isAuthenticated, guestCart, fetchDbCart]
+    [isAuthenticated, guestAddItem, fetchDbCart]
   );
 
   // Update item quantity
@@ -198,10 +220,10 @@ export function useCart(): UseCartReturn {
           await fetchDbCart();
         });
       } else {
-        guestCart.updateQuantity(productId, quantity);
+        guestUpdateQuantity(productId, quantity);
       }
     },
-    [isAuthenticated, guestCart, fetchDbCart]
+    [isAuthenticated, guestUpdateQuantity, fetchDbCart]
   );
 
   // Remove item from cart
@@ -213,10 +235,10 @@ export function useCart(): UseCartReturn {
           await fetchDbCart();
         });
       } else {
-        guestCart.removeItem(productId);
+        guestRemoveItem(productId);
       }
     },
-    [isAuthenticated, guestCart, fetchDbCart]
+    [isAuthenticated, guestRemoveItem, fetchDbCart]
   );
 
   // Clear entire cart
@@ -227,9 +249,9 @@ export function useCart(): UseCartReturn {
         await fetchDbCart();
       });
     } else {
-      guestCart.clearCart();
+      guestClearCart();
     }
-  }, [isAuthenticated, guestCart, fetchDbCart]);
+  }, [isAuthenticated, guestClearCart, fetchDbCart]);
 
   // Refresh cart data
   const refreshCart = useCallback(async () => {
@@ -240,7 +262,8 @@ export function useCart(): UseCartReturn {
 
   return {
     items,
-    isLoading: isLoading || !isHydrated,
+    isLoading:
+      isSessionLoading || !isHydrated || (isAuthenticated && !dbCartLoaded),
     isPending,
     itemCount,
     subtotal,

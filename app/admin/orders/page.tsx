@@ -57,7 +57,13 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { getOrders, updateOrderStatus } from "@/lib/actions/admin";
 
-type OrderStatus = "PENDING" | "CONFIRMED" | "PROCESSING" | "SHIPPED" | "DELIVERED" | "CANCELLED";
+type OrderStatus =
+  | "PENDING"
+  | "CONFIRMED"
+  | "PROCESSING"
+  | "SHIPPED"
+  | "DELIVERED"
+  | "CANCELLED";
 
 interface Order {
   id: string;
@@ -102,7 +108,14 @@ interface Order {
   }>;
 }
 
-const ORDER_STATUS_CONFIG: Record<OrderStatus, { label: string; variant: "default" | "secondary" | "destructive" | "outline"; icon: typeof Clock }> = {
+const ORDER_STATUS_CONFIG: Record<
+  OrderStatus,
+  {
+    label: string;
+    variant: "default" | "secondary" | "destructive" | "outline";
+    icon: typeof Clock;
+  }
+> = {
   PENDING: { label: "পেন্ডিং", variant: "secondary", icon: Clock },
   CONFIRMED: { label: "কনফার্মড", variant: "default", icon: CheckCircle },
   PROCESSING: { label: "প্রসেসিং", variant: "outline", icon: RefreshCw },
@@ -163,7 +176,11 @@ export default function AdminOrdersPage() {
     if (!selectedOrder || !newStatus) return;
 
     startTransition(async () => {
-      const result = await updateOrderStatus(selectedOrder.id, newStatus, statusNote || undefined);
+      const result = await updateOrderStatus(
+        selectedOrder.id,
+        newStatus,
+        statusNote || undefined
+      );
       if (result.success) {
         toast.success("অর্ডার স্ট্যাটাস আপডেট হয়েছে");
         setIsDialogOpen(false);
@@ -196,7 +213,9 @@ export default function AdminOrdersPage() {
   // Calculate stats
   const stats = {
     pending: orders.filter((o) => o.status === "PENDING").length,
-    confirmed: orders.filter((o) => o.status === "CONFIRMED" || o.status === "PROCESSING").length,
+    confirmed: orders.filter(
+      (o) => o.status === "CONFIRMED" || o.status === "PROCESSING"
+    ).length,
     shipped: orders.filter((o) => o.status === "SHIPPED").length,
     delivered: orders.filter((o) => o.status === "DELIVERED").length,
   };
@@ -205,14 +224,15 @@ export default function AdminOrdersPage() {
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold">অর্ডার ম্যানেজমেন্ট</h1>
-        <p className="text-muted-foreground">
-          মোট {total} টি অর্ডার
-        </p>
+        <p className="text-muted-foreground">মোট {total} টি অর্ডার</p>
       </div>
 
       {/* Stats Cards */}
       <div className="grid gap-4 md:grid-cols-4">
-        <Card className="cursor-pointer hover:border-primary/50" onClick={() => setStatusFilter("PENDING")}>
+        <Card
+          className="cursor-pointer hover:border-primary/50"
+          onClick={() => setStatusFilter("PENDING")}
+        >
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">পেন্ডিং</CardTitle>
             <Clock className="h-4 w-4 text-yellow-500" />
@@ -221,7 +241,10 @@ export default function AdminOrdersPage() {
             <div className="text-2xl font-bold">{stats.pending}</div>
           </CardContent>
         </Card>
-        <Card className="cursor-pointer hover:border-primary/50" onClick={() => setStatusFilter("CONFIRMED")}>
+        <Card
+          className="cursor-pointer hover:border-primary/50"
+          onClick={() => setStatusFilter("CONFIRMED")}
+        >
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">প্রসেসিং</CardTitle>
             <RefreshCw className="h-4 w-4 text-blue-500" />
@@ -230,7 +253,10 @@ export default function AdminOrdersPage() {
             <div className="text-2xl font-bold">{stats.confirmed}</div>
           </CardContent>
         </Card>
-        <Card className="cursor-pointer hover:border-primary/50" onClick={() => setStatusFilter("SHIPPED")}>
+        <Card
+          className="cursor-pointer hover:border-primary/50"
+          onClick={() => setStatusFilter("SHIPPED")}
+        >
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">শিপড</CardTitle>
             <Truck className="h-4 w-4 text-purple-500" />
@@ -239,7 +265,10 @@ export default function AdminOrdersPage() {
             <div className="text-2xl font-bold">{stats.shipped}</div>
           </CardContent>
         </Card>
-        <Card className="cursor-pointer hover:border-primary/50" onClick={() => setStatusFilter("DELIVERED")}>
+        <Card
+          className="cursor-pointer hover:border-primary/50"
+          onClick={() => setStatusFilter("DELIVERED")}
+        >
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">ডেলিভারড</CardTitle>
             <Package className="h-4 w-4 text-green-500" />
@@ -261,7 +290,13 @@ export default function AdminOrdersPage() {
             className="pl-9"
           />
         </div>
-        <Select value={statusFilter} onValueChange={(v) => { setStatusFilter(v); setPage(1); }}>
+        <Select
+          value={statusFilter}
+          onValueChange={(v) => {
+            setStatusFilter(v);
+            setPage(1);
+          }}
+        >
           <SelectTrigger className="w-full sm:w-48">
             <Filter className="h-4 w-4 mr-2" />
             <SelectValue placeholder="স্ট্যাটাস ফিল্টার" />
@@ -309,38 +344,51 @@ export default function AdminOrdersPage() {
             </TableHeader>
             <TableBody>
               {orders.map((order) => {
-                const StatusIcon = ORDER_STATUS_CONFIG[order.status]?.icon || Clock;
+                const StatusIcon =
+                  ORDER_STATUS_CONFIG[order.status]?.icon || Clock;
                 return (
                   <TableRow key={order.id}>
                     <TableCell>
                       <div>
                         <p className="font-medium">#{order.orderNumber}</p>
                         <p className="text-xs text-muted-foreground">
-                          {order.paymentMethod} • {order.paymentStatus === "PAID" ? "পেইড" : "আনপেইড"}
+                          {order.paymentMethod} •{" "}
+                          {order.paymentStatus === "PAID" ? "পেইড" : "আনপেইড"}
                         </p>
                       </div>
                     </TableCell>
                     <TableCell>
                       <div>
-                        <p className="font-medium">{order.user.name || "নাম নেই"}</p>
-                        <p className="text-sm text-muted-foreground">{order.user.phone || order.user.email}</p>
+                        <p className="font-medium">
+                          {order.user.name || "নাম নেই"}
+                        </p>
+                        <p className="text-sm text-muted-foreground">
+                          {order.user.phone || order.user.email}
+                        </p>
                       </div>
                     </TableCell>
                     <TableCell className="hidden md:table-cell">
                       <span className="text-muted-foreground">
-                        {format(new Date(order.createdAt), "dd MMM yyyy", { locale: bn })}
+                        {format(new Date(order.createdAt), "dd MMM yyyy", {
+                          locale: bn,
+                        })}
                       </span>
                     </TableCell>
-                    <TableCell>
-                      {order.items.length} টি
-                    </TableCell>
+                    <TableCell>{order.items.length} টি</TableCell>
                     <TableCell className="font-medium">
                       {formatCurrency(order.total)}
                     </TableCell>
                     <TableCell>
-                      <Badge variant={ORDER_STATUS_CONFIG[order.status]?.variant || "secondary"} className="gap-1">
+                      <Badge
+                        variant={
+                          ORDER_STATUS_CONFIG[order.status]?.variant ||
+                          "secondary"
+                        }
+                        className="gap-1"
+                      >
                         <StatusIcon className="h-3 w-3" />
-                        {ORDER_STATUS_CONFIG[order.status]?.label || order.status}
+                        {ORDER_STATUS_CONFIG[order.status]?.label ||
+                          order.status}
                       </Badge>
                     </TableCell>
                     <TableCell>
@@ -352,7 +400,11 @@ export default function AdminOrdersPage() {
                         </Button>
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="icon" disabled={isPending}>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              disabled={isPending}
+                            >
                               <MoreHorizontal className="h-4 w-4" />
                             </Button>
                           </DropdownMenuTrigger>
@@ -365,35 +417,51 @@ export default function AdminOrdersPage() {
                             </DropdownMenuItem>
                             <DropdownMenuSeparator />
                             {order.status === "PENDING" && (
-                              <DropdownMenuItem onClick={() => openStatusDialog(order, "CONFIRMED")}>
+                              <DropdownMenuItem
+                                onClick={() =>
+                                  openStatusDialog(order, "CONFIRMED")
+                                }
+                              >
                                 <CheckCircle className="mr-2 h-4 w-4 text-green-500" />
                                 কনফার্ম করুন
                               </DropdownMenuItem>
                             )}
-                            {(order.status === "CONFIRMED" || order.status === "PROCESSING") && (
-                              <DropdownMenuItem onClick={() => openStatusDialog(order, "SHIPPED")}>
+                            {(order.status === "CONFIRMED" ||
+                              order.status === "PROCESSING") && (
+                              <DropdownMenuItem
+                                onClick={() =>
+                                  openStatusDialog(order, "SHIPPED")
+                                }
+                              >
                                 <Truck className="mr-2 h-4 w-4 text-blue-500" />
                                 শিপ করুন
                               </DropdownMenuItem>
                             )}
                             {order.status === "SHIPPED" && (
-                              <DropdownMenuItem onClick={() => openStatusDialog(order, "DELIVERED")}>
+                              <DropdownMenuItem
+                                onClick={() =>
+                                  openStatusDialog(order, "DELIVERED")
+                                }
+                              >
                                 <Package className="mr-2 h-4 w-4 text-green-500" />
                                 ডেলিভারড
                               </DropdownMenuItem>
                             )}
-                            {order.status !== "DELIVERED" && order.status !== "CANCELLED" && (
-                              <>
-                                <DropdownMenuSeparator />
-                                <DropdownMenuItem
-                                  className="text-destructive"
-                                  onClick={() => openStatusDialog(order, "CANCELLED")}
-                                >
-                                  <XCircle className="mr-2 h-4 w-4" />
-                                  বাতিল করুন
-                                </DropdownMenuItem>
-                              </>
-                            )}
+                            {order.status !== "DELIVERED" &&
+                              order.status !== "CANCELLED" && (
+                                <>
+                                  <DropdownMenuSeparator />
+                                  <DropdownMenuItem
+                                    className="text-destructive"
+                                    onClick={() =>
+                                      openStatusDialog(order, "CANCELLED")
+                                    }
+                                  >
+                                    <XCircle className="mr-2 h-4 w-4" />
+                                    বাতিল করুন
+                                  </DropdownMenuItem>
+                                </>
+                              )}
                           </DropdownMenuContent>
                         </DropdownMenu>
                       </div>
@@ -451,12 +519,24 @@ export default function AdminOrdersPage() {
           <div className="space-y-4 py-4">
             <div className="flex items-center gap-2">
               <span className="text-sm">বর্তমান:</span>
-              <Badge variant={ORDER_STATUS_CONFIG[selectedOrder?.status as OrderStatus]?.variant || "secondary"}>
-                {ORDER_STATUS_CONFIG[selectedOrder?.status as OrderStatus]?.label || selectedOrder?.status}
+              <Badge
+                variant={
+                  ORDER_STATUS_CONFIG[selectedOrder?.status as OrderStatus]
+                    ?.variant || "secondary"
+                }
+              >
+                {ORDER_STATUS_CONFIG[selectedOrder?.status as OrderStatus]
+                  ?.label || selectedOrder?.status}
               </Badge>
               <span className="mx-2">→</span>
-              <Badge variant={ORDER_STATUS_CONFIG[newStatus as OrderStatus]?.variant || "secondary"}>
-                {ORDER_STATUS_CONFIG[newStatus as OrderStatus]?.label || newStatus}
+              <Badge
+                variant={
+                  ORDER_STATUS_CONFIG[newStatus as OrderStatus]?.variant ||
+                  "secondary"
+                }
+              >
+                {ORDER_STATUS_CONFIG[newStatus as OrderStatus]?.label ||
+                  newStatus}
               </Badge>
             </div>
             <div className="space-y-2">

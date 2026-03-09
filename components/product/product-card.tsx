@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { useCart } from "@/hooks/use-cart";
+import { useWishlist } from "@/hooks/use-wishlist";
 import { toast } from "sonner";
 
 export interface Product {
@@ -35,16 +36,46 @@ interface ProductCardProps {
 
 export function ProductCard({ product, onAddToWishlist }: ProductCardProps) {
   const [isHovered, setIsHovered] = useState(false);
-  const [isWishlisted, setIsWishlisted] = useState(false);
   const [isAddingToCart, setIsAddingToCart] = useState(false);
+  const [isTogglingWishlist, setIsTogglingWishlist] = useState(false);
   const [justAdded, setJustAdded] = useState(false);
 
   const { addItem } = useCart();
+  const {
+    isInWishlist,
+    toggle: toggleWishlist,
+    isAuthenticated,
+  } = useWishlist();
 
-  const handleWishlistClick = (e: React.MouseEvent) => {
+  const isWishlisted = isInWishlist(product.id);
+
+  const handleWishlistClick = async (e: React.MouseEvent) => {
     e.preventDefault();
-    setIsWishlisted(!isWishlisted);
+    e.stopPropagation();
+
+    if (!isAuthenticated) {
+      toast.error("উইশলিস্টে যোগ করতে লগইন করুন");
+      return;
+    }
+
+    if (isTogglingWishlist) return;
+
+    setIsTogglingWishlist(true);
+
+    const result = await toggleWishlist(product.id);
+
+    if (result.success) {
+      if (result.action === "added") {
+        toast.success(`${product.name} উইশলিস্টে যোগ করা হয়েছে`);
+      } else {
+        toast.success(`${product.name} উইশলিস্ট থেকে সরানো হয়েছে`);
+      }
+    } else {
+      toast.error(result.error || "সমস্যা হয়েছে");
+    }
+
     onAddToWishlist?.(product);
+    setIsTogglingWishlist(false);
   };
 
   const handleAddToCart = async (e: React.MouseEvent) => {
@@ -119,19 +150,27 @@ export function ProductCard({ product, onAddToWishlist }: ProductCardProps) {
           {/* Wishlist Button */}
           <button
             onClick={handleWishlistClick}
-            className="absolute top-2 right-2 p-2 bg-card/80 backdrop-blur-sm rounded-full transition-all hover:bg-card"
+            disabled={isTogglingWishlist}
+            className={cn(
+              "absolute top-2 right-2 p-2 bg-card/80 backdrop-blur-sm rounded-full transition-all hover:bg-card",
+              isTogglingWishlist && "opacity-70"
+            )}
             aria-label={
               isWishlisted ? "Remove from wishlist" : "Add to wishlist"
             }
           >
-            <Heart
-              className={cn(
-                "h-4 w-4 transition-colors",
-                isWishlisted
-                  ? "fill-destructive text-destructive"
-                  : "text-foreground"
-              )}
-            />
+            {isTogglingWishlist ? (
+              <Loader2 className="h-4 w-4 animate-spin text-primary" />
+            ) : (
+              <Heart
+                className={cn(
+                  "h-4 w-4 transition-colors",
+                  isWishlisted
+                    ? "fill-destructive text-destructive"
+                    : "text-foreground"
+                )}
+              />
+            )}
           </button>
 
           {/* Quick Add Button */}

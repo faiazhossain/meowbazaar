@@ -23,7 +23,13 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import {
   Select,
@@ -37,7 +43,13 @@ import { Spinner } from "@/components/ui/spinner";
 import { toast } from "sonner";
 import { getOrderById, updateOrderStatus } from "@/lib/actions/admin";
 
-type OrderStatus = "PENDING" | "CONFIRMED" | "PROCESSING" | "SHIPPED" | "DELIVERED" | "CANCELLED";
+type OrderStatus =
+  | "PENDING"
+  | "CONFIRMED"
+  | "PROCESSING"
+  | "SHIPPED"
+  | "DELIVERED"
+  | "CANCELLED";
 
 interface OrderDetails {
   id: string;
@@ -83,13 +95,51 @@ interface OrderDetails {
   }>;
 }
 
-const ORDER_STATUS_CONFIG: Record<OrderStatus, { label: string; variant: "default" | "secondary" | "destructive" | "outline"; icon: typeof Clock; color: string }> = {
-  PENDING: { label: "পেন্ডিং", variant: "secondary", icon: Clock, color: "text-yellow-500" },
-  CONFIRMED: { label: "কনফার্মড", variant: "default", icon: CheckCircle, color: "text-green-500" },
-  PROCESSING: { label: "প্রসেসিং", variant: "outline", icon: RefreshCw, color: "text-blue-500" },
-  SHIPPED: { label: "শিপড", variant: "outline", icon: Truck, color: "text-purple-500" },
-  DELIVERED: { label: "ডেলিভারড", variant: "default", icon: Package, color: "text-green-500" },
-  CANCELLED: { label: "বাতিল", variant: "destructive", icon: XCircle, color: "text-red-500" },
+const ORDER_STATUS_CONFIG: Record<
+  OrderStatus,
+  {
+    label: string;
+    variant: "default" | "secondary" | "destructive" | "outline";
+    icon: typeof Clock;
+    color: string;
+  }
+> = {
+  PENDING: {
+    label: "পেন্ডিং",
+    variant: "secondary",
+    icon: Clock,
+    color: "text-yellow-500",
+  },
+  CONFIRMED: {
+    label: "কনফার্মড",
+    variant: "default",
+    icon: CheckCircle,
+    color: "text-green-500",
+  },
+  PROCESSING: {
+    label: "প্রসেসিং",
+    variant: "outline",
+    icon: RefreshCw,
+    color: "text-blue-500",
+  },
+  SHIPPED: {
+    label: "শিপড",
+    variant: "outline",
+    icon: Truck,
+    color: "text-purple-500",
+  },
+  DELIVERED: {
+    label: "ডেলিভারড",
+    variant: "default",
+    icon: Package,
+    color: "text-green-500",
+  },
+  CANCELLED: {
+    label: "বাতিল",
+    variant: "destructive",
+    icon: XCircle,
+    color: "text-red-500",
+  },
 };
 
 export default function OrderDetailPage() {
@@ -126,7 +176,11 @@ export default function OrderDetailPage() {
     if (!order || !newStatus || newStatus === order.status) return;
 
     startTransition(async () => {
-      const result = await updateOrderStatus(order.id, newStatus, statusNote || undefined);
+      const result = await updateOrderStatus(
+        order.id,
+        newStatus,
+        statusNote || undefined
+      );
       if (result.success) {
         toast.success("অর্ডার স্ট্যাটাস আপডেট হয়েছে");
         setStatusNote("");
@@ -178,14 +232,23 @@ export default function OrderDetailPage() {
           </Button>
           <div>
             <div className="flex items-center gap-3">
-              <h1 className="text-2xl font-bold">অর্ডার #{order.orderNumber}</h1>
-              <Badge variant={ORDER_STATUS_CONFIG[order.status]?.variant || "secondary"} className="gap-1">
+              <h1 className="text-2xl font-bold">
+                অর্ডার #{order.orderNumber}
+              </h1>
+              <Badge
+                variant={
+                  ORDER_STATUS_CONFIG[order.status]?.variant || "secondary"
+                }
+                className="gap-1"
+              >
                 <StatusIcon className="h-3 w-3" />
                 {ORDER_STATUS_CONFIG[order.status]?.label || order.status}
               </Badge>
             </div>
             <p className="text-muted-foreground">
-              {format(new Date(order.createdAt), "dd MMMM yyyy, hh:mm a", { locale: bn })}
+              {format(new Date(order.createdAt), "dd MMMM yyyy, hh:mm a", {
+                locale: bn,
+              })}
             </p>
           </div>
         </div>
@@ -202,7 +265,9 @@ export default function OrderDetailPage() {
           <Card>
             <CardHeader>
               <CardTitle>অর্ডার আইটেম</CardTitle>
-              <CardDescription>{order.items.length} টি প্রোডাক্ট</CardDescription>
+              <CardDescription>
+                {order.items.length} টি প্রোডাক্ট
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
@@ -251,7 +316,9 @@ export default function OrderDetailPage() {
                 <Separator />
                 <div className="flex justify-between font-semibold text-lg">
                   <span>মোট</span>
-                  <span className="text-primary">{formatCurrency(order.total)}</span>
+                  <span className="text-primary">
+                    {formatCurrency(order.total)}
+                  </span>
                 </div>
               </div>
             </CardContent>
@@ -270,12 +337,15 @@ export default function OrderDetailPage() {
               ) : (
                 <div className="space-y-4">
                   {order.timeline.map((event, index) => {
-                    const config = ORDER_STATUS_CONFIG[event.status as OrderStatus];
+                    const config =
+                      ORDER_STATUS_CONFIG[event.status as OrderStatus];
                     const EventIcon = config?.icon || Clock;
                     return (
                       <div key={event.id} className="flex gap-4">
                         <div className="relative">
-                          <div className={`flex h-8 w-8 items-center justify-center rounded-full bg-muted ${config?.color || ""}`}>
+                          <div
+                            className={`flex h-8 w-8 items-center justify-center rounded-full bg-muted ${config?.color || ""}`}
+                          >
                             <EventIcon className="h-4 w-4" />
                           </div>
                           {index < order.timeline.length - 1 && (
@@ -292,7 +362,11 @@ export default function OrderDetailPage() {
                             </p>
                           )}
                           <p className="text-xs text-muted-foreground mt-1">
-                            {format(new Date(event.createdAt), "dd MMM yyyy, hh:mm a", { locale: bn })}
+                            {format(
+                              new Date(event.createdAt),
+                              "dd MMM yyyy, hh:mm a",
+                              { locale: bn }
+                            )}
                           </p>
                         </div>
                       </div>
@@ -367,7 +441,8 @@ export default function OrderDetailPage() {
                 <p className="font-medium">{order.address.fullName}</p>
                 <p>{order.address.phone}</p>
                 <p className="text-muted-foreground">
-                  {order.address.address}, {order.address.area}, {order.address.division}
+                  {order.address.address}, {order.address.area},{" "}
+                  {order.address.division}
                 </p>
               </CardContent>
             </Card>
@@ -388,7 +463,11 @@ export default function OrderDetailPage() {
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">পেমেন্ট স্ট্যাটাস</span>
-                <Badge variant={order.paymentStatus === "PAID" ? "default" : "secondary"}>
+                <Badge
+                  variant={
+                    order.paymentStatus === "PAID" ? "default" : "secondary"
+                  }
+                >
                   {order.paymentStatus === "PAID" ? "পেইড" : "আনপেইড"}
                 </Badge>
               </div>

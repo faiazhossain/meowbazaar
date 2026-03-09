@@ -1,8 +1,8 @@
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/utils";
 
 interface BadgeProps {
-  children: React.ReactNode
-  className?: string
+  children: React.ReactNode;
+  className?: string;
 }
 
 export function CODBadge({ className }: { className?: string }) {
@@ -15,10 +15,16 @@ export function CODBadge({ className }: { className?: string }) {
     >
       COD
     </span>
-  )
+  );
 }
 
-export function DiscountBadge({ percentage, className }: { percentage: number; className?: string }) {
+export function DiscountBadge({
+  percentage,
+  className,
+}: {
+  percentage: number;
+  className?: string;
+}) {
   return (
     <span
       className={cn(
@@ -28,7 +34,7 @@ export function DiscountBadge({ percentage, className }: { percentage: number; c
     >
       {percentage}% ছাড়
     </span>
-  )
+  );
 }
 
 export function NewBadge({ className }: { className?: string }) {
@@ -41,23 +47,29 @@ export function NewBadge({ className }: { className?: string }) {
     >
       নতুন
     </span>
-  )
+  );
 }
 
-export function StockBadge({ inStock, className }: { inStock: boolean; className?: string }) {
+export function StockBadge({
+  inStock,
+  className,
+}: {
+  inStock: boolean;
+  className?: string;
+}) {
   return (
     <span
       className={cn(
         "inline-flex items-center px-2 py-0.5 rounded text-xs font-medium",
-        inStock 
-          ? "bg-success/10 text-success" 
+        inStock
+          ? "bg-success/10 text-success"
           : "bg-destructive/10 text-destructive",
         className
       )}
     >
       {inStock ? "স্টকে আছে" : "স্টক শেষ"}
     </span>
-  )
+  );
 }
 
 export function CategoryBadge({ children, className }: BadgeProps) {
@@ -70,13 +82,19 @@ export function CategoryBadge({ children, className }: BadgeProps) {
     >
       {children}
     </span>
-  )
+  );
 }
 
-export function OrderStatusBadge({ 
-  status 
-}: { 
-  status: "pending" | "confirmed" | "processing" | "shipped" | "delivered" | "cancelled" 
+export function OrderStatusBadge({
+  status,
+}: {
+  status:
+    | "pending"
+    | "confirmed"
+    | "processing"
+    | "shipped"
+    | "delivered"
+    | "cancelled";
 }) {
   const statusConfig = {
     pending: { label: "পেন্ডিং", className: "bg-amber-100 text-amber-700" },
@@ -84,10 +102,13 @@ export function OrderStatusBadge({
     processing: { label: "প্রসেসিং", className: "bg-cyan-100 text-cyan-700" },
     shipped: { label: "শিপড", className: "bg-purple-100 text-purple-700" },
     delivered: { label: "ডেলিভারড", className: "bg-success/10 text-success" },
-    cancelled: { label: "বাতিল", className: "bg-destructive/10 text-destructive" },
-  }
+    cancelled: {
+      label: "বাতিল",
+      className: "bg-destructive/10 text-destructive",
+    },
+  };
 
-  const config = statusConfig[status]
+  const config = statusConfig[status];
 
   return (
     <span
@@ -98,5 +119,5 @@ export function OrderStatusBadge({
     >
       {config.label}
     </span>
-  )
+  );
 }
