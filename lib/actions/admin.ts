@@ -13,6 +13,147 @@ function generateSlug(name: string): string {
     .trim();
 }
 
+// ==================== CATEGORY ACTIONS ====================
+
+interface CreateCategoryData {
+  name: string;
+  nameEn: string;
+  image?: string;
+  description?: string;
+}
+
+interface UpdateCategoryData extends Partial<CreateCategoryData> {
+  id: string;
+}
+
+// Get all categories with product count (Admin)
+export async function getAdminCategories() {
+  const session = await auth();
+  if (!session?.user?.id || session.user.role !== "ADMIN") {
+    return [];
+  }
+
+  const categories = await db.category.findMany({
+    include: {
+      _count: {
+        select: { products: true },
+      },
+    },
+    orderBy: { createdAt: "desc" },
+  });
+
+  return categories;
+}
+
+// Get single category
+export async function getCategoryById(id: string) {
+  const session = await auth();
+  if (!session?.user?.id || session.user.role !== "ADMIN") {
+    return null;
+  }
+
+  const category = await db.category.findUnique({
+    where: { id },
+    include: {
+      _count: {
+        select: { products: true },
+      },
+    },
+  });
+
+  return category;
+}
+
+// Create category (Admin only)
+export async function createCategory(data: CreateCategoryData) {
+  const session = await auth();
+  if (!session?.user?.id || session.user.role !== "ADMIN") {
+    return { success: false, error: "অনুমতি নেই" };
+  }
+
+  try {
+    const slug = generateSlug(data.nameEn) + "-" + Date.now();
+
+    const category = await db.category.create({
+      data: {
+        name: data.name,
+        nameEn: data.nameEn,
+        slug,
+        image: data.image,
+      },
+    });
+
+    revalidatePath("/admin/categories");
+    revalidatePath("/products");
+
+    return { success: true, category };
+  } catch (error) {
+    console.error("Create category error:", error);
+    return { success: false, error: "ক্যাটাগরি তৈরি করা যায়নি" };
+  }
+}
+
+// Update category (Admin only)
+export async function updateCategory(data: UpdateCategoryData) {
+  const session = await auth();
+  if (!session?.user?.id || session.user.role !== "ADMIN") {
+    return { success: false, error: "অনুমতি নেই" };
+  }
+
+  try {
+    const { id, ...updateData } = data;
+
+    const category = await db.category.update({
+      where: { id },
+      data: updateData,
+    });
+
+    revalidatePath("/admin/categories");
+    revalidatePath("/products");
+
+    return { success: true, category };
+  } catch (error) {
+    console.error("Update category error:", error);
+    return { success: false, error: "ক্যাটাগরি আপডেট করা যায়নি" };
+  }
+}
+
+// Delete category (Admin only)
+export async function deleteCategory(categoryId: string) {
+  const session = await auth();
+  if (!session?.user?.id || session.user.role !== "ADMIN") {
+    return { success: false, error: "অনুমতি নেই" };
+  }
+
+  try {
+    // Check if category has products
+    const productCount = await db.product.count({
+      where: { categoryId },
+    });
+
+    if (productCount > 0) {
+      return {
+        success: false,
+        error: `এই ক্যাটাগরিতে ${productCount} টি পণ্য আছে। প্রথমে পণ্যগুলো সরান।`,
+      };
+    }
+
+    await db.category.delete({
+      where: { id: categoryId },
+    });
+
+    revalidatePath("/admin/categories");
+    revalidatePath("/products");
+
+    return { success: true };
+  } catch (error) {
+    console.error("Delete category error:", error);
+    return { success: false, error: "ক্যাটাগরি মুছে ফেলা যায়নি" };
+  }
+}
+
+// ==================== PRODUCT ACTIONS ====================
+
 interface CreateProductData {
   name: string;
   nameEn?: string;
@@ -29,6 +170,79 @@ interface CreateProductData {
 
 interface UpdateProductData extends Partial<CreateProductData> {
   id: string;
+}
+
+// Get all products with category (Admin)
+export async function getAdminProducts(options?: {
+  search?: string;
+  categoryId?: string;
+  limit?: number;
+  offset?: number;
+}) {
+  const session = await auth();
+  if (!session?.user?.id || session.user.role !== "ADMIN") {
+    return { products: [], total: 0 };
+  }
+
+  const where: Record<string, unknown> = {};
+
+  if (options?.search) {
+    where.OR = [
+      { name: { contains: options.search, mode: "insensitive" } },
+      { nameEn: { contains: options.search, mode: "insensitive" } },
+    ];
+  }
+
+  if (options?.categoryId && options.categoryId !== "all") {
+    where.categoryId = options.categoryId;
+  }
+
+  const [products, total] = await Promise.all([
+    db.product.findMany({
+      where,
+      include: {
+        category: {
+          select: {
+            id: true,
+            name: true,
+            nameEn: true,
+            slug: true,
+          },
+        },
+      },
+      orderBy: { createdAt: "desc" },
+      take: options?.limit || 50,
+      skip: options?.offset || 0,
+    }),
+    db.product.count({ where }),
+  ]);
+
+  return { products, total };
+}
+
+// Get single product by ID
+export async function getProductById(id: string) {
+  const session = await auth();
+  if (!session?.user?.id || session.user.role !== "ADMIN") {
+    return { success: false, error: "অনুমতি নেই", product: null };
+  }
+
+  try {
+    const product = await db.product.findUnique({
+      where: { id },
+      include: {
+        category: true,
+      },
+    });
+
+    if (!product) {
+      return { success: false, error: "পণ্য পাওয়া যায়নি", product: null };
+    }
+
+    return { success: true, product };
+  } catch {
+    return { success: false, error: "পণ্য লোড করা যায়নি", product: null };
+  }
 }
 
 // Create product (Admin only)
@@ -146,37 +360,6 @@ export async function updateProductStock(productId: string, stock: number) {
   } catch (error) {
     console.error("Update stock error:", error);
     return { success: false, error: "স্টক আপডেট করা যায়নি" };
-  }
-}
-
-// Create category (Admin only)
-export async function createCategory(
-  name: string,
-  nameEn: string,
-  image?: string
-) {
-  const session = await auth();
-  if (!session?.user?.id || session.user.role !== "ADMIN") {
-    return { success: false, error: "অনুমতি নেই" };
-  }
-
-  try {
-    const slug = generateSlug(nameEn);
-
-    const category = await db.category.create({
-      data: {
-        name,
-        nameEn,
-        slug,
-        image,
-      },
-    });
-
-    revalidatePath("/admin/categories");
-    return { success: true, category };
-  } catch (error) {
-    console.error("Create category error:", error);
-    return { success: false, error: "ক্যাটাগরি তৈরি করা যায়নি" };
   }
 }
 

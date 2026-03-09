@@ -1,5 +1,12 @@
-import Link from "next/link"
-import { Facebook, Instagram, Youtube, Phone, Mail, MapPin } from "lucide-react"
+import Link from "next/link";
+import {
+  Facebook,
+  Instagram,
+  Youtube,
+  Phone,
+  Mail,
+  MapPin,
+} from "lucide-react";
 
 const footerLinks = {
   quickLinks: [
@@ -23,7 +30,7 @@ const footerLinks = {
     { href: "/products?category=health", label: "স্বাস্থ্য সামগ্রী" },
     { href: "/products?category=grooming", label: "গ্রুমিং" },
   ],
-}
+};
 
 export function Footer() {
   return (
@@ -37,7 +44,8 @@ export function Footer() {
               <span className="text-xl font-bold text-primary">PetBazaar</span>
             </Link>
             <p className="text-gray-400 text-sm leading-relaxed">
-              বাংলাদেশের সবচেয়ে বড় পেট শপ। বিড়াল, কুকুর, পাখি, মাছ ও অন্যান্য পোষা প্রাণীর জন্য সেরা মানের পণ্য সরবরাহ করি।
+              বাংলাদেশের সবচেয়ে বড় পেট শপ। বিড়াল, কুকুর, পাখি, মাছ ও অন্যান্য
+              পোষা প্রাণীর জন্য সেরা মানের পণ্য সরবরাহ করি।
             </p>
             <div className="flex gap-4">
               <a
@@ -72,7 +80,9 @@ export function Footer() {
 
           {/* Quick Links */}
           <div>
-            <h3 className="text-lg font-semibold mb-4 text-card">দ্রুত লিঙ্ক</h3>
+            <h3 className="text-lg font-semibold mb-4 text-card">
+              দ্রুত লিঙ্ক
+            </h3>
             <ul className="space-y-2">
               {footerLinks.quickLinks.map((link) => (
                 <li key={link.href}>
@@ -89,7 +99,9 @@ export function Footer() {
 
           {/* Categories */}
           <div>
-            <h3 className="text-lg font-semibold mb-4 text-card">পোষা প্রাণী</h3>
+            <h3 className="text-lg font-semibold mb-4 text-card">
+              পোষা প্রাণী
+            </h3>
             <ul className="space-y-2">
               {footerLinks.petTypes.map((link) => (
                 <li key={link.href}>
@@ -124,7 +136,9 @@ export function Footer() {
               </ul>
             </div>
             <div>
-              <h3 className="text-lg font-semibold mb-4 text-card">পেমেন্ট পদ্ধতি</h3>
+              <h3 className="text-lg font-semibold mb-4 text-card">
+                পেমেন্ট পদ্ধতি
+              </h3>
               <div className="flex flex-wrap gap-2">
                 <PaymentBadge>COD</PaymentBadge>
                 <PaymentBadge>bKash</PaymentBadge>
@@ -143,7 +157,7 @@ export function Footer() {
         </div>
       </div>
     </footer>
-  )
+  );
 }
 
 function PaymentBadge({ children }: { children: React.ReactNode }) {
@@ -151,7 +165,7 @@ function PaymentBadge({ children }: { children: React.ReactNode }) {
     <span className="px-3 py-1 bg-gray-700 text-gray-300 text-xs rounded-full">
       {children}
     </span>
-  )
+  );
 }
 
 function PetLogoWhite() {
@@ -172,5 +186,5 @@ function PetLogoWhite() {
       <circle cx="25" cy="18" r="2.5" fill="currentColor" />
       <ellipse cx="16" cy="22" rx="5" ry="4" fill="currentColor" />
     </svg>
-  )
+  );
 }

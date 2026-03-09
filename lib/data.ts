@@ -1,5 +1,5 @@
-import { Product } from "@/components/product/product-card"
-import { Category } from "@/components/product/category-card"
+import { Product } from "@/components/product/product-card";
+import { Category } from "@/components/product/category-card";
 
 // Pet type categories
 export const petTypes = [
@@ -7,7 +7,8 @@ export const petTypes = [
     id: "cat",
     name: "বিড়াল",
     nameEn: "Cats",
-    image: "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=200&h=200&fit=crop",
+    image:
+      "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=200&h=200&fit=crop",
     href: "/products?pet=cat",
     productCount: 145,
   },
@@ -15,7 +16,8 @@ export const petTypes = [
     id: "dog",
     name: "কুকুর",
     nameEn: "Dogs",
-    image: "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=200&h=200&fit=crop",
+    image:
+      "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=200&h=200&fit=crop",
     href: "/products?pet=dog",
     productCount: 189,
   },
@@ -23,7 +25,8 @@ export const petTypes = [
     id: "bird",
     name: "পাখি",
     nameEn: "Birds",
-    image: "https://images.unsplash.com/photo-1552728089-57bdde30beb3?w=200&h=200&fit=crop",
+    image:
+      "https://images.unsplash.com/photo-1552728089-57bdde30beb3?w=200&h=200&fit=crop",
     href: "/products?pet=bird",
     productCount: 76,
   },
@@ -31,7 +34,8 @@ export const petTypes = [
     id: "fish",
     name: "মাছ",
     nameEn: "Fish",
-    image: "https://images.unsplash.com/photo-1520302630591-fd1c66edc19d?w=200&h=200&fit=crop",
+    image:
+      "https://images.unsplash.com/photo-1520302630591-fd1c66edc19d?w=200&h=200&fit=crop",
     href: "/products?pet=fish",
     productCount: 94,
   },
@@ -39,7 +43,8 @@ export const petTypes = [
     id: "rabbit",
     name: "খরগোশ",
     nameEn: "Rabbits",
-    image: "https://images.unsplash.com/photo-1585110396000-c9ffd4e4b308?w=200&h=200&fit=crop",
+    image:
+      "https://images.unsplash.com/photo-1585110396000-c9ffd4e4b308?w=200&h=200&fit=crop",
     href: "/products?pet=rabbit",
     productCount: 42,
   },
@@ -47,11 +52,12 @@ export const petTypes = [
     id: "hamster",
     name: "হ্যামস্টার",
     nameEn: "Hamsters",
-    image: "https://images.unsplash.com/photo-1425082661705-1834bfd09dca?w=200&h=200&fit=crop",
+    image:
+      "https://images.unsplash.com/photo-1425082661705-1834bfd09dca?w=200&h=200&fit=crop",
     href: "/products?pet=hamster",
     productCount: 38,
   },
-]
+];
 
 // Product categories
 export const categories: Category[] = [
@@ -59,7 +65,8 @@ export const categories: Category[] = [
     id: "food",
     name: "পেট ফুড",
     nameEn: "Pet Food",
-    image: "https://images.unsplash.com/photo-1589924691995-400dc9ecc119?w=200&h=200&fit=crop",
+    image:
+      "https://images.unsplash.com/photo-1589924691995-400dc9ecc119?w=200&h=200&fit=crop",
     href: "/products?category=food",
     productCount: 245,
   },
@@ -67,7 +74,8 @@ export const categories: Category[] = [
     id: "toys",
     name: "খেলনা",
     nameEn: "Toys",
-    image: "https://images.unsplash.com/photo-1545249390-6bdfa286032f?w=200&h=200&fit=crop",
+    image:
+      "https://images.unsplash.com/photo-1545249390-6bdfa286032f?w=200&h=200&fit=crop",
     href: "/products?category=toys",
     productCount: 132,
   },
@@ -75,7 +83,8 @@ export const categories: Category[] = [
     id: "accessories",
     name: "এক্সেসরিজ",
     nameEn: "Accessories",
-    image: "https://images.unsplash.com/photo-1574158622682-e40e69881006?w=200&h=200&fit=crop",
+    image:
+      "https://images.unsplash.com/photo-1574158622682-e40e69881006?w=200&h=200&fit=crop",
     href: "/products?category=accessories",
     productCount: 186,
   },
@@ -83,7 +92,8 @@ export const categories: Category[] = [
     id: "health",
     name: "স্বাস্থ্য",
     nameEn: "Health",
-    image: "https://images.unsplash.com/photo-1606567595334-d39972c85dfd?w=200&h=200&fit=crop",
+    image:
+      "https://images.unsplash.com/photo-1606567595334-d39972c85dfd?w=200&h=200&fit=crop",
     href: "/products?category=health",
     productCount: 94,
   },
@@ -91,7 +101,8 @@ export const categories: Category[] = [
     id: "grooming",
     name: "গ্রুমিং",
     nameEn: "Grooming",
-    image: "https://images.unsplash.com/photo-1518791841217-8f162f1e1131?w=200&h=200&fit=crop",
+    image:
+      "https://images.unsplash.com/photo-1518791841217-8f162f1e1131?w=200&h=200&fit=crop",
     href: "/products?category=grooming",
     productCount: 78,
   },
@@ -99,11 +110,12 @@ export const categories: Category[] = [
     id: "housing",
     name: "ঘর ও খাঁচা",
     nameEn: "Housing & Cages",
-    image: "https://images.unsplash.com/photo-1603380353725-f8a4d39cc41e?w=200&h=200&fit=crop",
+    image:
+      "https://images.unsplash.com/photo-1603380353725-f8a4d39cc41e?w=200&h=200&fit=crop",
     href: "/products?category=housing",
     productCount: 65,
   },
-]
+];
 
 export const bestsellers: Product[] = [
   {
@@ -112,7 +124,8 @@ export const bestsellers: Product[] = [
     nameEn: "Royal Canin Indoor Cat Food 2kg",
     price: 2450,
     mrp: 2800,
-    image: "https://images.unsplash.com/photo-1589924691995-400dc9ecc119?w=400&h=400&fit=crop",
+    image:
+      "https://images.unsplash.com/photo-1589924691995-400dc9ecc119?w=400&h=400&fit=crop",
     rating: 4.8,
     reviewCount: 124,
     inStock: true,
@@ -126,7 +139,8 @@ export const bestsellers: Product[] = [
     nameEn: "Pedigree Adult Dog Food 3kg",
     price: 1850,
     mrp: 2100,
-    image: "https://images.unsplash.com/photo-1568640347023-a616a30bc3bd?w=400&h=400&fit=crop",
+    image:
+      "https://images.unsplash.com/photo-1568640347023-a616a30bc3bd?w=400&h=400&fit=crop",
     rating: 4.7,
     reviewCount: 189,
     inStock: true,
@@ -140,7 +154,8 @@ export const bestsellers: Product[] = [
     nameEn: "Feather Wand Cat Toy Interactive",
     price: 350,
     mrp: 450,
-    image: "https://images.unsplash.com/photo-1545249390-6bdfa286032f?w=400&h=400&fit=crop",
+    image:
+      "https://images.unsplash.com/photo-1545249390-6bdfa286032f?w=400&h=400&fit=crop",
     rating: 4.5,
     reviewCount: 89,
     inStock: true,
@@ -155,7 +170,8 @@ export const bestsellers: Product[] = [
     nameEn: "Bird Food Mix Seed 1kg",
     price: 450,
     mrp: 550,
-    image: "https://images.unsplash.com/photo-1591198936750-16d8e15edb9e?w=400&h=400&fit=crop",
+    image:
+      "https://images.unsplash.com/photo-1591198936750-16d8e15edb9e?w=400&h=400&fit=crop",
     rating: 4.6,
     reviewCount: 78,
     inStock: true,
@@ -169,7 +185,8 @@ export const bestsellers: Product[] = [
     nameEn: "Dog Chew Toy Rubber Ball",
     price: 280,
     mrp: 350,
-    image: "https://images.unsplash.com/photo-1535294435445-d7249524ef2e?w=400&h=400&fit=crop",
+    image:
+      "https://images.unsplash.com/photo-1535294435445-d7249524ef2e?w=400&h=400&fit=crop",
     rating: 4.4,
     reviewCount: 156,
     inStock: true,
@@ -182,7 +199,8 @@ export const bestsellers: Product[] = [
     name: "একোয়ারিয়াম ফিশ ফুড ১০০গ্রাম",
     nameEn: "Aquarium Fish Food 100g",
     price: 180,
-    image: "https://images.unsplash.com/photo-1520302630591-fd1c66edc19d?w=400&h=400&fit=crop",
+    image:
+      "https://images.unsplash.com/photo-1520302630591-fd1c66edc19d?w=400&h=400&fit=crop",
     rating: 4.5,
     reviewCount: 234,
     inStock: true,
@@ -190,7 +208,7 @@ export const bestsellers: Product[] = [
     category: "food",
     petType: "fish",
   },
-]
+];
 
 export const newArrivals: Product[] = [
   {
@@ -199,7 +217,8 @@ export const newArrivals: Product[] = [
     nameEn: "Dog Collar Adjustable Nylon",
     price: 320,
     mrp: 400,
-    image: "https://images.unsplash.com/photo-1599839575945-a9e5af0c3fa5?w=400&h=400&fit=crop",
+    image:
+      "https://images.unsplash.com/photo-1599839575945-a9e5af0c3fa5?w=400&h=400&fit=crop",
     rating: 4.4,
     reviewCount: 112,
     inStock: true,
@@ -214,7 +233,8 @@ export const newArrivals: Product[] = [
     nameEn: "Bird Cage Large Size",
     price: 2200,
     mrp: 2800,
-    image: "https://images.unsplash.com/photo-1520367445093-50dc08a59d9d?w=400&h=400&fit=crop",
+    image:
+      "https://images.unsplash.com/photo-1520367445093-50dc08a59d9d?w=400&h=400&fit=crop",
     rating: 4.7,
     reviewCount: 67,
     inStock: true,
@@ -229,7 +249,8 @@ export const newArrivals: Product[] = [
     nameEn: "Aquarium Filter Pump",
     price: 850,
     mrp: 1000,
-    image: "https://images.unsplash.com/photo-1544943910-4c1dc44aab44?w=400&h=400&fit=crop",
+    image:
+      "https://images.unsplash.com/photo-1544943910-4c1dc44aab44?w=400&h=400&fit=crop",
     rating: 4.5,
     reviewCount: 89,
     inStock: true,
@@ -244,7 +265,8 @@ export const newArrivals: Product[] = [
     nameEn: "Rabbit Food Pellet 1kg",
     price: 380,
     mrp: 450,
-    image: "https://images.unsplash.com/photo-1585110396000-c9ffd4e4b308?w=400&h=400&fit=crop",
+    image:
+      "https://images.unsplash.com/photo-1585110396000-c9ffd4e4b308?w=400&h=400&fit=crop",
     rating: 4.6,
     reviewCount: 45,
     inStock: true,
@@ -259,7 +281,8 @@ export const newArrivals: Product[] = [
     nameEn: "Cat Scratching Post 70cm",
     price: 1650,
     mrp: 2000,
-    image: "https://images.unsplash.com/photo-1615497001839-b0a0eac3274c?w=400&h=400&fit=crop",
+    image:
+      "https://images.unsplash.com/photo-1615497001839-b0a0eac3274c?w=400&h=400&fit=crop",
     rating: 4.7,
     reviewCount: 167,
     inStock: true,
@@ -274,7 +297,8 @@ export const newArrivals: Product[] = [
     nameEn: "Hamster Wheel Runner",
     price: 450,
     mrp: 550,
-    image: "https://images.unsplash.com/photo-1425082661705-1834bfd09dca?w=400&h=400&fit=crop",
+    image:
+      "https://images.unsplash.com/photo-1425082661705-1834bfd09dca?w=400&h=400&fit=crop",
     rating: 4.3,
     reviewCount: 34,
     inStock: true,
@@ -283,7 +307,7 @@ export const newArrivals: Product[] = [
     category: "toys",
     petType: "hamster",
   },
-]
+];
 
 export const allProducts: Product[] = [
   ...bestsellers,
@@ -294,7 +318,8 @@ export const allProducts: Product[] = [
     nameEn: "Me-O Cat Food Chicken Flavor 1.2kg",
     price: 680,
     mrp: 750,
-    image: "https://images.unsplash.com/photo-1589924691995-400dc9ecc119?w=400&h=400&fit=crop",
+    image:
+      "https://images.unsplash.com/photo-1589924691995-400dc9ecc119?w=400&h=400&fit=crop",
     rating: 4.2,
     reviewCount: 189,
     inStock: true,
@@ -308,7 +333,8 @@ export const allProducts: Product[] = [
     nameEn: "Dog Leash Training Rope 2m",
     price: 450,
     mrp: 550,
-    image: "https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=400&h=400&fit=crop",
+    image:
+      "https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=400&h=400&fit=crop",
     rating: 4.5,
     reviewCount: 123,
     inStock: true,
@@ -321,7 +347,8 @@ export const allProducts: Product[] = [
     name: "পাখির জন্য ভিটামিন ড্রপস",
     nameEn: "Bird Vitamin Drops",
     price: 280,
-    image: "https://images.unsplash.com/photo-1591198936750-16d8e15edb9e?w=400&h=400&fit=crop",
+    image:
+      "https://images.unsplash.com/photo-1591198936750-16d8e15edb9e?w=400&h=400&fit=crop",
     rating: 4.4,
     reviewCount: 56,
     inStock: true,
@@ -335,7 +362,8 @@ export const allProducts: Product[] = [
     nameEn: "Fish Tank Decoration Set",
     price: 550,
     mrp: 700,
-    image: "https://images.unsplash.com/photo-1571752726703-5e7d1f6a986d?w=400&h=400&fit=crop",
+    image:
+      "https://images.unsplash.com/photo-1571752726703-5e7d1f6a986d?w=400&h=400&fit=crop",
     rating: 4.6,
     reviewCount: 78,
     inStock: true,
@@ -349,7 +377,8 @@ export const allProducts: Product[] = [
     nameEn: "Cat Litter Box Hooded",
     price: 1450,
     mrp: 1800,
-    image: "https://images.unsplash.com/photo-1603380353725-f8a4d39cc41e?w=400&h=400&fit=crop",
+    image:
+      "https://images.unsplash.com/photo-1603380353725-f8a4d39cc41e?w=400&h=400&fit=crop",
     rating: 4.7,
     reviewCount: 89,
     inStock: true,
@@ -363,7 +392,8 @@ export const allProducts: Product[] = [
     nameEn: "Dog Shampoo Anti-Flea 500ml",
     price: 380,
     mrp: 450,
-    image: "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400&h=400&fit=crop",
+    image:
+      "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400&h=400&fit=crop",
     rating: 4.5,
     reviewCount: 167,
     inStock: true,
@@ -371,14 +401,16 @@ export const allProducts: Product[] = [
     category: "grooming",
     petType: "dog",
   },
-]
+];
 
 export const blogPosts = [
   {
     id: "1",
     title: "কুকুরের খাবার নির্বাচনের সম্পূর্ণ গাইড",
-    excerpt: "আপনার কুকুরের বয়স, জাত এবং স্বাস্থ্য অনুযায়ী সঠিক খাবার বেছে নিন।",
-    image: "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400&h=300&fit=crop",
+    excerpt:
+      "আপনার কুকুরের বয়স, জাত এবং স্বাস্থ্য অনুযায়ী সঠিক খাবার বেছে নিন।",
+    image:
+      "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400&h=300&fit=crop",
     href: "/blog/dog-food-guide",
     date: "২৫ ফেব্রুয়ারি, ২০২৬",
     petType: "dog",
@@ -386,8 +418,10 @@ export const blogPosts = [
   {
     id: "2",
     title: "বিড়ালের খাবার নির্বাচনের গাইড",
-    excerpt: "আপনার বিড়ালের বয়স, স্বাস্থ্য এবং পছন্দ অনুযায়ী সঠিক খাবার নির্বাচন করুন।",
-    image: "https://images.unsplash.com/photo-1573865526739-10659fec78a5?w=400&h=300&fit=crop",
+    excerpt:
+      "আপনার বিড়ালের বয়স, স্বাস্থ্য এবং পছন্দ অনুযায়ী সঠিক খাবার নির্বাচন করুন।",
+    image:
+      "https://images.unsplash.com/photo-1573865526739-10659fec78a5?w=400&h=300&fit=crop",
     href: "/blog/cat-food-guide",
     date: "২০ ফেব্রুয়ারি, ২০২৬",
     petType: "cat",
@@ -395,8 +429,10 @@ export const blogPosts = [
   {
     id: "3",
     title: "পোষা পাখির যত্ন ও খাওয়ানো",
-    excerpt: "বাজরিগার, ফিঞ্চ ও অন্যান্য পাখির সঠিক যত্ন এবং খাবারের নির্দেশিকা।",
-    image: "https://images.unsplash.com/photo-1552728089-57bdde30beb3?w=400&h=300&fit=crop",
+    excerpt:
+      "বাজরিগার, ফিঞ্চ ও অন্যান্য পাখির সঠিক যত্ন এবং খাবারের নির্দেশিকা।",
+    image:
+      "https://images.unsplash.com/photo-1552728089-57bdde30beb3?w=400&h=300&fit=crop",
     href: "/blog/bird-care-guide",
     date: "১৫ ফেব্রুয়ারি, ২০২৬",
     petType: "bird",
@@ -404,8 +440,10 @@ export const blogPosts = [
   {
     id: "4",
     title: "একোয়ারিয়াম সেটআপ ও মাছের যত্ন",
-    excerpt: "নতুনদের জন্য একোয়ারিয়াম সেটআপ এবং মাছের স্বাস্থ্যকর পরিবেশ তৈরির টিপস।",
-    image: "https://images.unsplash.com/photo-1520302630591-fd1c66edc19d?w=400&h=300&fit=crop",
+    excerpt:
+      "নতুনদের জন্য একোয়ারিয়াম সেটআপ এবং মাছের স্বাস্থ্যকর পরিবেশ তৈরির টিপস।",
+    image:
+      "https://images.unsplash.com/photo-1520302630591-fd1c66edc19d?w=400&h=300&fit=crop",
     href: "/blog/aquarium-setup",
     date: "১০ ফেব্রুয়ারি, ২০২৬",
     petType: "fish",
@@ -414,7 +452,8 @@ export const blogPosts = [
     id: "5",
     title: "কুকুরের ট্রেনিং - বেসিক কমান্ড শেখান",
     excerpt: "ঘরে বসে আপনার কুকুরকে বসো, থাকো, আসো এই কমান্ডগুলো শেখান।",
-    image: "https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=400&h=300&fit=crop",
+    image:
+      "https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=400&h=300&fit=crop",
     href: "/blog/dog-training-basics",
     date: "৫ ফেব্রুয়ারি, ২০২৬",
     petType: "dog",
@@ -422,10 +461,12 @@ export const blogPosts = [
   {
     id: "6",
     title: "খরগোশ পালনের সম্পূর্ণ গাইড",
-    excerpt: "খরগোশের খাঁচা, খাবার, স্বাস্থ্য যত্ন এবং হ্যান্ডলিং সম্পর্কে জানুন।",
-    image: "https://images.unsplash.com/photo-1585110396000-c9ffd4e4b308?w=400&h=300&fit=crop",
+    excerpt:
+      "খরগোশের খাঁচা, খাবার, স্বাস্থ্য যত্ন এবং হ্যান্ডলিং সম্পর্কে জানুন।",
+    image:
+      "https://images.unsplash.com/photo-1585110396000-c9ffd4e4b308?w=400&h=300&fit=crop",
     href: "/blog/rabbit-care-guide",
     date: "১ ফেব্রুয়ারি, ২০২৬",
     petType: "rabbit",
   },
-]
+];
