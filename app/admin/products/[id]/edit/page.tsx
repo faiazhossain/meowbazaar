@@ -18,7 +18,7 @@ export default async function EditProductPage({
 
   const { id } = await params;
 
-  const [productResult, categoriesResult] = await Promise.all([
+  const [productResult, categories] = await Promise.all([
     getProductById(id),
     getAdminCategories(),
   ]);
@@ -26,8 +26,6 @@ export default async function EditProductPage({
   if (!productResult.success || !productResult.product) {
     notFound();
   }
-
-  const categories = categoriesResult.categories || [];
 
   return (
     <div className="p-6">

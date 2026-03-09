@@ -10,8 +10,7 @@ export default async function NewProductPage() {
     redirect("/auth/signin");
   }
 
-  const categoriesResult = await getAdminCategories();
-  const categories = categoriesResult.categories || [];
+  const categories = await getAdminCategories();
 
   return (
     <div className="p-6">
