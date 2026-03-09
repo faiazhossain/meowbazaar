@@ -17,16 +17,21 @@ const hindSiliguri = Hind_Siliguri({
 });
 
 export const metadata: Metadata = {
-  title: "MeowBazaar | আপনার বিড়ালের জন্য সবকিছু",
+  title: "PetBazaar | আপনার পোষা প্রাণীর সবকিছু",
   description:
-    "বাংলাদেশের সেরা ক্যাট শপ - প্রিমিয়াম ক্যাট ফুড, খেলনা, লিটার ও আরও অনেক কিছু। ঢাকায় হোম ডেলিভারি এবং সারাদেশে ক্যাশ অন ডেলিভারি।",
+    "বাংলাদেশের সেরা পেট শপ - বিড়াল, কুকুর, পাখি ও মাছের জন্য প্রিমিয়াম খাবার, খেলনা ও এক্সেসরিজ। ঢাকায় হোম ডেলিভারি এবং সারাদেশে ক্যাশ অন ডেলিভারি।",
   keywords: [
+    "pet food",
     "cat food",
-    "cat toys",
-    "cat litter",
+    "dog food",
+    "bird food",
+    "fish food",
+    "pet toys",
     "pet shop bangladesh",
-    "meowbazaar",
-    "ক্যাট ফুড",
+    "petbazaar",
+    "পেট ফুড",
+    "পোষা প্রাণীর খাবার",
+    "কুকুরের খাবার",
     "বিড়ালের খাবার",
   ],
   icons: {

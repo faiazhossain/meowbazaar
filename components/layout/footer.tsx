@@ -9,12 +9,19 @@ const footerLinks = {
     { href: "/privacy", label: "গোপনীয়তা নীতি" },
     { href: "/returns", label: "রিটার্ন পলিসি" },
   ],
+  petTypes: [
+    { href: "/products?pet=cat", label: "বিড়াল" },
+    { href: "/products?pet=dog", label: "কুকুর" },
+    { href: "/products?pet=bird", label: "পাখি" },
+    { href: "/products?pet=fish", label: "মাছ" },
+    { href: "/products?pet=rabbit", label: "খরগোশ" },
+  ],
   categories: [
-    { href: "/products?category=food", label: "ক্যাট ফুড" },
+    { href: "/products?category=food", label: "পেট ফুড" },
     { href: "/products?category=toys", label: "খেলনা" },
-    { href: "/products?category=litter", label: "লিটার" },
     { href: "/products?category=accessories", label: "এক্সেসরিজ" },
     { href: "/products?category=health", label: "স্বাস্থ্য সামগ্রী" },
+    { href: "/products?category=grooming", label: "গ্রুমিং" },
   ],
 }
 
@@ -26,11 +33,11 @@ export function Footer() {
           {/* Brand Section */}
           <div className="space-y-4">
             <Link href="/" className="flex items-center gap-2">
-              <CatLogoWhite />
-              <span className="text-xl font-bold text-primary">MeowBazaar</span>
+              <PetLogoWhite />
+              <span className="text-xl font-bold text-primary">PetBazaar</span>
             </Link>
             <p className="text-gray-400 text-sm leading-relaxed">
-              বাংলাদেশের সবচেয়ে বড় ক্যাট শপ। আমরা আপনার প্রিয় বিড়ালের জন্য সেরা মানের পণ্য সরবরাহ করি।
+              বাংলাদেশের সবচেয়ে বড় পেট শপ। বিড়াল, কুকুর, পাখি, মাছ ও অন্যান্য পোষা প্রাণীর জন্য সেরা মানের পণ্য সরবরাহ করি।
             </p>
             <div className="flex gap-4">
               <a
@@ -82,9 +89,9 @@ export function Footer() {
 
           {/* Categories */}
           <div>
-            <h3 className="text-lg font-semibold mb-4 text-card">ক্যাটাগরি</h3>
+            <h3 className="text-lg font-semibold mb-4 text-card">পোষা প্রাণী</h3>
             <ul className="space-y-2">
-              {footerLinks.categories.map((link) => (
+              {footerLinks.petTypes.map((link) => (
                 <li key={link.href}>
                   <Link
                     href={link.href}
@@ -108,7 +115,7 @@ export function Footer() {
                 </li>
                 <li className="flex items-center gap-2 text-gray-400 text-sm">
                   <Mail className="h-4 w-4 text-primary" />
-                  <span>info@meowbazaar.com</span>
+                  <span>info@petbazaar.com</span>
                 </li>
                 <li className="flex items-start gap-2 text-gray-400 text-sm">
                   <MapPin className="h-4 w-4 text-primary shrink-0 mt-0.5" />
@@ -131,7 +138,7 @@ export function Footer() {
         {/* Bottom Bar */}
         <div className="border-t border-gray-700 mt-8 pt-8 text-center">
           <p className="text-gray-400 text-sm">
-            © {new Date().getFullYear()} MeowBazaar. সর্বস্বত্ব সংরক্ষিত।
+            © {new Date().getFullYear()} PetBazaar. সর্বস্বত্ব সংরক্ষিত।
           </p>
         </div>
       </div>
@@ -147,7 +154,7 @@ function PaymentBadge({ children }: { children: React.ReactNode }) {
   )
 }
 
-function CatLogoWhite() {
+function PetLogoWhite() {
   return (
     <svg
       width="32"
@@ -157,33 +164,13 @@ function CatLogoWhite() {
       xmlns="http://www.w3.org/2000/svg"
       className="text-primary"
     >
-      <path
-        d="M16 28C22.6274 28 28 22.6274 28 16C28 9.37258 22.6274 4 16 4C9.37258 4 4 9.37258 4 16C4 22.6274 9.37258 28 16 28Z"
-        fill="currentColor"
-        fillOpacity="0.2"
-      />
-      <path
-        d="M8 12L6 4L12 8M24 12L26 4L20 8"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <circle cx="12" cy="14" r="2" fill="currentColor" />
-      <circle cx="20" cy="14" r="2" fill="currentColor" />
-      <path
-        d="M16 18C16 18 14 20 12 20M16 18C16 18 18 20 20 20M16 18V16"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M10 22C12 24 14 25 16 25C18 25 20 24 22 22"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-      />
+      {/* Paw print logo */}
+      <circle cx="16" cy="20" r="8" fill="currentColor" fillOpacity="0.3" />
+      <circle cx="10" cy="12" r="3" fill="currentColor" />
+      <circle cx="22" cy="12" r="3" fill="currentColor" />
+      <circle cx="7" cy="18" r="2.5" fill="currentColor" />
+      <circle cx="25" cy="18" r="2.5" fill="currentColor" />
+      <ellipse cx="16" cy="22" rx="5" ry="4" fill="currentColor" />
     </svg>
   )
 }

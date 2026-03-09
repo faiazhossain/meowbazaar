@@ -33,14 +33,10 @@ import { signOut } from "next-auth/react";
 
 const navLinks = [
   { href: "/products", label: "সব পণ্য", labelEn: "All Products" },
-  { href: "/products?category=food", label: "ক্যাট ফুড", labelEn: "Cat Food" },
-  { href: "/products?category=toys", label: "খেলনা", labelEn: "Toys" },
-  { href: "/products?category=litter", label: "লিটার", labelEn: "Litter" },
-  {
-    href: "/products?category=accessories",
-    label: "এক্সেসরিজ",
-    labelEn: "Accessories",
-  },
+  { href: "/products?pet=cat", label: "বিড়াল", labelEn: "Cats" },
+  { href: "/products?pet=dog", label: "কুকুর", labelEn: "Dogs" },
+  { href: "/products?pet=bird", label: "পাখি", labelEn: "Birds" },
+  { href: "/products?pet=fish", label: "মাছ", labelEn: "Fish" },
 ];
 
 interface NavbarClientProps {
@@ -91,9 +87,9 @@ export function NavbarClient({
             <SheetContent side="left" className="w-80 bg-card">
               <div className="flex flex-col gap-6 py-6">
                 <Link href="/" className="flex items-center gap-2">
-                  <CatLogo />
+                  <PetLogo />
                   <span className="text-xl font-bold text-primary">
-                    MeowBazaar
+                    PetBazaar
                   </span>
                 </Link>
                 <nav className="flex flex-col gap-4">
@@ -176,9 +172,9 @@ export function NavbarClient({
 
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 shrink-0">
-            <CatLogo />
+            <PetLogo />
             <span className="text-xl font-bold text-primary hidden sm:inline">
-              MeowBazaar
+              PetBazaar
             </span>
           </Link>
 
@@ -351,7 +347,7 @@ export function NavbarClient({
   );
 }
 
-function CatLogo() {
+function PetLogo() {
   return (
     <svg
       width="32"
@@ -361,33 +357,13 @@ function CatLogo() {
       xmlns="http://www.w3.org/2000/svg"
       className="text-primary"
     >
-      <path
-        d="M16 28C22.6274 28 28 22.6274 28 16C28 9.37258 22.6274 4 16 4C9.37258 4 4 9.37258 4 16C4 22.6274 9.37258 28 16 28Z"
-        fill="currentColor"
-        fillOpacity="0.2"
-      />
-      <path
-        d="M8 12L6 4L12 8M24 12L26 4L20 8"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <circle cx="12" cy="14" r="2" fill="currentColor" />
-      <circle cx="20" cy="14" r="2" fill="currentColor" />
-      <path
-        d="M16 18C16 18 14 20 12 20M16 18C16 18 18 20 20 20M16 18V16"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M10 22C12 24 14 25 16 25C18 25 20 24 22 22"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-      />
+      {/* Paw print logo */}
+      <circle cx="16" cy="20" r="8" fill="currentColor" fillOpacity="0.2" />
+      <circle cx="10" cy="12" r="3" fill="currentColor" />
+      <circle cx="22" cy="12" r="3" fill="currentColor" />
+      <circle cx="7" cy="18" r="2.5" fill="currentColor" />
+      <circle cx="25" cy="18" r="2.5" fill="currentColor" />
+      <ellipse cx="16" cy="22" rx="5" ry="4" fill="currentColor" />
     </svg>
   );
 }

@@ -9,10 +9,10 @@ async function main() {
   // Create admin user
   const adminPassword = await bcrypt.hash("admin123", 10);
   const admin = await prisma.user.upsert({
-    where: { email: "admin@meowbazaar.com" },
+    where: { email: "admin@petbazaar.com" },
     update: {},
     create: {
-      email: "admin@meowbazaar.com",
+      email: "admin@petbazaar.com",
       name: "Admin",
       password: adminPassword,
       phone: "+8801700000000",
@@ -42,14 +42,47 @@ async function main() {
   // Create categories
   const categories = await Promise.all([
     prisma.category.upsert({
-      where: { slug: "food" },
+      where: { slug: "cat-food" },
       update: {},
       create: {
-        name: "ক্যাট ফুড",
+        name: "বিড়ালের খাবার",
         nameEn: "Cat Food",
-        slug: "food",
+        slug: "cat-food",
         image:
           "https://images.unsplash.com/photo-1589924691995-400dc9ecc119?w=200&h=200&fit=crop",
+      },
+    }),
+    prisma.category.upsert({
+      where: { slug: "dog-food" },
+      update: {},
+      create: {
+        name: "কুকুরের খাবার",
+        nameEn: "Dog Food",
+        slug: "dog-food",
+        image:
+          "https://images.unsplash.com/photo-1568640347023-a616a30bc3bd?w=200&h=200&fit=crop",
+      },
+    }),
+    prisma.category.upsert({
+      where: { slug: "bird-food" },
+      update: {},
+      create: {
+        name: "পাখির খাবার",
+        nameEn: "Bird Food",
+        slug: "bird-food",
+        image:
+          "https://images.unsplash.com/photo-1591198936750-16d8e15edb9e?w=200&h=200&fit=crop",
+      },
+    }),
+    prisma.category.upsert({
+      where: { slug: "fish-food" },
+      update: {},
+      create: {
+        name: "মাছের খাবার",
+        nameEn: "Fish Food",
+        slug: "fish-food",
+        image:
+          "https://images.unsplash.com/photo-1520302630591-fd1c66edc19d?w=200&h=200&fit=crop",
       },
     }),
     prisma.category.upsert({
@@ -61,17 +94,6 @@ async function main() {
         slug: "toys",
         image:
           "https://images.unsplash.com/photo-1545249390-6bdfa286032f?w=200&h=200&fit=crop",
-      },
-    }),
-    prisma.category.upsert({
-      where: { slug: "litter" },
-      update: {},
-      create: {
-        name: "লিটার",
-        nameEn: "Litter",
-        slug: "litter",
-        image:
-          "https://images.unsplash.com/photo-1603380353725-f8a4d39cc41e?w=200&h=200&fit=crop",
       },
     }),
     prisma.category.upsert({
@@ -107,11 +129,23 @@ async function main() {
           "https://images.unsplash.com/photo-1518791841217-8f162f1e1131?w=200&h=200&fit=crop",
       },
     }),
+    prisma.category.upsert({
+      where: { slug: "housing" },
+      update: {},
+      create: {
+        name: "ঘর ও খাঁচা",
+        nameEn: "Housing & Cages",
+        slug: "housing",
+        image:
+          "https://images.unsplash.com/photo-1520367445093-50dc08a59d9d?w=200&h=200&fit=crop",
+      },
+    }),
   ]);
   console.log("✅ Categories created:", categories.length);
 
   // Create products
   const products = [
+    // Cat Products
     {
       name: "রয়্যাল ক্যানিন ইনডোর ক্যাট ফুড ২কেজি",
       nameEn: "Royal Canin Indoor Cat Food 2kg",
@@ -122,7 +156,7 @@ async function main() {
       mrp: 2800,
       image:
         "https://images.unsplash.com/photo-1589924691995-400dc9ecc119?w=400&h=400&fit=crop",
-      categorySlug: "food",
+      categorySlug: "cat-food",
       stock: 25,
       rating: 4.8,
       reviewCount: 124,
@@ -144,66 +178,6 @@ async function main() {
       isNew: true,
     },
     {
-      name: "ক্যাট লিটার ক্লাম্পিং ১০লিটার",
-      nameEn: "Cat Litter Clumping 10L",
-      slug: "cat-litter-clumping-10l",
-      description:
-        "দুর্গন্ধ নিয়ন্ত্রণকারী ক্লাম্পিং ক্যাট লিটার। সহজে পরিষ্কার করা যায়।",
-      price: 850,
-      mrp: 1000,
-      image:
-        "https://images.unsplash.com/photo-1603380353725-f8a4d39cc41e?w=400&h=400&fit=crop",
-      categorySlug: "litter",
-      stock: 2,
-      rating: 4.6,
-      reviewCount: 256,
-    },
-    {
-      name: "সফট ক্যাট বেড প্লাশ রাউন্ড",
-      nameEn: "Soft Cat Bed Plush Round",
-      slug: "soft-cat-bed-plush-round",
-      description:
-        "আরামদায়ক প্লাশ রাউন্ড ক্যাট বেড। আপনার বিড়ালের আরামদায়ক ঘুমের জন্য।",
-      price: 1200,
-      mrp: 1500,
-      image:
-        "https://images.unsplash.com/photo-1574158622682-e40e69881006?w=400&h=400&fit=crop",
-      categorySlug: "accessories",
-      stock: 15,
-      rating: 4.9,
-      reviewCount: 78,
-    },
-    {
-      name: "হুইসকাস ওয়েট ক্যাট ফুড টুনা ৮৫গ্রাম",
-      nameEn: "Whiskas Wet Cat Food Tuna 85g",
-      slug: "whiskas-wet-cat-food-tuna-85g",
-      description: "টুনা ফ্লেভারের মুখরোচক ওয়েট ক্যাট ফুড।",
-      price: 120,
-      image:
-        "https://images.unsplash.com/photo-1606567595334-d39972c85dfd?w=400&h=400&fit=crop",
-      categorySlug: "food",
-      stock: 100,
-      rating: 4.4,
-      reviewCount: 312,
-      isNew: true,
-    },
-    {
-      name: "অটোমেটিক লেজার ক্যাট টয়",
-      nameEn: "Automatic Laser Cat Toy",
-      slug: "automatic-laser-cat-toy",
-      description:
-        "স্বয়ংক্রিয় লেজার টয় যা আপনার বিড়ালকে ঘন্টার পর ঘন্টা ব্যস্ত রাখবে।",
-      price: 780,
-      mrp: 950,
-      image:
-        "https://images.unsplash.com/photo-1518791841217-8f162f1e1131?w=400&h=400&fit=crop",
-      categorySlug: "toys",
-      stock: 8,
-      rating: 4.3,
-      reviewCount: 45,
-      isNew: true,
-    },
-    {
       name: "ক্যাট স্ক্র্যাচিং পোস্ট ৭০সেমি",
       nameEn: "Cat Scratching Post 70cm",
       slug: "cat-scratching-post-70cm",
@@ -218,77 +192,180 @@ async function main() {
       reviewCount: 167,
       isNew: true,
     },
+    // Dog Products
     {
-      name: "ক্যাট গ্রুমিং ব্রাশ সেলফ ক্লিনিং",
-      nameEn: "Cat Grooming Brush Self Cleaning",
-      slug: "cat-grooming-brush-self-cleaning",
-      description: "সেলফ ক্লিনিং গ্রুমিং ব্রাশ। সহজে পরিষ্কার করা যায়।",
-      price: 450,
-      mrp: 550,
+      name: "পেডিগ্রি অ্যাডাল্ট ডগ ফুড ৩কেজি",
+      nameEn: "Pedigree Adult Dog Food 3kg",
+      slug: "pedigree-adult-dog-food-3kg",
+      description: "অ্যাডাল্ট কুকুরের জন্য সম্পূর্ণ পুষ্টিকর ড্রাই ডগ ফুড।",
+      price: 1850,
+      mrp: 2100,
       image:
-        "https://images.unsplash.com/photo-1596854407944-bf87f6fdd49e?w=400&h=400&fit=crop",
-      categorySlug: "grooming",
-      stock: 20,
-      rating: 4.6,
-      reviewCount: 93,
-      isNew: true,
-    },
-    {
-      name: "মিও ক্যাট ফুড চিকেন ফ্লেভার ১.২কেজি",
-      nameEn: "Me-O Cat Food Chicken Flavor 1.2kg",
-      slug: "me-o-cat-food-chicken-1-2kg",
-      description: "চিকেন ফ্লেভারের সুস্বাদু ড্রাই ক্যাট ফুড।",
-      price: 680,
-      mrp: 750,
-      image:
-        "https://images.unsplash.com/photo-1589924691995-400dc9ecc119?w=400&h=400&fit=crop",
-      categorySlug: "food",
+        "https://images.unsplash.com/photo-1568640347023-a616a30bc3bd?w=400&h=400&fit=crop",
+      categorySlug: "dog-food",
       stock: 30,
-      rating: 4.2,
+      rating: 4.7,
       reviewCount: 189,
     },
     {
-      name: "ক্যাট ক্যারিয়ার ব্যাগ এয়ারলাইন অ্যাপ্রুভড",
-      nameEn: "Cat Carrier Bag Airline Approved",
-      slug: "cat-carrier-bag-airline-approved",
-      description:
-        "এয়ারলাইন অ্যাপ্রুভড ক্যাট ক্যারিয়ার ব্যাগ। ভ্রমণের জন্য উপযুক্ত।",
-      price: 1850,
-      mrp: 2200,
-      image:
-        "https://images.unsplash.com/photo-1574158622682-e40e69881006?w=400&h=400&fit=crop",
-      categorySlug: "accessories",
-      stock: 7,
-      rating: 4.8,
-      reviewCount: 56,
-    },
-    {
-      name: "ক্যাট নিপ স্প্রে ১০০মিলি",
-      nameEn: "Cat Nip Spray 100ml",
-      slug: "cat-nip-spray-100ml",
-      description:
-        "ন্যাচারাল ক্যাট নিপ স্প্রে। খেলনা এবং স্ক্র্যাচিং পোস্টে স্প্রে করুন।",
-      price: 320,
-      image:
-        "https://images.unsplash.com/photo-1615497001839-b0a0eac3274c?w=400&h=400&fit=crop",
-      categorySlug: "toys",
-      stock: 40,
-      rating: 4.1,
-      reviewCount: 67,
-    },
-    {
-      name: "ক্যাট ফিডার বাউল স্টেইনলেস স্টিল",
-      nameEn: "Cat Feeder Bowl Stainless Steel",
-      slug: "cat-feeder-bowl-stainless-steel",
-      description: "স্টেইনলেস স্টিল ফিডার বাউল। সহজে পরিষ্কার এবং টেকসই।",
+      name: "ডগ চিউ টয় রাবার বল",
+      nameEn: "Dog Chew Toy Rubber Ball",
+      slug: "dog-chew-toy-rubber-ball",
+      description: "টেকসই রাবার বল যা কুকুরের দাঁতের জন্য ভালো।",
       price: 280,
       mrp: 350,
       image:
-        "https://images.unsplash.com/photo-1574158622682-e40e69881006?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1535294435445-d7249524ef2e?w=400&h=400&fit=crop",
+      categorySlug: "toys",
+      stock: 45,
+      rating: 4.4,
+      reviewCount: 156,
+    },
+    {
+      name: "ডগ কলার অ্যাডজাস্টেবল নাইলন",
+      nameEn: "Dog Collar Adjustable Nylon",
+      slug: "dog-collar-adjustable-nylon",
+      description: "আরামদায়ক এবং টেকসই নাইলন কলার।",
+      price: 320,
+      mrp: 400,
+      image:
+        "https://images.unsplash.com/photo-1599839575945-a9e5af0c3fa5?w=400&h=400&fit=crop",
       categorySlug: "accessories",
-      stock: 50,
+      stock: 60,
+      rating: 4.4,
+      reviewCount: 112,
+      isNew: true,
+    },
+    {
+      name: "ডগ শ্যাম্পু অ্যান্টি-ফ্লি ৫০০মিলি",
+      nameEn: "Dog Shampoo Anti-Flea 500ml",
+      slug: "dog-shampoo-anti-flea-500ml",
+      description: "ফ্লি এবং টিক প্রতিরোধক শ্যাম্পু।",
+      price: 380,
+      mrp: 450,
+      image:
+        "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400&h=400&fit=crop",
+      categorySlug: "grooming",
+      stock: 35,
       rating: 4.5,
-      reviewCount: 142,
+      reviewCount: 167,
+    },
+    // Bird Products
+    {
+      name: "বার্ড ফুড মিক্স সিড ১কেজি",
+      nameEn: "Bird Food Mix Seed 1kg",
+      slug: "bird-food-mix-seed-1kg",
+      description: "বিভিন্ন পাখির জন্য মিশ্র বীজ খাবার।",
+      price: 450,
+      mrp: 550,
+      image:
+        "https://images.unsplash.com/photo-1591198936750-16d8e15edb9e?w=400&h=400&fit=crop",
+      categorySlug: "bird-food",
+      stock: 40,
+      rating: 4.6,
+      reviewCount: 78,
+    },
+    {
+      name: "পাখির খাঁচা বড় সাইজ",
+      nameEn: "Bird Cage Large Size",
+      slug: "bird-cage-large-size",
+      description: "বড় পাখিদের জন্য প্রশস্ত খাঁচা।",
+      price: 2200,
+      mrp: 2800,
+      image:
+        "https://images.unsplash.com/photo-1520367445093-50dc08a59d9d?w=400&h=400&fit=crop",
+      categorySlug: "housing",
+      stock: 15,
+      rating: 4.7,
+      reviewCount: 67,
+      isNew: true,
+    },
+    {
+      name: "পাখির জন্য ভিটামিন ড্রপস",
+      nameEn: "Bird Vitamin Drops",
+      slug: "bird-vitamin-drops",
+      description: "পাখির স্বাস্থ্যের জন্য ভিটামিন ড্রপস।",
+      price: 280,
+      image:
+        "https://images.unsplash.com/photo-1591198936750-16d8e15edb9e?w=400&h=400&fit=crop",
+      categorySlug: "health",
+      stock: 50,
+      rating: 4.4,
+      reviewCount: 56,
+    },
+    // Fish Products
+    {
+      name: "একোয়ারিয়াম ফিশ ফুড ১০০গ্রাম",
+      nameEn: "Aquarium Fish Food 100g",
+      slug: "aquarium-fish-food-100g",
+      description: "একোয়ারিয়াম মাছের জন্য ভাসমান খাবার।",
+      price: 180,
+      image:
+        "https://images.unsplash.com/photo-1520302630591-fd1c66edc19d?w=400&h=400&fit=crop",
+      categorySlug: "fish-food",
+      stock: 80,
+      rating: 4.5,
+      reviewCount: 234,
+    },
+    {
+      name: "একোয়ারিয়াম ফিল্টার পাম্প",
+      nameEn: "Aquarium Filter Pump",
+      slug: "aquarium-filter-pump",
+      description: "পানি পরিষ্কার রাখার জন্য ফিল্টার পাম্প।",
+      price: 850,
+      mrp: 1000,
+      image:
+        "https://images.unsplash.com/photo-1544943910-4c1dc44aab44?w=400&h=400&fit=crop",
+      categorySlug: "accessories",
+      stock: 25,
+      rating: 4.5,
+      reviewCount: 89,
+      isNew: true,
+    },
+    {
+      name: "ফিশ ট্যাঙ্ক ডেকোরেশন সেট",
+      nameEn: "Fish Tank Decoration Set",
+      slug: "fish-tank-decoration-set",
+      description: "একোয়ারিয়াম সাজানোর জন্য ডেকোরেশন সেট।",
+      price: 550,
+      mrp: 700,
+      image:
+        "https://images.unsplash.com/photo-1571752726703-5e7d1f6a986d?w=400&h=400&fit=crop",
+      categorySlug: "accessories",
+      stock: 30,
+      rating: 4.6,
+      reviewCount: 78,
+    },
+    // Small Pets
+    {
+      name: "খরগোশের খাবার পেলেট ১কেজি",
+      nameEn: "Rabbit Food Pellet 1kg",
+      slug: "rabbit-food-pellet-1kg",
+      description: "খরগোশের জন্য পুষ্টিকর পেলেট খাবার।",
+      price: 380,
+      mrp: 450,
+      image:
+        "https://images.unsplash.com/photo-1585110396000-c9ffd4e4b308?w=400&h=400&fit=crop",
+      categorySlug: "accessories",
+      stock: 35,
+      rating: 4.6,
+      reviewCount: 45,
+      isNew: true,
+    },
+    {
+      name: "হ্যামস্টার হুইল রানার",
+      nameEn: "Hamster Wheel Runner",
+      slug: "hamster-wheel-runner",
+      description: "হ্যামস্টারের ব্যায়ামের জন্য হুইল রানার।",
+      price: 450,
+      mrp: 550,
+      image:
+        "https://images.unsplash.com/photo-1425082661705-1834bfd09dca?w=400&h=400&fit=crop",
+      categorySlug: "toys",
+      stock: 20,
+      rating: 4.3,
+      reviewCount: 34,
+      isNew: true,
     },
   ];
 
@@ -338,7 +415,7 @@ async function main() {
 
   console.log("🎉 Database seeded successfully!");
   console.log("");
-  console.log("📧 Admin login: admin@meowbazaar.com / admin123");
+  console.log("📧 Admin login: admin@petbazaar.com / admin123");
   console.log("📧 Customer login: customer@example.com / customer123");
 }
 

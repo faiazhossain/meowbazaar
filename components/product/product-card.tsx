@@ -1,53 +1,58 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import Image from "next/image"
-import Link from "next/link"
-import { Heart, ShoppingCart, Star } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { cn } from "@/lib/utils"
+import { useState } from "react";
+import Image from "next/image";
+import Link from "next/link";
+import { Heart, ShoppingCart, Star } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
 
 export interface Product {
-  id: string
-  name: string
-  nameEn?: string
-  price: number
-  mrp?: number
-  image: string
-  rating: number
-  reviewCount: number
-  inStock: boolean
-  isNew?: boolean
-  discount?: number
-  hasCOD?: boolean
-  category: string
+  id: string;
+  name: string;
+  nameEn?: string;
+  price: number;
+  mrp?: number;
+  image: string;
+  rating: number;
+  reviewCount: number;
+  inStock: boolean;
+  isNew?: boolean;
+  discount?: number;
+  hasCOD?: boolean;
+  category: string;
+  petType?: string;
 }
 
 interface ProductCardProps {
-  product: Product
-  onAddToCart?: (product: Product) => void
-  onAddToWishlist?: (product: Product) => void
+  product: Product;
+  onAddToCart?: (product: Product) => void;
+  onAddToWishlist?: (product: Product) => void;
 }
 
-export function ProductCard({ product, onAddToCart, onAddToWishlist }: ProductCardProps) {
-  const [isHovered, setIsHovered] = useState(false)
-  const [isWishlisted, setIsWishlisted] = useState(false)
+export function ProductCard({
+  product,
+  onAddToCart,
+  onAddToWishlist,
+}: ProductCardProps) {
+  const [isHovered, setIsHovered] = useState(false);
+  const [isWishlisted, setIsWishlisted] = useState(false);
 
   const handleWishlistClick = (e: React.MouseEvent) => {
-    e.preventDefault()
-    setIsWishlisted(!isWishlisted)
-    onAddToWishlist?.(product)
-  }
+    e.preventDefault();
+    setIsWishlisted(!isWishlisted);
+    onAddToWishlist?.(product);
+  };
 
   const handleAddToCart = (e: React.MouseEvent) => {
-    e.preventDefault()
-    onAddToCart?.(product)
-  }
+    e.preventDefault();
+    onAddToCart?.(product);
+  };
 
-  const discountPercentage = product.mrp 
+  const discountPercentage = product.mrp
     ? Math.round(((product.mrp - product.price) / product.mrp) * 100)
-    : product.discount
+    : product.discount;
 
   return (
     <Link href={`/products/${product.id}`}>
@@ -65,7 +70,7 @@ export function ProductCard({ product, onAddToCart, onAddToWishlist }: ProductCa
             fill
             className="object-cover transition-transform duration-300 group-hover:scale-105"
           />
-          
+
           {/* Badges */}
           <div className="absolute top-2 left-2 flex flex-col gap-1">
             {product.isNew && (
@@ -89,12 +94,16 @@ export function ProductCard({ product, onAddToCart, onAddToWishlist }: ProductCa
           <button
             onClick={handleWishlistClick}
             className="absolute top-2 right-2 p-2 bg-card/80 backdrop-blur-sm rounded-full transition-all hover:bg-card"
-            aria-label={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
+            aria-label={
+              isWishlisted ? "Remove from wishlist" : "Add to wishlist"
+            }
           >
             <Heart
               className={cn(
                 "h-4 w-4 transition-colors",
-                isWishlisted ? "fill-destructive text-destructive" : "text-foreground"
+                isWishlisted
+                  ? "fill-destructive text-destructive"
+                  : "text-foreground"
               )}
             />
           </button>
@@ -103,7 +112,9 @@ export function ProductCard({ product, onAddToCart, onAddToWishlist }: ProductCa
           <div
             className={cn(
               "absolute bottom-0 left-0 right-0 p-2 transition-all duration-300",
-              isHovered ? "translate-y-0 opacity-100" : "translate-y-full opacity-0"
+              isHovered
+                ? "translate-y-0 opacity-100"
+                : "translate-y-full opacity-0"
             )}
           >
             <Button
@@ -171,5 +182,5 @@ export function ProductCard({ product, onAddToCart, onAddToWishlist }: ProductCa
         </div>
       </article>
     </Link>
-  )
+  );
 }
