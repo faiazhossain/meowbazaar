@@ -1,33 +1,38 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import Link from "next/link"
-import { Search, ShoppingCart, Heart, User, Menu, X } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Badge } from "@/components/ui/badge"
+import { useState } from "react";
+import Link from "next/link";
+import { Search, Heart, User, Menu, X } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
 import {
   Sheet,
   SheetContent,
   SheetTrigger,
   SheetClose,
-} from "@/components/ui/sheet"
+} from "@/components/ui/sheet";
+import { CartButton } from "@/components/cart/cart-button";
 
 const navLinks = [
   { href: "/products", label: "সব পণ্য", labelEn: "All Products" },
   { href: "/products?category=food", label: "ক্যাট ফুড", labelEn: "Cat Food" },
   { href: "/products?category=toys", label: "খেলনা", labelEn: "Toys" },
   { href: "/products?category=litter", label: "লিটার", labelEn: "Litter" },
-  { href: "/products?category=accessories", label: "এক্সেসরিজ", labelEn: "Accessories" },
-]
+  {
+    href: "/products?category=accessories",
+    label: "এক্সেসরিজ",
+    labelEn: "Accessories",
+  },
+];
 
 interface NavbarProps {
-  cartCount?: number
-  wishlistCount?: number
+  cartCount?: number;
+  wishlistCount?: number;
 }
 
 export function Navbar({ cartCount = 0, wishlistCount = 0 }: NavbarProps) {
-  const [searchQuery, setSearchQuery] = useState("")
+  const [searchQuery, setSearchQuery] = useState("");
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border bg-card shadow-sm">
@@ -46,7 +51,9 @@ export function Navbar({ cartCount = 0, wishlistCount = 0 }: NavbarProps) {
               <div className="flex flex-col gap-6 py-6">
                 <Link href="/" className="flex items-center gap-2">
                   <CatLogo />
-                  <span className="text-xl font-bold text-primary">MeowBazaar</span>
+                  <span className="text-xl font-bold text-primary">
+                    MeowBazaar
+                  </span>
                 </Link>
                 <nav className="flex flex-col gap-4">
                   {navLinks.map((link) => (
@@ -78,7 +85,9 @@ export function Navbar({ cartCount = 0, wishlistCount = 0 }: NavbarProps) {
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 shrink-0">
             <CatLogo />
-            <span className="text-xl font-bold text-primary hidden sm:inline">MeowBazaar</span>
+            <span className="text-xl font-bold text-primary hidden sm:inline">
+              MeowBazaar
+            </span>
           </Link>
 
           {/* Desktop Navigation */}
@@ -134,7 +143,11 @@ export function Navbar({ cartCount = 0, wishlistCount = 0 }: NavbarProps) {
             </Sheet>
 
             <Link href="/wishlist">
-              <Button variant="ghost" size="icon" className="relative text-foreground">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="relative text-foreground"
+              >
                 <Heart className="h-5 w-5" />
                 {wishlistCount > 0 && (
                   <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 bg-accent text-accent-foreground text-xs">
@@ -145,17 +158,7 @@ export function Navbar({ cartCount = 0, wishlistCount = 0 }: NavbarProps) {
               </Button>
             </Link>
 
-            <Link href="/cart">
-              <Button variant="ghost" size="icon" className="relative text-foreground">
-                <ShoppingCart className="h-5 w-5" />
-                {cartCount > 0 && (
-                  <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 bg-primary text-primary-foreground text-xs">
-                    {cartCount}
-                  </Badge>
-                )}
-                <span className="sr-only">Cart</span>
-              </Button>
-            </Link>
+            <CartButton serverCartCount={cartCount} />
 
             <Link href="/account" className="hidden sm:block">
               <Button variant="ghost" size="icon" className="text-foreground">
@@ -167,7 +170,7 @@ export function Navbar({ cartCount = 0, wishlistCount = 0 }: NavbarProps) {
         </div>
       </div>
     </header>
-  )
+  );
 }
 
 function CatLogo() {
@@ -208,5 +211,5 @@ function CatLogo() {
         strokeLinecap="round"
       />
     </svg>
-  )
+  );
 }

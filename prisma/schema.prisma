@@ -20,6 +20,9 @@ model User {
   password      String?
   image         String?
   role          Role      @default(CUSTOMER)
+  isActive      Boolean   @default(true)
+  lastLoginAt   DateTime?
+  loginCount    Int       @default(0)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
@@ -30,6 +33,8 @@ model User {
   wishlist      WishlistItem[]
   addresses     Address[]
   reviews       Review[]
+  activities    UserActivity[]
+  loginAttempts LoginAttempt[]
 }
 
 enum Role {
@@ -244,4 +249,92 @@ model Review {
   product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   @@unique([userId, productId])
+}
+
+// ==================== ANALYTICS & TRACKING ====================
+
+// Track all user activities for analytics
+model UserActivity {
+  id        String       @id @default(cuid())
+  userId    String?
+  type      ActivityType
+  metadata  String?      // JSON string for additional data
+  ipAddress String?
+  userAgent String?
+  createdAt DateTime     @default(now())
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([type])
+  @@index([createdAt])
+}
+
+enum ActivityType {
+  PAGE_VIEW
+  PRODUCT_VIEW
+  ADD_TO_CART
+  REMOVE_FROM_CART
+  ADD_TO_WISHLIST
+  REMOVE_FROM_WISHLIST
+  CHECKOUT_START
+  ORDER_PLACED
+  ORDER_CANCELLED
+  SEARCH
+  FILTER_APPLIED
+  REGISTER
+  LOGIN
+  LOGOUT
+  PROFILE_UPDATE
+}
+
+// Track login attempts for security
+model LoginAttempt {
+  id        String   @id @default(cuid())
+  email     String
+  userId    String?
+  success   Boolean
+  ipAddress String?
+  userAgent String?
+  failReason String?
+  createdAt DateTime @default(now())
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([email])
+  @@index([userId])
+  @@index([createdAt])
+}
+
+// Daily aggregated analytics for dashboard
+model DailyAnalytics {
+  id              String   @id @default(cuid())
+  date            DateTime @unique
+  totalVisitors   Int      @default(0)
+  uniqueVisitors  Int      @default(0)
+  newRegistrations Int     @default(0)
+  totalOrders     Int      @default(0)
+  totalRevenue    Float    @default(0)
+  averageOrderValue Float  @default(0)
+  cartAbandonment Float    @default(0)
+  topProducts     String?  // JSON array of product IDs
+  topCategories   String?  // JSON array of category IDs
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([date])
+}
+
+// Store notification/alert for admin
+model AdminNotification {
+  id        String   @id @default(cuid())
+  type      String
+  title     String
+  message   String
+  isRead    Boolean  @default(false)
+  metadata  String?  // JSON for additional data
+  createdAt DateTime @default(now())
+
+  @@index([isRead])
+  @@index([createdAt])
 }

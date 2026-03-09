@@ -1,306 +1,484 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import Image from "next/image"
-import { Search, Filter, ChevronDown, Eye, MoreHorizontal } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { OrderStatusBadge } from "@/components/ui/product-badges"
+import { useEffect, useState, useTransition } from "react";
+import Link from "next/link";
+import { format } from "date-fns";
+import { bn } from "date-fns/locale";
+import {
+  Search,
+  Filter,
+  Eye,
+  MoreHorizontal,
+  Package,
+  ChevronLeft,
+  ChevronRight,
+  CheckCircle,
+  Truck,
+  XCircle,
+  Clock,
+  RefreshCw,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
+} from "@/components/ui/select";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from "@/components/ui/dropdown-menu";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
-import { allProducts } from "@/lib/data"
-import { cn } from "@/lib/utils"
+} from "@/components/ui/dialog";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Spinner } from "@/components/ui/spinner";
+import { Textarea } from "@/components/ui/textarea";
+import { toast } from "sonner";
+import { getOrders, updateOrderStatus } from "@/lib/actions/admin";
 
-const orders = [
-  {
-    id: "#MB2024030912",
-    customer: { name: "মোঃ আব্দুল্লাহ", phone: "01712345678", email: "abdullah@example.com" },
-    date: "৯ মার্চ, ২০২৬",
-    total: 3450,
-    status: "pending" as const,
-    items: [
-      { ...allProducts[0], quantity: 2 },
-      { ...allProducts[2], quantity: 1 },
-    ],
-    address: "বাড়ি ১২, রোড ৫, ধানমন্ডি, ঢাকা",
-    paymentMethod: "ক্যাশ অন ডেলিভারি",
-  },
-  {
-    id: "#MB2024030911",
-    customer: { name: "ফাতিমা বেগম", phone: "01812345678", email: "fatima@example.com" },
-    date: "৯ মার্চ, ২০২৬",
-    total: 1200,
-    status: "confirmed" as const,
-    items: [{ ...allProducts[3], quantity: 1 }],
-    address: "বাড়ি ৫, রোড ১০, মিরপুর, ঢাকা",
-    paymentMethod: "বিকাশ",
-  },
-  {
-    id: "#MB2024030910",
-    customer: { name: "রহিম উদ্দিন", phone: "01912345678", email: "rahim@example.com" },
-    date: "৮ মার্চ, ২০২৬",
-    total: 5600,
-    status: "shipped" as const,
-    items: [
-      { ...allProducts[0], quantity: 1 },
-      { ...allProducts[1], quantity: 2 },
-      { ...allProducts[4], quantity: 1 },
-    ],
-    address: "বাড়ি ২০, রোড ৩, উত্তরা, ঢাকা",
-    paymentMethod: "নগদ",
-  },
-  {
-    id: "#MB2024030909",
-    customer: { name: "করিম মিয়া", phone: "01612345678", email: "karim@example.com" },
-    date: "৭ মার্চ, ২০২৬",
-    total: 890,
-    status: "delivered" as const,
-    items: [{ ...allProducts[5], quantity: 1 }],
-    address: "বাড়ি ১৫, রোড ৮, বনানী, ঢাকা",
-    paymentMethod: "কার্ড",
-  },
-  {
-    id: "#MB2024030908",
-    customer: { name: "সুমাইয়া আক্তার", phone: "01512345678", email: "sumaiya@example.com" },
-    date: "৬ মার্চ, ২০২৬",
-    total: 2340,
-    status: "cancelled" as const,
-    items: [{ ...allProducts[2], quantity: 2 }],
-    address: "বাড়ি ৮, রোড ১২, গুলশান, ঢাকা",
-    paymentMethod: "ক্যাশ অন ডেলিভারি",
-  },
-]
+type OrderStatus = "PENDING" | "CONFIRMED" | "PROCESSING" | "SHIPPED" | "DELIVERED" | "CANCELLED";
+
+interface Order {
+  id: string;
+  orderNumber: string;
+  status: OrderStatus;
+  paymentStatus: string;
+  paymentMethod: string;
+  subtotal: number;
+  deliveryFee: number;
+  total: number;
+  createdAt: Date;
+  user: {
+    id: string;
+    name: string | null;
+    email: string;
+    phone: string | null;
+  };
+  address: {
+    fullName: string;
+    phone: string;
+    address: string;
+    division: string;
+    area: string;
+  } | null;
+  items: Array<{
+    id: string;
+    name: string;
+    quantity: number;
+    price: number;
+    product: {
+      id: string;
+      slug: string;
+      image: string;
+      name: string;
+    };
+  }>;
+  timeline: Array<{
+    id: string;
+    status: string;
+    note: string | null;
+    createdAt: Date;
+  }>;
+}
+
+const ORDER_STATUS_CONFIG: Record<OrderStatus, { label: string; variant: "default" | "secondary" | "destructive" | "outline"; icon: typeof Clock }> = {
+  PENDING: { label: "পেন্ডিং", variant: "secondary", icon: Clock },
+  CONFIRMED: { label: "কনফার্মড", variant: "default", icon: CheckCircle },
+  PROCESSING: { label: "প্রসেসিং", variant: "outline", icon: RefreshCw },
+  SHIPPED: { label: "শিপড", variant: "outline", icon: Truck },
+  DELIVERED: { label: "ডেলিভারড", variant: "default", icon: Package },
+  CANCELLED: { label: "বাতিল", variant: "destructive", icon: XCircle },
+};
+
+const ITEMS_PER_PAGE = 15;
 
 export default function AdminOrdersPage() {
-  const [searchQuery, setSearchQuery] = useState("")
-  const [statusFilter, setStatusFilter] = useState("all")
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [total, setTotal] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
+  const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState("ALL");
+  const [page, setPage] = useState(1);
+  const [isPending, startTransition] = useTransition();
 
-  const filteredOrders = orders.filter((order) => {
-    const matchesSearch =
-      order.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      order.customer.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      order.customer.phone.includes(searchQuery)
-    const matchesStatus = statusFilter === "all" || order.status === statusFilter
-    return matchesSearch && matchesStatus
-  })
+  // Status update dialog
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [newStatus, setNewStatus] = useState<OrderStatus | "">("");
+  const [statusNote, setStatusNote] = useState("");
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  const fetchOrders = async () => {
+    setIsLoading(true);
+    try {
+      const result = await getOrders({
+        search: search || undefined,
+        status: statusFilter !== "ALL" ? statusFilter : undefined,
+        limit: ITEMS_PER_PAGE,
+        offset: (page - 1) * ITEMS_PER_PAGE,
+      });
+      setOrders(result.orders as Order[]);
+      setTotal(result.total);
+    } catch (error) {
+      console.error("Failed to fetch orders:", error);
+      toast.error("অর্ডার লোড করতে সমস্যা হয়েছে");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchOrders();
+  }, [page, statusFilter]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setPage(1);
+      fetchOrders();
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [search]);
+
+  const handleStatusUpdate = async () => {
+    if (!selectedOrder || !newStatus) return;
+
+    startTransition(async () => {
+      const result = await updateOrderStatus(selectedOrder.id, newStatus, statusNote || undefined);
+      if (result.success) {
+        toast.success("অর্ডার স্ট্যাটাস আপডেট হয়েছে");
+        setIsDialogOpen(false);
+        setSelectedOrder(null);
+        setNewStatus("");
+        setStatusNote("");
+        fetchOrders();
+      } else {
+        toast.error(result.error);
+      }
+    });
+  };
+
+  const openStatusDialog = (order: Order, status: OrderStatus) => {
+    setSelectedOrder(order);
+    setNewStatus(status);
+    setIsDialogOpen(true);
+  };
+
+  const totalPages = Math.ceil(total / ITEMS_PER_PAGE);
+
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat("bn-BD", {
+      style: "currency",
+      currency: "BDT",
+      minimumFractionDigits: 0,
+    }).format(amount);
+  };
+
+  // Calculate stats
+  const stats = {
+    pending: orders.filter((o) => o.status === "PENDING").length,
+    confirmed: orders.filter((o) => o.status === "CONFIRMED" || o.status === "PROCESSING").length,
+    shipped: orders.filter((o) => o.status === "SHIPPED").length,
+    delivered: orders.filter((o) => o.status === "DELIVERED").length,
+  };
 
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-foreground">অর্ডার ম্যানেজমেন্ট</h1>
-        <p className="text-muted-foreground">সকল অর্ডার দেখুন এবং ম্যানেজ করুন</p>
+        <h1 className="text-2xl font-bold">অর্ডার ম্যানেজমেন্ট</h1>
+        <p className="text-muted-foreground">
+          মোট {total} টি অর্ডার
+        </p>
+      </div>
+
+      {/* Stats Cards */}
+      <div className="grid gap-4 md:grid-cols-4">
+        <Card className="cursor-pointer hover:border-primary/50" onClick={() => setStatusFilter("PENDING")}>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">পেন্ডিং</CardTitle>
+            <Clock className="h-4 w-4 text-yellow-500" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{stats.pending}</div>
+          </CardContent>
+        </Card>
+        <Card className="cursor-pointer hover:border-primary/50" onClick={() => setStatusFilter("CONFIRMED")}>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">প্রসেসিং</CardTitle>
+            <RefreshCw className="h-4 w-4 text-blue-500" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{stats.confirmed}</div>
+          </CardContent>
+        </Card>
+        <Card className="cursor-pointer hover:border-primary/50" onClick={() => setStatusFilter("SHIPPED")}>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">শিপড</CardTitle>
+            <Truck className="h-4 w-4 text-purple-500" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{stats.shipped}</div>
+          </CardContent>
+        </Card>
+        <Card className="cursor-pointer hover:border-primary/50" onClick={() => setStatusFilter("DELIVERED")}>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">ডেলিভারড</CardTitle>
+            <Package className="h-4 w-4 text-green-500" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{stats.delivered}</div>
+          </CardContent>
+        </Card>
       </div>
 
       {/* Filters */}
       <div className="flex flex-col sm:flex-row gap-4">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <div className="relative flex-1 max-w-sm">
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
-            placeholder="অর্ডার আইডি, কাস্টমার নাম বা ফোন দিয়ে খুঁজুন..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10"
+            placeholder="অর্ডার নম্বর বা কাস্টমার দিয়ে খুঁজুন..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="pl-9"
           />
         </div>
-        <Select value={statusFilter} onValueChange={setStatusFilter}>
+        <Select value={statusFilter} onValueChange={(v) => { setStatusFilter(v); setPage(1); }}>
           <SelectTrigger className="w-full sm:w-48">
             <Filter className="h-4 w-4 mr-2" />
             <SelectValue placeholder="স্ট্যাটাস ফিল্টার" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">সব স্ট্যাটাস</SelectItem>
-            <SelectItem value="pending">পেন্ডিং</SelectItem>
-            <SelectItem value="confirmed">নিশ্চিত</SelectItem>
-            <SelectItem value="shipped">শিপড</SelectItem>
-            <SelectItem value="delivered">ডেলিভারড</SelectItem>
-            <SelectItem value="cancelled">বাতিল</SelectItem>
+            <SelectItem value="ALL">সব স্ট্যাটাস</SelectItem>
+            <SelectItem value="PENDING">পেন্ডিং</SelectItem>
+            <SelectItem value="CONFIRMED">কনফার্মড</SelectItem>
+            <SelectItem value="PROCESSING">প্রসেসিং</SelectItem>
+            <SelectItem value="SHIPPED">শিপড</SelectItem>
+            <SelectItem value="DELIVERED">ডেলিভারড</SelectItem>
+            <SelectItem value="CANCELLED">বাতিল</SelectItem>
           </SelectContent>
         </Select>
       </div>
 
       {/* Orders Table */}
-      <div className="bg-card rounded-lg overflow-hidden" style={{ boxShadow: "var(--shadow-card)" }}>
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-muted/50 border-b border-border">
-              <tr>
-                <th className="text-left px-4 py-3 text-sm font-medium text-muted-foreground">অর্ডার</th>
-                <th className="text-left px-4 py-3 text-sm font-medium text-muted-foreground">কাস্টমার</th>
-                <th className="text-left px-4 py-3 text-sm font-medium text-muted-foreground hidden md:table-cell">তারিখ</th>
-                <th className="text-left px-4 py-3 text-sm font-medium text-muted-foreground">মোট</th>
-                <th className="text-left px-4 py-3 text-sm font-medium text-muted-foreground">স্ট্যাটাস</th>
-                <th className="text-right px-4 py-3 text-sm font-medium text-muted-foreground">অ্যাকশন</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-border">
-              {filteredOrders.map((order) => (
-                <tr key={order.id} className="hover:bg-muted/30 transition-colors">
-                  <td className="px-4 py-4">
-                    <span className="font-medium text-foreground">{order.id}</span>
-                  </td>
-                  <td className="px-4 py-4">
-                    <div>
-                      <p className="font-medium text-foreground">{order.customer.name}</p>
-                      <p className="text-sm text-muted-foreground">{order.customer.phone}</p>
-                    </div>
-                  </td>
-                  <td className="px-4 py-4 hidden md:table-cell">
-                    <span className="text-muted-foreground">{order.date}</span>
-                  </td>
-                  <td className="px-4 py-4">
-                    <span className="font-medium text-foreground">
-                      ৳{order.total.toLocaleString("bn-BD")}
-                    </span>
-                  </td>
-                  <td className="px-4 py-4">
-                    <OrderStatusBadge status={order.status} />
-                  </td>
-                  <td className="px-4 py-4 text-right">
-                    <div className="flex items-center justify-end gap-2">
-                      <Dialog>
-                        <DialogTrigger asChild>
-                          <Button variant="ghost" size="icon">
-                            <Eye className="h-4 w-4" />
-                          </Button>
-                        </DialogTrigger>
-                        <DialogContent className="max-w-lg max-h-[90vh] overflow-auto">
-                          <DialogHeader>
-                            <DialogTitle>অর্ডার {order.id}</DialogTitle>
-                          </DialogHeader>
-                          <OrderDetails order={order} />
-                        </DialogContent>
-                      </Dialog>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon">
-                            <MoreHorizontal className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem>স্ট্যাটাস আপডেট</DropdownMenuItem>
-                          <DropdownMenuItem>ইনভয়েস প্রিন্ট</DropdownMenuItem>
-                          <DropdownMenuItem className="text-destructive">
-                            অর্ডার বাতিল
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-
-        {filteredOrders.length === 0 && (
-          <div className="p-8 text-center">
-            <p className="text-muted-foreground">কোনো অর্ডার পাওয়া যায়নি</p>
+      <div className="rounded-md border">
+        {isLoading ? (
+          <div className="flex items-center justify-center py-10">
+            <Spinner className="h-8 w-8" />
           </div>
+        ) : orders.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-10 text-center">
+            <Package className="h-12 w-12 text-muted-foreground mb-4" />
+            <p className="text-lg font-medium">কোন অর্ডার পাওয়া যায়নি</p>
+            <p className="text-muted-foreground">
+              {search || statusFilter !== "ALL"
+                ? "অন্য ফিল্টার দিয়ে খুঁজুন"
+                : "অর্ডার হলে এখানে দেখাবে"}
+            </p>
+          </div>
+        ) : (
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>অর্ডার</TableHead>
+                <TableHead>কাস্টমার</TableHead>
+                <TableHead className="hidden md:table-cell">তারিখ</TableHead>
+                <TableHead>আইটেম</TableHead>
+                <TableHead>মোট</TableHead>
+                <TableHead>স্ট্যাটাস</TableHead>
+                <TableHead className="w-[80px]"></TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {orders.map((order) => {
+                const StatusIcon = ORDER_STATUS_CONFIG[order.status]?.icon || Clock;
+                return (
+                  <TableRow key={order.id}>
+                    <TableCell>
+                      <div>
+                        <p className="font-medium">#{order.orderNumber}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {order.paymentMethod} • {order.paymentStatus === "PAID" ? "পেইড" : "আনপেইড"}
+                        </p>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div>
+                        <p className="font-medium">{order.user.name || "নাম নেই"}</p>
+                        <p className="text-sm text-muted-foreground">{order.user.phone || order.user.email}</p>
+                      </div>
+                    </TableCell>
+                    <TableCell className="hidden md:table-cell">
+                      <span className="text-muted-foreground">
+                        {format(new Date(order.createdAt), "dd MMM yyyy", { locale: bn })}
+                      </span>
+                    </TableCell>
+                    <TableCell>
+                      {order.items.length} টি
+                    </TableCell>
+                    <TableCell className="font-medium">
+                      {formatCurrency(order.total)}
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant={ORDER_STATUS_CONFIG[order.status]?.variant || "secondary"} className="gap-1">
+                        <StatusIcon className="h-3 w-3" />
+                        {ORDER_STATUS_CONFIG[order.status]?.label || order.status}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-1">
+                        <Button variant="ghost" size="icon" asChild>
+                          <Link href={`/admin/orders/${order.id}`}>
+                            <Eye className="h-4 w-4" />
+                          </Link>
+                        </Button>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="icon" disabled={isPending}>
+                              <MoreHorizontal className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem asChild>
+                              <Link href={`/admin/orders/${order.id}`}>
+                                <Eye className="mr-2 h-4 w-4" />
+                                বিস্তারিত দেখুন
+                              </Link>
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            {order.status === "PENDING" && (
+                              <DropdownMenuItem onClick={() => openStatusDialog(order, "CONFIRMED")}>
+                                <CheckCircle className="mr-2 h-4 w-4 text-green-500" />
+                                কনফার্ম করুন
+                              </DropdownMenuItem>
+                            )}
+                            {(order.status === "CONFIRMED" || order.status === "PROCESSING") && (
+                              <DropdownMenuItem onClick={() => openStatusDialog(order, "SHIPPED")}>
+                                <Truck className="mr-2 h-4 w-4 text-blue-500" />
+                                শিপ করুন
+                              </DropdownMenuItem>
+                            )}
+                            {order.status === "SHIPPED" && (
+                              <DropdownMenuItem onClick={() => openStatusDialog(order, "DELIVERED")}>
+                                <Package className="mr-2 h-4 w-4 text-green-500" />
+                                ডেলিভারড
+                              </DropdownMenuItem>
+                            )}
+                            {order.status !== "DELIVERED" && order.status !== "CANCELLED" && (
+                              <>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem
+                                  className="text-destructive"
+                                  onClick={() => openStatusDialog(order, "CANCELLED")}
+                                >
+                                  <XCircle className="mr-2 h-4 w-4" />
+                                  বাতিল করুন
+                                </DropdownMenuItem>
+                              </>
+                            )}
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
         )}
       </div>
-    </div>
-  )
-}
 
-function OrderDetails({ order }: { order: typeof orders[0] }) {
-  return (
-    <div className="space-y-6">
-      {/* Customer Info */}
-      <div>
-        <h3 className="font-medium text-foreground mb-3">কাস্টমার তথ্য</h3>
-        <div className="grid grid-cols-2 gap-4 p-4 bg-muted rounded-lg">
-          <div>
-            <p className="text-sm text-muted-foreground">নাম</p>
-            <p className="font-medium text-foreground">{order.customer.name}</p>
-          </div>
-          <div>
-            <p className="text-sm text-muted-foreground">ফোন</p>
-            <p className="font-medium text-foreground">{order.customer.phone}</p>
-          </div>
-          <div>
-            <p className="text-sm text-muted-foreground">ইমেইল</p>
-            <p className="font-medium text-foreground">{order.customer.email}</p>
-          </div>
-          <div>
-            <p className="text-sm text-muted-foreground">পেমেন্ট</p>
-            <p className="font-medium text-foreground">{order.paymentMethod}</p>
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-between">
+          <p className="text-sm text-muted-foreground">
+            {(page - 1) * ITEMS_PER_PAGE + 1} -{" "}
+            {Math.min(page * ITEMS_PER_PAGE, total)} / {total}
+          </p>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              disabled={page === 1}
+            >
+              <ChevronLeft className="h-4 w-4" />
+              আগে
+            </Button>
+            <span className="text-sm">
+              পৃষ্ঠা {page} / {totalPages}
+            </span>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+              disabled={page === totalPages}
+            >
+              পরে
+              <ChevronRight className="h-4 w-4" />
+            </Button>
           </div>
         </div>
-      </div>
+      )}
 
-      {/* Delivery Address */}
-      <div>
-        <h3 className="font-medium text-foreground mb-3">ডেলিভারি ঠিকানা</h3>
-        <p className="text-muted-foreground p-4 bg-muted rounded-lg">{order.address}</p>
-      </div>
-
-      {/* Order Items */}
-      <div>
-        <h3 className="font-medium text-foreground mb-3">অর্ডার আইটেম</h3>
-        <div className="space-y-3">
-          {order.items.map((item) => (
-            <div key={item.id} className="flex gap-3">
-              <div className="relative w-16 h-16 rounded overflow-hidden bg-muted">
-                <Image src={item.image} alt={item.name} fill className="object-cover" />
-              </div>
-              <div className="flex-1">
-                <p className="text-sm font-medium text-foreground line-clamp-1">{item.name}</p>
-                <p className="text-sm text-muted-foreground">x{item.quantity}</p>
-              </div>
-              <p className="font-medium text-foreground">
-                ৳{(item.price * item.quantity).toLocaleString("bn-BD")}
-              </p>
+      {/* Status Update Dialog */}
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>অর্ডার স্ট্যাটাস আপডেট</DialogTitle>
+            <DialogDescription>
+              অর্ডার #{selectedOrder?.orderNumber} এর স্ট্যাটাস পরিবর্তন করুন
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="flex items-center gap-2">
+              <span className="text-sm">বর্তমান:</span>
+              <Badge variant={ORDER_STATUS_CONFIG[selectedOrder?.status as OrderStatus]?.variant || "secondary"}>
+                {ORDER_STATUS_CONFIG[selectedOrder?.status as OrderStatus]?.label || selectedOrder?.status}
+              </Badge>
+              <span className="mx-2">→</span>
+              <Badge variant={ORDER_STATUS_CONFIG[newStatus as OrderStatus]?.variant || "secondary"}>
+                {ORDER_STATUS_CONFIG[newStatus as OrderStatus]?.label || newStatus}
+              </Badge>
             </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Status Update */}
-      <div>
-        <h3 className="font-medium text-foreground mb-3">স্ট্যাটাস আপডেট</h3>
-        <Select defaultValue={order.status}>
-          <SelectTrigger>
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="pending">পেন্ডিং</SelectItem>
-            <SelectItem value="confirmed">নিশ্চিত</SelectItem>
-            <SelectItem value="shipped">শিপড</SelectItem>
-            <SelectItem value="delivered">ডেলিভারড</SelectItem>
-            <SelectItem value="cancelled">বাতিল</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-
-      {/* Total */}
-      <div className="flex justify-between pt-4 border-t border-border">
-        <span className="font-semibold text-foreground">মোট</span>
-        <span className="text-xl font-bold text-primary">
-          ৳{order.total.toLocaleString("bn-BD")}
-        </span>
-      </div>
-
-      <Button className="w-full bg-primary hover:bg-brand-orange-dark text-primary-foreground">
-        আপডেট সেভ করুন
-      </Button>
+            <div className="space-y-2">
+              <label className="text-sm font-medium">নোট (ঐচ্ছিক)</label>
+              <Textarea
+                placeholder="স্ট্যাটাস পরিবর্তনের কারণ লিখুন..."
+                value={statusNote}
+                onChange={(e) => setStatusNote(e.target.value)}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
+              বাতিল
+            </Button>
+            <Button onClick={handleStatusUpdate} disabled={isPending}>
+              {isPending ? <Spinner className="mr-2 h-4 w-4" /> : null}
+              আপডেট করুন
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
-  )
+  );
 }

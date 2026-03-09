@@ -174,3 +174,79 @@ export async function getCartCount() {
 
   return cart?.items.reduce((acc, item) => acc + item.quantity, 0) || 0;
 }
+
+// Merge guest cart items into user's cart on login
+export async function mergeGuestCartOnLogin(
+  guestItems: { productId: string; quantity: number }[]
+) {
+  const session = await auth();
+  if (!session?.user?.id) {
+    return { success: false, error: "লগইন করুন" };
+  }
+
+  if (!guestItems || guestItems.length === 0) {
+    return { success: true };
+  }
+
+  try {
+    // Get or create user's cart
+    let cart = await db.cart.findUnique({
+      where: { userId: session.user.id },
+    });
+
+    if (!cart) {
+      cart = await db.cart.create({
+        data: { userId: session.user.id },
+      });
+    }
+
+    // Process each guest item
+    for (const guestItem of guestItems) {
+      // Verify product exists and is in stock
+      const product = await db.product.findUnique({
+        where: { id: guestItem.productId },
+      });
+
+      if (!product || !product.inStock) {
+        continue; // Skip unavailable products
+      }
+
+      // Check if item already exists in user's cart
+      const existingItem = await db.cartItem.findUnique({
+        where: {
+          cartId_productId: {
+            cartId: cart.id,
+            productId: guestItem.productId,
+          },
+        },
+      });
+
+      if (existingItem) {
+        // Add quantities together, respecting stock limits
+        const newQuantity = Math.min(
+          existingItem.quantity + guestItem.quantity,
+          product.stock
+        );
+        await db.cartItem.update({
+          where: { id: existingItem.id },
+          data: { quantity: newQuantity },
+        });
+      } else {
+        // Add new item, respecting stock limits
+        await db.cartItem.create({
+          data: {
+            cartId: cart.id,
+            productId: guestItem.productId,
+            quantity: Math.min(guestItem.quantity, product.stock),
+          },
+        });
+      }
+    }
+
+    revalidatePath("/cart");
+    return { success: true };
+  } catch (error) {
+    console.error("Merge cart error:", error);
+    return { success: false, error: "কার্ট মার্জ করা যায়নি" };
+  }
+}

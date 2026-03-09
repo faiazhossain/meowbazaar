@@ -22,12 +22,11 @@ import { cn } from "@/lib/utils"
 
 const sidebarLinks = [
   { href: "/admin", label: "ড্যাশবোর্ড", icon: LayoutDashboard },
-  { href: "/admin/orders", label: "অর্ডার", icon: ShoppingCart, badge: 5 },
+  { href: "/admin/orders", label: "অর্ডার", icon: ShoppingCart },
   { href: "/admin/products", label: "পণ্য", icon: Package },
   { href: "/admin/categories", label: "ক্যাটাগরি", icon: FolderTree },
   { href: "/admin/customers", label: "কাস্টমার", icon: Users },
-  { href: "/admin/suppliers", label: "সাপ্লায়ার", icon: Truck },
-  { href: "/admin/reports", label: "রিপোর্ট", icon: BarChart3 },
+  { href: "/admin/analytics", label: "অ্যানালিটিক্স", icon: BarChart3 },
   { href: "/admin/settings", label: "সেটিংস", icon: Settings },
 ]
 
@@ -59,14 +58,6 @@ export default function AdminLayout({
               <Icon className="h-5 w-5" />
               <span className="font-medium">{link.label}</span>
             </div>
-            {link.badge && (
-              <Badge className={cn(
-                "ml-auto",
-                isActive ? "bg-primary-foreground text-primary" : "bg-primary text-primary-foreground"
-              )}>
-                {link.badge}
-              </Badge>
-            )}
           </Link>
         )
       })}

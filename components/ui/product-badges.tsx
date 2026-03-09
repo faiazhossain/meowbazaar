@@ -76,11 +76,12 @@ export function CategoryBadge({ children, className }: BadgeProps) {
 export function OrderStatusBadge({ 
   status 
 }: { 
-  status: "pending" | "confirmed" | "shipped" | "delivered" | "cancelled" 
+  status: "pending" | "confirmed" | "processing" | "shipped" | "delivered" | "cancelled" 
 }) {
   const statusConfig = {
     pending: { label: "পেন্ডিং", className: "bg-amber-100 text-amber-700" },
     confirmed: { label: "নিশ্চিত", className: "bg-blue-100 text-blue-700" },
+    processing: { label: "প্রসেসিং", className: "bg-cyan-100 text-cyan-700" },
     shipped: { label: "শিপড", className: "bg-purple-100 text-purple-700" },
     delivered: { label: "ডেলিভারড", className: "bg-success/10 text-success" },
     cancelled: { label: "বাতিল", className: "bg-destructive/10 text-destructive" },

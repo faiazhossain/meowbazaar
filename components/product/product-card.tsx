@@ -3,10 +3,12 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Heart, ShoppingCart, Star } from "lucide-react";
+import { Heart, ShoppingCart, Star, Check, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { useCart } from "@/hooks/use-cart";
+import { toast } from "sonner";
 
 export interface Product {
   id: string;
@@ -23,21 +25,21 @@ export interface Product {
   hasCOD?: boolean;
   category: string;
   petType?: string;
+  stock?: number;
 }
 
 interface ProductCardProps {
   product: Product;
-  onAddToCart?: (product: Product) => void;
   onAddToWishlist?: (product: Product) => void;
 }
 
-export function ProductCard({
-  product,
-  onAddToCart,
-  onAddToWishlist,
-}: ProductCardProps) {
+export function ProductCard({ product, onAddToWishlist }: ProductCardProps) {
   const [isHovered, setIsHovered] = useState(false);
   const [isWishlisted, setIsWishlisted] = useState(false);
+  const [isAddingToCart, setIsAddingToCart] = useState(false);
+  const [justAdded, setJustAdded] = useState(false);
+
+  const { addItem } = useCart();
 
   const handleWishlistClick = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -45,9 +47,33 @@ export function ProductCard({
     onAddToWishlist?.(product);
   };
 
-  const handleAddToCart = (e: React.MouseEvent) => {
+  const handleAddToCart = async (e: React.MouseEvent) => {
     e.preventDefault();
-    onAddToCart?.(product);
+    e.stopPropagation();
+
+    if (!product.inStock || isAddingToCart) return;
+
+    setIsAddingToCart(true);
+
+    const result = await addItem({
+      id: product.id,
+      name: product.name,
+      nameEn: product.nameEn,
+      price: product.price,
+      mrp: product.mrp,
+      image: product.image,
+      stock: product.stock || 99, // Default stock if not provided
+    });
+
+    setIsAddingToCart(false);
+
+    if (result.success) {
+      setJustAdded(true);
+      toast.success(`${product.name} কার্টে যোগ করা হয়েছে`);
+      setTimeout(() => setJustAdded(false), 2000);
+    } else {
+      toast.error(result.error || "কার্টে যোগ করা যায়নি");
+    }
   };
 
   const discountPercentage = product.mrp
@@ -119,12 +145,32 @@ export function ProductCard({
           >
             <Button
               onClick={handleAddToCart}
-              disabled={!product.inStock}
-              className="w-full bg-primary hover:bg-brand-orange-dark text-primary-foreground gap-2"
+              disabled={!product.inStock || isAddingToCart}
+              className={cn(
+                "w-full gap-2",
+                justAdded
+                  ? "bg-green-600 hover:bg-green-700"
+                  : "bg-primary hover:bg-brand-orange-dark",
+                "text-primary-foreground"
+              )}
               size="sm"
             >
-              <ShoppingCart className="h-4 w-4" />
-              {product.inStock ? "কার্টে যোগ করুন" : "স্টক শেষ"}
+              {isAddingToCart ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  যোগ হচ্ছে...
+                </>
+              ) : justAdded ? (
+                <>
+                  <Check className="h-4 w-4" />
+                  যোগ হয়েছে
+                </>
+              ) : (
+                <>
+                  <ShoppingCart className="h-4 w-4" />
+                  {product.inStock ? "কার্টে যোগ করুন" : "স্টক শেষ"}
+                </>
+              )}
             </Button>
           </div>
         </div>

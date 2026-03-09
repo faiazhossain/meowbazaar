@@ -436,3 +436,361 @@ export async function getAllUsers() {
 
   return users;
 }
+
+// ==================== CUSTOMER MANAGEMENT ====================
+
+// Get customers with filters and pagination
+export async function getCustomers(options?: {
+  search?: string;
+  limit?: number;
+  offset?: number;
+  sortBy?: string;
+  sortOrder?: "asc" | "desc";
+}) {
+  const session = await auth();
+  if (!session?.user?.id || session.user.role !== "ADMIN") {
+    return { customers: [], total: 0 };
+  }
+
+  const where: Record<string, unknown> = {
+    role: "CUSTOMER",
+  };
+
+  if (options?.search) {
+    where.OR = [
+      { name: { contains: options.search, mode: "insensitive" } },
+      { email: { contains: options.search, mode: "insensitive" } },
+      { phone: { contains: options.search, mode: "insensitive" } },
+    ];
+  }
+
+  const [customers, total] = await Promise.all([
+    db.user.findMany({
+      where,
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        phone: true,
+        image: true,
+        isActive: true,
+        lastLoginAt: true,
+        loginCount: true,
+        createdAt: true,
+        _count: {
+          select: { orders: true, wishlist: true },
+        },
+        orders: {
+          select: { total: true },
+        },
+      },
+      orderBy: { [options?.sortBy || "createdAt"]: options?.sortOrder || "desc" },
+      take: options?.limit || 20,
+      skip: options?.offset || 0,
+    }),
+    db.user.count({ where }),
+  ]);
+
+  // Calculate total spent for each customer
+  const customersWithSpent = customers.map((customer) => ({
+    ...customer,
+    totalSpent: customer.orders.reduce((sum, order) => sum + order.total, 0),
+    orders: undefined,
+  }));
+
+  return { customers: customersWithSpent, total };
+}
+
+// Get single customer details
+export async function getCustomerById(customerId: string) {
+  const session = await auth();
+  if (!session?.user?.id || session.user.role !== "ADMIN") {
+    return null;
+  }
+
+  const customer = await db.user.findUnique({
+    where: { id: customerId },
+    include: {
+      orders: {
+        orderBy: { createdAt: "desc" },
+        take: 10,
+        include: {
+          items: true,
+        },
+      },
+      addresses: true,
+      wishlist: {
+        include: {
+          product: true,
+        },
+      },
+      activities: {
+        orderBy: { createdAt: "desc" },
+        take: 20,
+      },
+      loginAttempts: {
+        orderBy: { createdAt: "desc" },
+        take: 10,
+      },
+      _count: {
+        select: { orders: true, reviews: true, wishlist: true },
+      },
+    },
+  });
+
+  if (!customer) return null;
+
+  // Calculate total spent
+  const totalSpent = customer.orders.reduce((sum, order) => sum + order.total, 0);
+
+  return {
+    ...customer,
+    totalSpent,
+  };
+}
+
+// Toggle customer active status
+export async function toggleCustomerStatus(customerId: string) {
+  const session = await auth();
+  if (!session?.user?.id || session.user.role !== "ADMIN") {
+    return { success: false, error: "অনুমতি নেই" };
+  }
+
+  try {
+    const customer = await db.user.findUnique({
+      where: { id: customerId },
+      select: { isActive: true },
+    });
+
+    if (!customer) {
+      return { success: false, error: "কাস্টমার পাওয়া যায়নি" };
+    }
+
+    await db.user.update({
+      where: { id: customerId },
+      data: { isActive: !customer.isActive },
+    });
+
+    revalidatePath("/admin/customers");
+    return { success: true, isActive: !customer.isActive };
+  } catch (error) {
+    console.error("Toggle customer status error:", error);
+    return { success: false, error: "স্ট্যাটাস পরিবর্তন করা যায়নি" };
+  }
+}
+
+// ==================== ORDER MANAGEMENT ====================
+
+// Get orders with filters
+export async function getOrders(options?: {
+  search?: string;
+  status?: string;
+  limit?: number;
+  offset?: number;
+  sortBy?: string;
+  sortOrder?: "asc" | "desc";
+}) {
+  const session = await auth();
+  if (!session?.user?.id || session.user.role !== "ADMIN") {
+    return { orders: [], total: 0 };
+  }
+
+  const where: Record<string, unknown> = {};
+
+  if (options?.search) {
+    where.OR = [
+      { orderNumber: { contains: options.search, mode: "insensitive" } },
+      { user: { name: { contains: options.search, mode: "insensitive" } } },
+      { user: { email: { contains: options.search, mode: "insensitive" } } },
+    ];
+  }
+
+  if (options?.status && options.status !== "ALL") {
+    where.status = options.status;
+  }
+
+  const [orders, total] = await Promise.all([
+    db.order.findMany({
+      where,
+      include: {
+        user: {
+          select: { id: true, name: true, email: true, phone: true },
+        },
+        address: true,
+        items: {
+          include: { product: true },
+        },
+        timeline: {
+          orderBy: { createdAt: "desc" },
+        },
+      },
+      orderBy: { [options?.sortBy || "createdAt"]: options?.sortOrder || "desc" },
+      take: options?.limit || 20,
+      skip: options?.offset || 0,
+    }),
+    db.order.count({ where }),
+  ]);
+
+  return { orders, total };
+}
+
+// Get single order details
+export async function getOrderById(orderId: string) {
+  const session = await auth();
+  if (!session?.user?.id || session.user.role !== "ADMIN") {
+    return null;
+  }
+
+  const order = await db.order.findUnique({
+    where: { id: orderId },
+    include: {
+      user: {
+        select: { id: true, name: true, email: true, phone: true, image: true },
+      },
+      address: true,
+      items: {
+        include: {
+          product: {
+            select: { id: true, slug: true, image: true, name: true },
+          },
+        },
+      },
+      timeline: {
+        orderBy: { createdAt: "desc" },
+      },
+    },
+  });
+
+  return order;
+}
+
+// Update order status
+export async function updateOrderStatus(
+  orderId: string,
+  status: "PENDING" | "CONFIRMED" | "PROCESSING" | "SHIPPED" | "DELIVERED" | "CANCELLED",
+  note?: string
+) {
+  const session = await auth();
+  if (!session?.user?.id || session.user.role !== "ADMIN") {
+    return { success: false, error: "অনুমতি নেই" };
+  }
+
+  try {
+    await db.$transaction(async (tx) => {
+      // Update order status
+      await tx.order.update({
+        where: { id: orderId },
+        data: { status },
+      });
+
+      // Add timeline entry
+      await tx.orderTimeline.create({
+        data: {
+          orderId,
+          status,
+          note,
+        },
+      });
+
+      // If delivered, update payment status
+      if (status === "DELIVERED") {
+        await tx.order.update({
+          where: { id: orderId },
+          data: { paymentStatus: "PAID" },
+        });
+      }
+
+      // If cancelled, restore stock
+      if (status === "CANCELLED") {
+        const order = await tx.order.findUnique({
+          where: { id: orderId },
+          include: { items: true },
+        });
+
+        if (order) {
+          for (const item of order.items) {
+            await tx.product.update({
+              where: { id: item.productId },
+              data: {
+                stock: { increment: item.quantity },
+                inStock: true,
+              },
+            });
+          }
+        }
+      }
+    });
+
+    // Create notification for status change
+    await db.adminNotification.create({
+      data: {
+        type: "ORDER_STATUS",
+        title: `অর্ডার স্ট্যাটাস পরিবর্তন`,
+        message: `অর্ডার ${orderId} এর স্ট্যাটাস ${status} করা হয়েছে`,
+        metadata: JSON.stringify({ orderId, status }),
+      },
+    });
+
+    revalidatePath("/admin/orders");
+    revalidatePath(`/admin/orders/${orderId}`);
+    return { success: true };
+  } catch (error) {
+    console.error("Update order status error:", error);
+    return { success: false, error: "স্ট্যাটাস আপডেট করা যায়নি" };
+  }
+}
+
+// Get admin notifications
+export async function getAdminNotifications(options?: {
+  unreadOnly?: boolean;
+  limit?: number;
+}) {
+  const session = await auth();
+  if (!session?.user?.id || session.user.role !== "ADMIN") {
+    return [];
+  }
+
+  const where: Record<string, unknown> = {};
+  if (options?.unreadOnly) {
+    where.isRead = false;
+  }
+
+  const notifications = await db.adminNotification.findMany({
+    where,
+    orderBy: { createdAt: "desc" },
+    take: options?.limit || 50,
+  });
+
+  return notifications;
+}
+
+// Mark notification as read
+export async function markNotificationRead(notificationId: string) {
+  const session = await auth();
+  if (!session?.user?.id || session.user.role !== "ADMIN") {
+    return { success: false };
+  }
+
+  await db.adminNotification.update({
+    where: { id: notificationId },
+    data: { isRead: true },
+  });
+
+  return { success: true };
+}
+
+// Mark all notifications as read
+export async function markAllNotificationsRead() {
+  const session = await auth();
+  if (!session?.user?.id || session.user.role !== "ADMIN") {
+    return { success: false };
+  }
+
+  await db.adminNotification.updateMany({
+    where: { isRead: false },
+    data: { isRead: true },
+  });
+
+  revalidatePath("/admin");
+  return { success: true };
+}

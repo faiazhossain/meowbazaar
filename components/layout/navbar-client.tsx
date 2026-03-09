@@ -5,7 +5,6 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
   Search,
-  ShoppingCart,
   Heart,
   User,
   Menu,
@@ -30,6 +29,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { signOut } from "next-auth/react";
+import { CartButton } from "@/components/cart/cart-button";
 
 const navLinks = [
   { href: "/products", label: "সব পণ্য", labelEn: "All Products" },
@@ -251,21 +251,7 @@ export function NavbarClient({
               </Button>
             </Link>
 
-            <Link href="/cart">
-              <Button
-                variant="ghost"
-                size="icon"
-                className="relative text-foreground"
-              >
-                <ShoppingCart className="h-5 w-5" />
-                {cartCount > 0 && (
-                  <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 bg-primary text-primary-foreground text-xs">
-                    {cartCount}
-                  </Badge>
-                )}
-                <span className="sr-only">Cart</span>
-              </Button>
-            </Link>
+            <CartButton serverCartCount={cartCount} />
 
             {/* User Menu */}
             <div className="hidden sm:block">

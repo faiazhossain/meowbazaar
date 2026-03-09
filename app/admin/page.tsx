@@ -7,95 +7,107 @@ import {
   ArrowUp,
   ArrowDown,
   ChevronRight,
-  AlertTriangle
+  AlertTriangle,
+  Eye,
+  Bell
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { OrderStatusBadge } from "@/components/ui/product-badges"
 import { cn } from "@/lib/utils"
+import { getDashboardStats } from "@/lib/actions/analytics"
+import { formatDistanceToNow } from "date-fns"
+import { bn } from "date-fns/locale"
 
-const stats = [
-  {
-    title: "আজকের অর্ডার",
-    value: "12",
-    change: "+15%",
-    trend: "up" as const,
-    icon: ShoppingCart,
-    color: "text-primary",
-    bgColor: "bg-primary/10",
-  },
-  {
-    title: "মোট রেভিনিউ",
-    value: "৳45,230",
-    change: "+8%",
-    trend: "up" as const,
-    icon: TrendingUp,
-    color: "text-success",
-    bgColor: "bg-success/10",
-  },
-  {
-    title: "মোট পণ্য",
-    value: "156",
-    change: "+3",
-    trend: "up" as const,
-    icon: Package,
-    color: "text-accent",
-    bgColor: "bg-accent/10",
-  },
-  {
-    title: "মোট কাস্টমার",
-    value: "1,234",
-    change: "+24",
-    trend: "up" as const,
-    icon: Users,
-    color: "text-blue-500",
-    bgColor: "bg-blue-500/10",
-  },
-]
+export default async function AdminDashboard() {
+  const result = await getDashboardStats()
+  
+  if (!result.success || !result.data) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <p className="text-muted-foreground">ড্যাশবোর্ড লোড করতে সমস্যা হয়েছে</p>
+      </div>
+    )
+  }
 
-const recentOrders = [
-  {
-    id: "#MB2024030912",
-    customer: "মোঃ আব্দুল্লাহ",
-    date: "১০ মিনিট আগে",
-    total: 3450,
-    status: "pending" as const,
-  },
-  {
-    id: "#MB2024030911",
-    customer: "ফাতিমা বেগম",
-    date: "২৫ মিনিট আগে",
-    total: 1200,
-    status: "confirmed" as const,
-  },
-  {
-    id: "#MB2024030910",
-    customer: "রহিম উদ্দিন",
-    date: "১ ঘন্টা আগে",
-    total: 5600,
-    status: "shipped" as const,
-  },
-  {
-    id: "#MB2024030909",
-    customer: "করিম মিয়া",
-    date: "২ ঘন্টা আগে",
-    total: 890,
-    status: "delivered" as const,
-  },
-]
+  const { overview, recentOrders, recentUsers, unreadNotifications } = result.data
 
-const lowStockProducts = [
-  { id: "1", name: "রয়্যাল ক্যানিন ইনডোর ক্যাট ফুড", stock: 3 },
-  { id: "2", name: "ফেদার ওয়ান্ড ক্যাট টয়", stock: 5 },
-  { id: "3", name: "ক্যাট লিটার ক্লাম্পিং", stock: 2 },
-]
+  const stats = [
+    {
+      title: "এই মাসের অর্ডার",
+      value: overview.ordersThisMonth.toString(),
+      change: `${overview.ordersChange > 0 ? '+' : ''}${overview.ordersChange}%`,
+      trend: overview.ordersChange >= 0 ? "up" as const : "down" as const,
+      icon: ShoppingCart,
+      color: "text-primary",
+      bgColor: "bg-primary/10",
+    },
+    {
+      title: "এই মাসের রেভিনিউ",
+      value: `৳${overview.revenueThisMonth.toLocaleString("bn-BD")}`,
+      change: `${overview.revenueChange > 0 ? '+' : ''}${overview.revenueChange}%`,
+      trend: overview.revenueChange >= 0 ? "up" as const : "down" as const,
+      icon: TrendingUp,
+      color: "text-success",
+      bgColor: "bg-success/10",
+    },
+    {
+      title: "মোট পণ্য",
+      value: overview.totalProducts.toString(),
+      change: overview.lowStockProducts > 0 ? `${overview.lowStockProducts} low stock` : "All good",
+      trend: overview.lowStockProducts > 0 ? "down" as const : "up" as const,
+      icon: Package,
+      color: "text-accent",
+      bgColor: "bg-accent/10",
+    },
+    {
+      title: "মোট কাস্টমার",
+      value: overview.totalUsers.toLocaleString("bn-BD"),
+      change: `${overview.usersChange > 0 ? '+' : ''}${overview.usersChange}%`,
+      trend: overview.usersChange >= 0 ? "up" as const : "down" as const,
+      icon: Users,
+      color: "text-blue-500",
+      bgColor: "bg-blue-500/10",
+    },
+  ]
 
-export default function AdminDashboard() {
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-foreground">ড্যাশবোর্ড</h1>
-        <p className="text-muted-foreground">স্বাগতম, MeowBazaar Admin Panel এ</p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-foreground">ড্যাশবোর্ড</h1>
+          <p className="text-muted-foreground">স্বাগতম, PetBazaar Admin Panel এ</p>
+        </div>
+        {unreadNotifications > 0 && (
+          <Link href="/admin/notifications">
+            <Button variant="outline" className="gap-2">
+              <Bell className="h-4 w-4" />
+              <span>{unreadNotifications} নতুন নোটিফিকেশন</span>
+            </Button>
+          </Link>
+        )}
       </div>
+
+      {/* Pending Orders Alert */}
+      {overview.pendingOrders > 0 && (
+        <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-lg p-4 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <AlertTriangle className="h-5 w-5 text-amber-600" />
+            <div>
+              <p className="font-medium text-amber-800 dark:text-amber-200">
+                {overview.pendingOrders}টি অর্ডার পেন্ডিং আছে
+              </p>
+              <p className="text-sm text-amber-600 dark:text-amber-400">
+                অনুগ্রহ করে অর্ডারগুলো প্রসেস করুন
+              </p>
+            </div>
+          </div>
+          <Link href="/admin/orders?status=PENDING">
+            <Button size="sm" className="bg-amber-600 hover:bg-amber-700">
+              দেখুন
+            </Button>
+          </Link>
+        </div>
+      )}
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -135,47 +147,93 @@ export default function AdminDashboard() {
               সব দেখুন <ChevronRight className="h-4 w-4" />
             </Link>
           </div>
-          <div className="divide-y divide-border">
-            {recentOrders.map((order) => (
-              <div key={order.id} className="flex items-center justify-between p-4 hover:bg-muted/50 transition-colors">
-                <div>
-                  <p className="font-medium text-foreground">{order.id}</p>
-                  <p className="text-sm text-muted-foreground">{order.customer}</p>
-                </div>
-                <div className="text-right">
-                  <p className="font-medium text-foreground">৳{order.total.toLocaleString("bn-BD")}</p>
-                  <OrderStatusBadge status={order.status} />
-                </div>
-              </div>
-            ))}
-          </div>
+          {recentOrders.length === 0 ? (
+            <div className="p-8 text-center text-muted-foreground">
+              এখনো কোনো অর্ডার নেই
+            </div>
+          ) : (
+            <div className="divide-y divide-border">
+              {recentOrders.map((order: {
+                id: string;
+                orderNumber: string;
+                user: { name: string | null; email: string | null };
+                total: number;
+                status: "PENDING" | "CONFIRMED" | "PROCESSING" | "SHIPPED" | "DELIVERED" | "CANCELLED";
+                createdAt: Date;
+              }) => (
+                <Link 
+                  key={order.id} 
+                  href={`/admin/orders/${order.id}`}
+                  className="flex items-center justify-between p-4 hover:bg-muted/50 transition-colors"
+                >
+                  <div>
+                    <p className="font-medium text-foreground">{order.orderNumber}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {order.user?.name || order.user?.email || "Unknown"}
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      {formatDistanceToNow(new Date(order.createdAt), { addSuffix: true, locale: bn })}
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <p className="font-medium text-foreground">৳{order.total.toLocaleString("bn-BD")}</p>
+                    <OrderStatusBadge status={order.status.toLowerCase() as "pending" | "confirmed" | "processing" | "shipped" | "delivered" | "cancelled"} />
+                  </div>
+                </Link>
+              ))}
+            </div>
+          )}
         </div>
 
-        {/* Low Stock Alerts */}
+        {/* New Customers */}
         <div className="bg-card rounded-lg" style={{ boxShadow: "var(--shadow-card)" }}>
           <div className="flex items-center justify-between p-4 border-b border-border">
             <div className="flex items-center gap-2">
-              <AlertTriangle className="h-5 w-5 text-destructive" />
-              <h2 className="text-lg font-semibold text-foreground">স্টক এলার্ট</h2>
+              <Users className="h-5 w-5 text-primary" />
+              <h2 className="text-lg font-semibold text-foreground">নতুন কাস্টমার</h2>
             </div>
-            <Link href="/admin/products" className="text-sm text-primary hover:text-brand-orange-dark">
+            <Link href="/admin/customers" className="text-sm text-primary hover:text-brand-orange-dark">
               সব দেখুন
             </Link>
           </div>
-          <div className="divide-y divide-border">
-            {lowStockProducts.map((product) => (
-              <div key={product.id} className="flex items-center justify-between p-4">
-                <p className="text-sm text-foreground line-clamp-1 flex-1 mr-4">{product.name}</p>
-                <span className="text-sm font-medium text-destructive shrink-0">
-                  {product.stock} বাকি
-                </span>
-              </div>
-            ))}
-          </div>
+          {recentUsers.length === 0 ? (
+            <div className="p-8 text-center text-muted-foreground">
+              এখনো কোনো কাস্টমার নেই
+            </div>
+          ) : (
+            <div className="divide-y divide-border">
+              {recentUsers.map((user: {
+                id: string;
+                name: string | null;
+                email: string | null;
+                createdAt: Date;
+                _count: { orders: number };
+              }) => (
+                <Link
+                  key={user.id}
+                  href={`/admin/customers/${user.id}`}
+                  className="flex items-center justify-between p-4 hover:bg-muted/50 transition-colors"
+                >
+                  <div>
+                    <p className="font-medium text-foreground">{user.name || "নাম নেই"}</p>
+                    <p className="text-sm text-muted-foreground">{user.email}</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-sm font-medium text-foreground">
+                      {user._count.orders} অর্ডার
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      {formatDistanceToNow(new Date(user.createdAt), { addSuffix: true, locale: bn })}
+                    </p>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          )}
           <div className="p-4 border-t border-border">
-            <Link href="/admin/products">
+            <Link href="/admin/customers">
               <Button variant="outline" className="w-full">
-                সব পণ্য দেখুন
+                সব কাস্টমার দেখুন
               </Button>
             </Link>
           </div>
@@ -198,16 +256,16 @@ export default function AdminDashboard() {
               <span>অর্ডার দেখুন</span>
             </Button>
           </Link>
-          <Link href="/admin/categories">
+          <Link href="/admin/customers">
             <Button variant="outline" className="w-full h-auto py-4 flex-col gap-2">
-              <Package className="h-6 w-6 text-primary" />
-              <span>ক্যাটাগরি</span>
+              <Users className="h-6 w-6 text-primary" />
+              <span>কাস্টমার</span>
             </Button>
           </Link>
-          <Link href="/admin/reports">
+          <Link href="/admin/analytics">
             <Button variant="outline" className="w-full h-auto py-4 flex-col gap-2">
               <TrendingUp className="h-6 w-6 text-primary" />
-              <span>রিপোর্ট</span>
+              <span>অ্যানালিটিক্স</span>
             </Button>
           </Link>
         </div>
