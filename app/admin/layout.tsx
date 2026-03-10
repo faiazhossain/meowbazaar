@@ -38,7 +38,7 @@ export default function AdminLayout({
   const pathname = usePathname();
 
   const SidebarContent = () => (
-    <nav className="space-y-1">
+    <nav className='space-y-1'>
       {sidebarLinks.map((link) => {
         const Icon = link.icon;
         const isActive =
@@ -52,48 +52,48 @@ export default function AdminLayout({
               "flex items-center justify-between px-4 py-3 rounded-lg transition-colors",
               isActive
                 ? "bg-primary text-primary-foreground"
-                : "text-foreground hover:bg-muted"
+                : "text-foreground hover:bg-muted",
             )}
           >
-            <div className="flex items-center gap-3">
-              <Icon className="h-5 w-5" />
-              <span className="font-medium">{link.label}</span>
+            <div className='flex items-center gap-3'>
+              <Icon className='h-5 w-5' />
+              <span className='font-medium'>{link.label}</span>
             </div>
           </Link>
         );
       })}
-      <button className="flex items-center gap-3 px-4 py-3 rounded-lg transition-colors text-destructive hover:bg-destructive/10 w-full">
-        <LogOut className="h-5 w-5" />
-        <span className="font-medium">লগআউট</span>
+      <button className='flex items-center gap-3 px-4 py-3 rounded-lg transition-colors text-destructive hover:bg-destructive/10 w-full'>
+        <LogOut className='h-5 w-5' />
+        <span className='font-medium'>লগআউট</span>
       </button>
     </nav>
   );
 
   return (
-    <div className="min-h-screen bg-muted/30">
+    <div className='min-h-screen bg-muted/30'>
       {/* Admin Header */}
-      <header className="sticky top-0 z-50 w-full border-b border-border bg-card">
-        <div className="flex h-16 items-center justify-between px-4 lg:px-6">
-          <div className="flex items-center gap-4">
+      <header className='sticky top-0 z-50 w-full border-b border-border bg-card'>
+        <div className='flex h-16 items-center justify-between px-4 lg:px-6'>
+          <div className='flex items-center gap-4'>
             {/* Mobile Menu */}
             <Sheet>
-              <SheetTrigger asChild className="lg:hidden">
-                <Button variant="ghost" size="icon">
-                  <Menu className="h-5 w-5" />
+              <SheetTrigger asChild className='lg:hidden'>
+                <Button variant='ghost' size='icon'>
+                  <Menu className='h-5 w-5' />
                 </Button>
               </SheetTrigger>
-              <SheetContent side="left" className="w-72 bg-card">
-                <div className="py-6">
+              <SheetContent side='left' className='w-72 bg-card'>
+                <div className='py-6'>
                   <Link
-                    href="/admin"
-                    className="flex items-center gap-2 px-4 mb-6"
+                    href='/admin'
+                    className='flex items-center gap-2 px-4 mb-6'
                   >
-                    <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-                      <span className="text-primary-foreground font-bold">
+                    <div className='w-8 h-8 bg-primary rounded-lg flex items-center justify-center'>
+                      <span className='text-primary-foreground font-bold'>
                         M
                       </span>
                     </div>
-                    <span className="text-lg font-bold text-foreground">
+                    <span className='text-lg font-bold text-foreground'>
                       Admin Panel
                     </span>
                   </Link>
@@ -102,26 +102,26 @@ export default function AdminLayout({
               </SheetContent>
             </Sheet>
 
-            <Link href="/admin" className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-                <span className="text-primary-foreground font-bold">M</span>
+            <Link href='/admin' className='flex items-center gap-2'>
+              <div className='w-8 h-8 bg-primary rounded-lg flex items-center justify-center'>
+                <span className='text-primary-foreground font-bold'>M</span>
               </div>
-              <span className="text-lg font-bold text-foreground hidden sm:inline">
-                MeowBazaar Admin
+              <span className='text-lg font-bold text-foreground hidden sm:inline'>
+                PetBazaar Admin
               </span>
             </Link>
           </div>
 
-          <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon" className="relative">
-              <Bell className="h-5 w-5" />
-              <span className="absolute top-1 right-1 w-2 h-2 bg-destructive rounded-full" />
+          <div className='flex items-center gap-4'>
+            <Button variant='ghost' size='icon' className='relative'>
+              <Bell className='h-5 w-5' />
+              <span className='absolute top-1 right-1 w-2 h-2 bg-destructive rounded-full' />
             </Button>
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
-                <span className="text-primary font-medium text-sm">আ</span>
+            <div className='flex items-center gap-2'>
+              <div className='w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center'>
+                <span className='text-primary font-medium text-sm'>আ</span>
               </div>
-              <span className="text-sm font-medium text-foreground hidden sm:inline">
+              <span className='text-sm font-medium text-foreground hidden sm:inline'>
                 Admin
               </span>
             </div>
@@ -129,16 +129,16 @@ export default function AdminLayout({
         </div>
       </header>
 
-      <div className="flex">
+      <div className='flex'>
         {/* Desktop Sidebar */}
-        <aside className="hidden lg:block w-64 shrink-0 border-r border-border bg-card min-h-[calc(100vh-4rem)]">
-          <div className="sticky top-16 p-4">
+        <aside className='hidden lg:block w-64 shrink-0 border-r border-border bg-card min-h-[calc(100vh-4rem)]'>
+          <div className='sticky top-16 p-4'>
             <SidebarContent />
           </div>
         </aside>
 
         {/* Main Content */}
-        <main className="flex-1 p-4 lg:p-6">{children}</main>
+        <main className='flex-1 p-4 lg:p-6'>{children}</main>
       </div>
     </div>
   );

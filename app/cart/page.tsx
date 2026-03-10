@@ -4,6 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { Section } from "@/components/ui/section";
@@ -15,6 +16,7 @@ import { useCart } from "@/hooks/use-cart";
 
 export default function CartPage() {
   const router = useRouter();
+  const { status: sessionStatus } = useSession();
   const {
     items,
     isLoading,
@@ -25,6 +27,10 @@ export default function CartPage() {
     itemCount,
   } = useCart();
   const [couponCode, setCouponCode] = useState("");
+
+  // Use both the hook's isAuthenticated and session status for reliability
+  const isUserAuthenticated = isAuthenticated || sessionStatus === "authenticated";
+  const isSessionLoading = sessionStatus === "loading";
 
   const handleUpdateQuantity = (
     itemId: string,
@@ -39,7 +45,7 @@ export default function CartPage() {
   };
 
   const handleCheckout = () => {
-    if (!isAuthenticated) {
+    if (!isUserAuthenticated) {
       // Redirect to login with callback to checkout
       router.push("/auth/login?callbackUrl=/checkout");
     } else {
@@ -54,8 +60,8 @@ export default function CartPage() {
   const deliveryFee = subtotal >= 500 ? 0 : 60;
   const total = subtotal + deliveryFee;
 
-  // Loading state
-  if (isLoading) {
+  // Loading state - wait for both cart and session to load
+  if (isLoading || isSessionLoading) {
     return (
       <div className="min-h-screen bg-background">
         <Navbar />
@@ -209,7 +215,7 @@ export default function CartPage() {
                 </h2>
 
                 {/* Guest User Notice */}
-                {!isAuthenticated && (
+                {!isUserAuthenticated && (
                   <div className="mb-4 p-3 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-lg">
                     <p className="text-sm text-amber-800 dark:text-amber-200">
                       চেকআউট করতে লগইন করুন। আপনার কার্ট সেভ থাকবে।
@@ -271,7 +277,7 @@ export default function CartPage() {
                     className="w-full bg-primary hover:bg-brand-orange-dark text-primary-foreground gap-2"
                     disabled={isPending}
                   >
-                    {isAuthenticated ? (
+                    {isUserAuthenticated ? (
                       <>
                         চেকআউট করুন
                         <ArrowRight className="h-4 w-4" />
