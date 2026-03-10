@@ -29,7 +29,7 @@ export default function LoginPage() {
     try {
       // Get user role first to determine redirect path
       const roleResult = await getUserRole(formData.email);
-      
+
       // Use client-side signIn for proper session handling
       const result = await signIn("credentials", {
         email: formData.email,

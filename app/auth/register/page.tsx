@@ -46,7 +46,7 @@ export default function RegisterPage() {
       formData.name,
       formData.email,
       formData.phone,
-      formData.password,
+      formData.password
     );
 
     if (result.success) {
@@ -60,36 +60,36 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className='min-h-screen bg-background'>
+    <div className="min-h-screen bg-background">
       <Navbar />
 
       <main>
-        <Section className='py-16'>
-          <div className='max-w-md mx-auto'>
+        <Section className="py-16">
+          <div className="max-w-md mx-auto">
             <div
-              className='bg-card rounded-lg p-8'
+              className="bg-card rounded-lg p-8"
               style={{ boxShadow: "var(--shadow-card)" }}
             >
-              <div className='text-center mb-8'>
-                <h1 className='text-2xl font-bold text-foreground mb-2'>
+              <div className="text-center mb-8">
+                <h1 className="text-2xl font-bold text-foreground mb-2">
                   নতুন একাউন্ট খুলুন
                 </h1>
-                <p className='text-muted-foreground'>PetBazaar এ যোগ দিন</p>
+                <p className="text-muted-foreground">PetBazaar এ যোগ দিন</p>
               </div>
 
               {error && (
-                <div className='bg-destructive/10 text-destructive text-sm p-3 rounded-lg mb-6'>
+                <div className="bg-destructive/10 text-destructive text-sm p-3 rounded-lg mb-6">
                   {error}
                 </div>
               )}
 
-              <form onSubmit={handleSubmit} className='space-y-4'>
-                <div className='space-y-2'>
-                  <Label htmlFor='name'>নাম *</Label>
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="name">নাম *</Label>
                   <Input
-                    id='name'
-                    type='text'
-                    placeholder='আপনার পূর্ণ নাম'
+                    id="name"
+                    type="text"
+                    placeholder="আপনার পূর্ণ নাম"
                     value={formData.name}
                     onChange={(e) =>
                       setFormData({ ...formData, name: e.target.value })
@@ -98,12 +98,12 @@ export default function RegisterPage() {
                   />
                 </div>
 
-                <div className='space-y-2'>
-                  <Label htmlFor='email'>ইমেইল *</Label>
+                <div className="space-y-2">
+                  <Label htmlFor="email">ইমেইল *</Label>
                   <Input
-                    id='email'
-                    type='email'
-                    placeholder='আপনার ইমেইল'
+                    id="email"
+                    type="email"
+                    placeholder="আপনার ইমেইল"
                     value={formData.email}
                     onChange={(e) =>
                       setFormData({ ...formData, email: e.target.value })
@@ -112,12 +112,12 @@ export default function RegisterPage() {
                   />
                 </div>
 
-                <div className='space-y-2'>
-                  <Label htmlFor='phone'>ফোন নম্বর *</Label>
+                <div className="space-y-2">
+                  <Label htmlFor="phone">ফোন নম্বর *</Label>
                   <Input
-                    id='phone'
-                    type='tel'
-                    placeholder='০১XXXXXXXXX'
+                    id="phone"
+                    type="tel"
+                    placeholder="০১XXXXXXXXX"
                     value={formData.phone}
                     onChange={(e) =>
                       setFormData({ ...formData, phone: e.target.value })
@@ -126,13 +126,13 @@ export default function RegisterPage() {
                   />
                 </div>
 
-                <div className='space-y-2'>
-                  <Label htmlFor='password'>পাসওয়ার্ড *</Label>
-                  <div className='relative'>
+                <div className="space-y-2">
+                  <Label htmlFor="password">পাসওয়ার্ড *</Label>
+                  <div className="relative">
                     <Input
-                      id='password'
+                      id="password"
                       type={showPassword ? "text" : "password"}
-                      placeholder='কমপক্ষে ৬ অক্ষর'
+                      placeholder="কমপক্ষে ৬ অক্ষর"
                       value={formData.password}
                       onChange={(e) =>
                         setFormData({ ...formData, password: e.target.value })
@@ -140,27 +140,27 @@ export default function RegisterPage() {
                       required
                     />
                     <button
-                      type='button'
+                      type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className='absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground'
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                     >
                       {showPassword ? (
-                        <EyeOff className='h-4 w-4' />
+                        <EyeOff className="h-4 w-4" />
                       ) : (
-                        <Eye className='h-4 w-4' />
+                        <Eye className="h-4 w-4" />
                       )}
                     </button>
                   </div>
                 </div>
 
-                <div className='space-y-2'>
-                  <Label htmlFor='confirmPassword'>
+                <div className="space-y-2">
+                  <Label htmlFor="confirmPassword">
                     পাসওয়ার্ড নিশ্চিত করুন *
                   </Label>
                   <Input
-                    id='confirmPassword'
-                    type='password'
-                    placeholder='পাসওয়ার্ড আবার লিখুন'
+                    id="confirmPassword"
+                    type="password"
+                    placeholder="পাসওয়ার্ড আবার লিখুন"
                     value={formData.confirmPassword}
                     onChange={(e) =>
                       setFormData({
@@ -173,13 +173,13 @@ export default function RegisterPage() {
                 </div>
 
                 <Button
-                  type='submit'
-                  className='w-full bg-primary hover:bg-brand-orange-dark text-primary-foreground'
+                  type="submit"
+                  className="w-full bg-primary hover:bg-brand-orange-dark text-primary-foreground"
                   disabled={isLoading}
                 >
                   {isLoading ? (
                     <>
-                      <Loader2 className='mr-2 h-4 w-4 animate-spin' />
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                       রেজিস্টার হচ্ছে...
                     </>
                   ) : (
@@ -188,12 +188,12 @@ export default function RegisterPage() {
                 </Button>
               </form>
 
-              <div className='mt-6 text-center'>
-                <p className='text-muted-foreground'>
+              <div className="mt-6 text-center">
+                <p className="text-muted-foreground">
                   ইতিমধ্যে একাউন্ট আছে?{" "}
                   <Link
-                    href='/auth/login'
-                    className='text-primary hover:text-brand-orange-dark font-medium'
+                    href="/auth/login"
+                    className="text-primary hover:text-brand-orange-dark font-medium"
                   >
                     লগইন করুন
                   </Link>
