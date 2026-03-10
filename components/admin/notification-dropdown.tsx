@@ -254,11 +254,11 @@ export function NotificationDropdown() {
         {notifications.length > 0 && (
           <div className="border-t p-2">
             <Link
-              href="/admin/orders"
+              href="/admin/notification"
               className="block text-center text-sm text-primary hover:underline py-1"
               onClick={() => setIsOpen(false)}
             >
-              View all orders
+              সব নোটিফিকেশন দেখুন
             </Link>
           </div>
         )}

@@ -11,6 +11,7 @@ import {
   BarChart3,
   Settings,
   Menu,
+  Bell,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -24,6 +25,7 @@ const sidebarLinks = [
   { href: "/admin/products", label: "পণ্য", icon: Package },
   { href: "/admin/categories", label: "ক্যাটাগরি", icon: FolderTree },
   { href: "/admin/customers", label: "কাস্টমার", icon: Users },
+  { href: "/admin/notification", label: "নোটিফিকেশন", icon: Bell },
   { href: "/admin/analytics", label: "অ্যানালিটিক্স", icon: BarChart3 },
   { href: "/admin/settings", label: "সেটিংস", icon: Settings },
 ];
@@ -113,9 +115,6 @@ export default function AdminLayout({
               <div className='w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center'>
                 <span className='text-primary font-medium text-sm'>Admin</span>
               </div>
-              <span className='text-sm font-medium text-foreground hidden sm:inline'>
-                Admin
-              </span>
             </div>
           </div>
         </div>
