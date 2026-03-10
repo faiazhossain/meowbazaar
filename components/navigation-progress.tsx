@@ -6,8 +6,9 @@ import {
   useState,
   useEffect,
   useCallback,
+  useRef,
 } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { CatLoader } from "@/components/ui/cat-loader";
 
 interface NavigationProgressContextType {
@@ -34,6 +35,8 @@ export function NavigationProgressProvider({
   const [isNavigating, setIsNavigating] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const pendingNavigationRef = useRef<string | null>(null);
 
   // Track if component is mounted to avoid hydration issues
   useEffect(() => {
@@ -46,14 +49,19 @@ export function NavigationProgressProvider({
 
   const endNavigation = useCallback(() => {
     setIsNavigating(false);
+    pendingNavigationRef.current = null;
   }, []);
 
   // End navigation when route changes complete
   useEffect(() => {
-    setIsNavigating(false);
-  }, [pathname]);
+    // Only end navigation if we were actually navigating to a new route
+    if (pendingNavigationRef.current) {
+      setIsNavigating(false);
+      pendingNavigationRef.current = null;
+    }
+  }, [pathname, searchParams]);
 
-  // Intercept link clicks to show loading state
+  // Listen for actual navigation using a more targeted approach
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
@@ -61,10 +69,13 @@ export function NavigationProgressProvider({
 
       if (!anchor) return;
 
+      // Skip if the event was already prevented (e.g., by add to cart handlers)
+      if (e.defaultPrevented) return;
+
       const href = anchor.getAttribute("href");
       if (!href) return;
 
-      // Skip external links, hash links, and download links
+      // Skip non-navigation links
       if (
         href.startsWith("http") ||
         href.startsWith("#") ||
@@ -76,8 +87,13 @@ export function NavigationProgressProvider({
         return;
       }
 
-      // Skip if modifier keys are pressed (open in new tab, etc.)
+      // Skip if modifier keys are pressed
       if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) {
+        return;
+      }
+
+      // Skip links with data-no-progress attribute (for action buttons)
+      if (anchor.hasAttribute("data-no-progress")) {
         return;
       }
 
@@ -86,33 +102,74 @@ export function NavigationProgressProvider({
       const newPath = href.startsWith("/") ? href : `/${href}`;
 
       if (currentPath !== newPath) {
+        pendingNavigationRef.current = newPath;
         setIsNavigating(true);
       }
     };
 
-    // Handle form submissions
-    const handleSubmit = (e: Event) => {
-      const form = e.target as HTMLFormElement;
-      if (form.getAttribute("data-no-loading") === "true") return;
-      setIsNavigating(true);
+    // Use capture phase to check before any handlers might prevent default
+    // but check defaultPrevented in a microtask to see if it was prevented
+    const handleClickCapture = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      const anchor = target.closest("a");
+
+      if (!anchor) return;
+
+      const href = anchor.getAttribute("href");
+      if (!href) return;
+
+      // Skip non-navigation links
+      if (
+        href.startsWith("http") ||
+        href.startsWith("#") ||
+        href.startsWith("mailto:") ||
+        href.startsWith("tel:") ||
+        anchor.hasAttribute("download") ||
+        anchor.getAttribute("target") === "_blank" ||
+        anchor.hasAttribute("data-no-progress")
+      ) {
+        return;
+      }
+
+      // Skip if modifier keys are pressed
+      if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) {
+        return;
+      }
+
+      // Use microtask to check if navigation was prevented
+      queueMicrotask(() => {
+        if (e.defaultPrevented) {
+          // Navigation was canceled, don't show loader
+          return;
+        }
+
+        const currentPath = window.location.pathname + window.location.search;
+        const newPath = href.startsWith("/") ? href : `/${href}`;
+
+        if (currentPath !== newPath) {
+          pendingNavigationRef.current = newPath;
+          setIsNavigating(true);
+        }
+      });
     };
 
-    document.addEventListener("click", handleClick);
-    document.addEventListener("submit", handleSubmit);
+    document.addEventListener("click", handleClickCapture, { capture: true });
 
     return () => {
-      document.removeEventListener("click", handleClick);
-      document.removeEventListener("submit", handleSubmit);
+      document.removeEventListener("click", handleClickCapture, {
+        capture: true,
+      });
     };
   }, []);
 
-  // Safety timeout to prevent infinite loading
+  // Safety timeout - reduced to 5 seconds for better UX
   useEffect(() => {
     if (!isNavigating) return;
 
     const timeout = setTimeout(() => {
       setIsNavigating(false);
-    }, 10000); // 10 second max
+      pendingNavigationRef.current = null;
+    }, 5000);
 
     return () => clearTimeout(timeout);
   }, [isNavigating]);
