@@ -4,6 +4,10 @@ import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { revalidatePath } from "next/cache";
 import { OrderStatus } from "@prisma/client";
+import {
+  triggerNewOrderNotification,
+  NewOrderNotificationPayload,
+} from "@/lib/pusher";
 
 // Generate order number
 function generateOrderNumber() {
@@ -15,6 +19,15 @@ function generateOrderNumber() {
     .toString()
     .padStart(3, "0");
   return `MB${year}${month}${day}${random}`;
+}
+
+// Format currency for notifications
+function formatCurrency(amount: number): string {
+  return new Intl.NumberFormat("bn-BD", {
+    style: "currency",
+    currency: "BDT",
+    minimumFractionDigits: 0,
+  }).format(amount);
 }
 
 interface CreateOrderData {
@@ -100,6 +113,42 @@ export async function createOrder(data: CreateOrderData) {
     await db.cartItem.deleteMany({
       where: { cartId: cart.id },
     });
+
+    // Get user info for notification
+    const user = await db.user.findUnique({
+      where: { id: session.user.id },
+      select: { name: true },
+    });
+
+    // Create admin notification
+    const adminNotification = await db.adminNotification.create({
+      data: {
+        type: "NEW_ORDER",
+        title: "New Order Received",
+        message: `Order ${order.orderNumber} - ${formatCurrency(total)} by ${user?.name || "Customer"}`,
+        metadata: JSON.stringify({
+          orderId: order.id,
+          orderNumber: order.orderNumber,
+          total: total,
+          customerName: user?.name || "Customer",
+        }),
+      },
+    });
+
+    // Trigger Pusher notification for real-time update
+    const notificationPayload: NewOrderNotificationPayload = {
+      id: adminNotification.id,
+      orderId: order.id,
+      orderNumber: order.orderNumber,
+      type: "NEW_ORDER",
+      title: "New Order Received",
+      message: `Order ${order.orderNumber} - ${formatCurrency(total)} by ${user?.name || "Customer"}`,
+      total: total,
+      customerName: user?.name || "Customer",
+      createdAt: adminNotification.createdAt.toISOString(),
+    };
+
+    await triggerNewOrderNotification(notificationPayload);
 
     revalidatePath("/account/orders");
     revalidatePath("/cart");

@@ -8,17 +8,15 @@ import {
   ShoppingCart,
   Users,
   FolderTree,
-  Truck,
   BarChart3,
   Settings,
-  LogOut,
   Menu,
-  Bell,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { NotificationDropdown } from "@/components/admin/notification-dropdown";
+import { LogoutButton } from "@/components/admin/logout-button";
 
 const sidebarLinks = [
   { href: "/admin", label: "ড্যাশবোর্ড", icon: LayoutDashboard },
@@ -62,10 +60,7 @@ export default function AdminLayout({
           </Link>
         );
       })}
-      <button className='flex items-center gap-3 px-4 py-3 rounded-lg transition-colors text-destructive hover:bg-destructive/10 w-full'>
-        <LogOut className='h-5 w-5' />
-        <span className='font-medium'>লগআউট</span>
-      </button>
+      <LogoutButton className='flex items-center gap-3 px-4 py-3 rounded-lg transition-colors text-destructive hover:bg-destructive/10 w-full' />
     </nav>
   );
 
@@ -113,10 +108,7 @@ export default function AdminLayout({
           </div>
 
           <div className='flex items-center gap-4'>
-            <Button variant='ghost' size='icon' className='relative'>
-              <Bell className='h-5 w-5' />
-              <span className='absolute top-1 right-1 w-2 h-2 bg-destructive rounded-full' />
-            </Button>
+            <NotificationDropdown />
             <div className='flex items-center gap-2'>
               <div className='w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center'>
                 <span className='text-primary font-medium text-sm'>Admin</span>
