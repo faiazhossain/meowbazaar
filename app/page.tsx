@@ -17,7 +17,43 @@ import {
   getBestsellers,
   getNewArrivals,
 } from "@/lib/actions/products";
-import { blogPosts } from "@/lib/data";
+
+// Static blog posts for homepage
+const blogPosts = [
+  {
+    id: "1",
+    title: "কুকুরের খাবার নির্বাচনের সম্পূর্ণ গাইড",
+    excerpt:
+      "আপনার কুকুরের বয়স, জাত এবং স্বাস্থ্য অনুযায়ী সঠিক খাবার বেছে নিন।",
+    image:
+      "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400&h=300&fit=crop",
+    href: "/blog/dog-food-guide",
+    date: "২৫ ফেব্রুয়ারি, ২০২৬",
+    petType: "dog",
+  },
+  {
+    id: "2",
+    title: "বিড়ালের খাবার নির্বাচনের গাইড",
+    excerpt:
+      "আপনার বিড়ালের বয়স, স্বাস্থ্য এবং পছন্দ অনুযায়ী সঠিক খাবার নির্বাচন করুন।",
+    image:
+      "https://images.unsplash.com/photo-1573865526739-10659fec78a5?w=400&h=300&fit=crop",
+    href: "/blog/cat-food-guide",
+    date: "২০ ফেব্রুয়ারি, ২০২৬",
+    petType: "cat",
+  },
+  {
+    id: "3",
+    title: "পোষা পাখির যত্ন ও খাওয়ানো",
+    excerpt:
+      "বাজরিগার, ফিঞ্চ ও অন্যান্য পাখির সঠিক যত্ন এবং খাবারের নির্দেশিকা।",
+    image:
+      "https://images.unsplash.com/photo-1552728089-57bdde30beb3?w=400&h=300&fit=crop",
+    href: "/blog/bird-care-guide",
+    date: "১৫ ফেব্রুয়ারি, ২০২৬",
+    petType: "bird",
+  },
+];
 
 export default async function HomePage() {
   const [categoriesData, bestsellersData, newArrivalsData] = await Promise.all([
