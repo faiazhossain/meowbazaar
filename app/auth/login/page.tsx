@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
@@ -14,7 +13,6 @@ import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { getUserRole } from "@/lib/actions/auth";
 
 export default function LoginPage() {
-  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
@@ -29,6 +27,9 @@ export default function LoginPage() {
     setError("");
 
     try {
+      // Get user role first to determine redirect path
+      const roleResult = await getUserRole(formData.email);
+      
       // Use client-side signIn for proper session handling
       const result = await signIn("credentials", {
         email: formData.email,
@@ -42,17 +43,13 @@ export default function LoginPage() {
         return;
       }
 
-      // Get user role to determine redirect
-      const roleResult = await getUserRole(formData.email);
+      // Hard redirect to ensure middleware sees the new session
       const redirectPath = roleResult?.role === "ADMIN" ? "/admin" : "/account";
-
-      router.push(redirectPath);
-      router.refresh();
+      window.location.href = redirectPath;
     } catch {
       setError("কিছু ভুল হয়েছে। আবার চেষ্টা করুন।");
+      setIsLoading(false);
     }
-
-    setIsLoading(false);
   };
 
   return (

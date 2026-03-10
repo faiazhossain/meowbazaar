@@ -1,6 +1,14 @@
 import { Resend } from "resend";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Lazy initialization to avoid issues if API key is missing
+let resendClient: Resend | null = null;
+
+function getResendClient(): Resend {
+  if (!resendClient) {
+    resendClient = new Resend(process.env.RESEND_API_KEY);
+  }
+  return resendClient;
+}
 
 interface SendPasswordResetEmailParams {
   email: string;
@@ -21,6 +29,7 @@ export async function sendPasswordResetEmail({
     console.log("========================================\n");
   }
 
+  const resend = getResendClient();
   const { data, error } = await resend.emails.send({
     from: process.env.EMAIL_FROM || "onboarding@resend.dev",
     to: email,

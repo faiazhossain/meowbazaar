@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { Section } from "@/components/ui/section";
@@ -13,7 +12,6 @@ import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { register } from "@/lib/actions/auth";
 
 export default function RegisterPage() {
-  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
@@ -52,7 +50,8 @@ export default function RegisterPage() {
     );
 
     if (result.success) {
-      router.push("/auth/login?registered=true");
+      // Hard redirect to login page
+      window.location.href = "/auth/login?registered=true";
     } else {
       setError(result.error || "রেজিস্ট্রেশন ব্যর্থ হয়েছে");
     }

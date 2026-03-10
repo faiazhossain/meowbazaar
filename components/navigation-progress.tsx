@@ -5,10 +5,9 @@ import {
   useContext,
   useState,
   useEffect,
-  useTransition,
   useCallback,
 } from "react";
-import { usePathname, useSearchParams } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { CatLoader } from "@/components/ui/cat-loader";
 
 interface NavigationProgressContextType {
@@ -33,8 +32,13 @@ export function NavigationProgressProvider({
   children: React.ReactNode;
 }) {
   const [isNavigating, setIsNavigating] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
   const pathname = usePathname();
-  const searchParams = useSearchParams();
+
+  // Track if component is mounted to avoid hydration issues
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   const startNavigation = useCallback(() => {
     setIsNavigating(true);
@@ -47,7 +51,7 @@ export function NavigationProgressProvider({
   // End navigation when route changes complete
   useEffect(() => {
     setIsNavigating(false);
-  }, [pathname, searchParams]);
+  }, [pathname]);
 
   // Intercept link clicks to show loading state
   useEffect(() => {
@@ -119,8 +123,8 @@ export function NavigationProgressProvider({
     >
       {children}
 
-      {/* Loading Overlay */}
-      {isNavigating && (
+      {/* Loading Overlay - only render after mount to avoid hydration issues */}
+      {isMounted && isNavigating && (
         <div
           className="fixed inset-0 z-9999 flex items-center justify-center bg-background/60 backdrop-blur-sm transition-all duration-300"
           role="progressbar"
