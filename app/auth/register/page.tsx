@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { signIn } from "next-auth/react";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { Section } from "@/components/ui/section";
@@ -50,13 +51,24 @@ export default function RegisterPage() {
     );
 
     if (result.success) {
-      // Hard redirect to login page
-      window.location.href = "/auth/login?registered=true";
+      // Auto login after successful registration
+      const signInResult = await signIn("credentials", {
+        email: formData.email,
+        password: formData.password,
+        redirect: false,
+      });
+
+      if (signInResult?.error) {
+        // If auto-login fails, redirect to login page
+        window.location.href = "/auth/login?registered=true";
+      } else {
+        // Redirect to products page
+        window.location.href = "/products";
+      }
     } else {
       setError(result.error || "রেজিস্ট্রেশন ব্যর্থ হয়েছে");
+      setIsLoading(false);
     }
-
-    setIsLoading(false);
   };
 
   return (
