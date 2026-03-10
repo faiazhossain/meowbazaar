@@ -4,7 +4,9 @@ import { signIn, signOut } from "@/lib/auth";
 import { db } from "@/lib/db";
 import bcrypt from "bcryptjs";
 import { AuthError } from "next-auth";
+import { randomBytes } from "crypto";
 import { recordLoginAttempt, recordRegistration } from "./analytics";
+import { sendPasswordResetEmail } from "@/lib/email";
 
 export interface ActionResult {
   success: boolean;
@@ -112,4 +114,119 @@ export async function register(
 
 export async function logout() {
   await signOut({ redirectTo: "/" });
+}
+
+export async function forgotPassword(email: string): Promise<ActionResult> {
+  try {
+    const user = await db.user.findUnique({
+      where: { email },
+    });
+
+    // Always return success to prevent email enumeration
+    if (!user) {
+      return { success: true };
+    }
+
+    // Delete any existing reset tokens for this email
+    await db.passwordResetToken.deleteMany({
+      where: { email },
+    });
+
+    // Generate new token
+    const token = randomBytes(32).toString("hex");
+    const expires = new Date(Date.now() + 3600000); // 1 hour
+
+    await db.passwordResetToken.create({
+      data: {
+        email,
+        token,
+        expires,
+      },
+    });
+
+    // Send email
+    const resetLink = `${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/auth/reset-password?token=${token}`;
+
+    await sendPasswordResetEmail({
+      email,
+      resetLink,
+    });
+
+    return { success: true };
+  } catch (error) {
+    console.error("Forgot password error:", error);
+    // Still return success to prevent email enumeration
+    return { success: true };
+  }
+}
+
+export async function resetPassword(
+  token: string,
+  newPassword: string
+): Promise<ActionResult> {
+  try {
+    const resetToken = await db.passwordResetToken.findUnique({
+      where: { token },
+    });
+
+    if (!resetToken) {
+      return { success: false, error: "Invalid or expired token" };
+    }
+
+    if (resetToken.expires < new Date()) {
+      await db.passwordResetToken.delete({
+        where: { id: resetToken.id },
+      });
+      return { success: false, error: "Token has expired" };
+    }
+
+    const user = await db.user.findUnique({
+      where: { email: resetToken.email },
+    });
+
+    if (!user) {
+      return { success: false, error: "User not found" };
+    }
+
+    // Hash new password
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    // Update password
+    await db.user.update({
+      where: { id: user.id },
+      data: { password: hashedPassword },
+    });
+
+    // Delete the used token
+    await db.passwordResetToken.delete({
+      where: { id: resetToken.id },
+    });
+
+    return { success: true };
+  } catch (error) {
+    console.error("Reset password error:", error);
+    return { success: false, error: "Failed to reset password" };
+  }
+}
+
+export async function validateResetToken(
+  token: string
+): Promise<{ valid: boolean; error?: string }> {
+  try {
+    const resetToken = await db.passwordResetToken.findUnique({
+      where: { token },
+    });
+
+    if (!resetToken) {
+      return { valid: false, error: "Invalid token" };
+    }
+
+    if (resetToken.expires < new Date()) {
+      return { valid: false, error: "Token has expired" };
+    }
+
+    return { valid: true };
+  } catch {
+    return { valid: false, error: "Failed to validate token" };
+  }
 }
