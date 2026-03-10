@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { signIn } from "next-auth/react";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { Section } from "@/components/ui/section";
@@ -10,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
-import { login } from "@/lib/actions/auth";
+import { getUserRole } from "@/lib/actions/auth";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -27,49 +28,64 @@ export default function LoginPage() {
     setIsLoading(true);
     setError("");
 
-    const result = await login(formData.email, formData.password);
+    try {
+      // Use client-side signIn for proper session handling
+      const result = await signIn("credentials", {
+        email: formData.email,
+        password: formData.password,
+        redirect: false,
+      });
 
-    if (result.success) {
-      router.push("/account");
+      if (result?.error) {
+        setError("ভুল ইমেইল বা পাসওয়ার্ড");
+        setIsLoading(false);
+        return;
+      }
+
+      // Get user role to determine redirect
+      const roleResult = await getUserRole(formData.email);
+      const redirectPath = roleResult?.role === "ADMIN" ? "/admin" : "/account";
+
+      router.push(redirectPath);
       router.refresh();
-    } else {
-      setError(result.error || "লগইন ব্যর্থ হয়েছে");
+    } catch {
+      setError("কিছু ভুল হয়েছে। আবার চেষ্টা করুন।");
     }
 
     setIsLoading(false);
   };
 
   return (
-    <div className='min-h-screen bg-background'>
+    <div className="min-h-screen bg-background">
       <Navbar />
 
       <main>
-        <Section className='py-16'>
-          <div className='max-w-md mx-auto'>
+        <Section className="py-16">
+          <div className="max-w-md mx-auto">
             <div
-              className='bg-card rounded-lg p-8'
+              className="bg-card rounded-lg p-8"
               style={{ boxShadow: "var(--shadow-card)" }}
             >
-              <div className='text-center mb-8'>
-                <h1 className='text-2xl font-bold text-foreground mb-2'>
+              <div className="text-center mb-8">
+                <h1 className="text-2xl font-bold text-foreground mb-2">
                   লগইন করুন
                 </h1>
-                <p className='text-muted-foreground'>PetBazaar এ স্বাগতম</p>
+                <p className="text-muted-foreground">PetBazaar এ স্বাগতম</p>
               </div>
 
               {error && (
-                <div className='bg-destructive/10 text-destructive text-sm p-3 rounded-lg mb-6'>
+                <div className="bg-destructive/10 text-destructive text-sm p-3 rounded-lg mb-6">
                   {error}
                 </div>
               )}
 
-              <form onSubmit={handleSubmit} className='space-y-4'>
-                <div className='space-y-2'>
-                  <Label htmlFor='email'>ইমেইল</Label>
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="email">ইমেইল</Label>
                   <Input
-                    id='email'
-                    type='email'
-                    placeholder='আপনার ইমেইল'
+                    id="email"
+                    type="email"
+                    placeholder="আপনার ইমেইল"
                     value={formData.email}
                     onChange={(e) =>
                       setFormData({ ...formData, email: e.target.value })
@@ -78,21 +94,21 @@ export default function LoginPage() {
                   />
                 </div>
 
-                <div className='space-y-2'>
-                  <div className='flex items-center justify-between'>
-                    <Label htmlFor='password'>পাসওয়ার্ড</Label>
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="password">পাসওয়ার্ড</Label>
                     <Link
-                      href='/auth/forgot-password'
-                      className='text-sm text-primary hover:text-brand-orange-dark'
+                      href="/auth/forgot-password"
+                      className="text-sm text-primary hover:text-brand-orange-dark"
                     >
                       পাসওয়ার্ড ভুলে গেছেন?
                     </Link>
                   </div>
-                  <div className='relative'>
+                  <div className="relative">
                     <Input
-                      id='password'
+                      id="password"
                       type={showPassword ? "text" : "password"}
-                      placeholder='আপনার পাসওয়ার্ড'
+                      placeholder="আপনার পাসওয়ার্ড"
                       value={formData.password}
                       onChange={(e) =>
                         setFormData({ ...formData, password: e.target.value })
@@ -100,27 +116,27 @@ export default function LoginPage() {
                       required
                     />
                     <button
-                      type='button'
+                      type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className='absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground'
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                     >
                       {showPassword ? (
-                        <EyeOff className='h-4 w-4' />
+                        <EyeOff className="h-4 w-4" />
                       ) : (
-                        <Eye className='h-4 w-4' />
+                        <Eye className="h-4 w-4" />
                       )}
                     </button>
                   </div>
                 </div>
 
                 <Button
-                  type='submit'
-                  className='w-full bg-primary hover:bg-brand-orange-dark text-primary-foreground'
+                  type="submit"
+                  className="w-full bg-primary hover:bg-brand-orange-dark text-primary-foreground"
                   disabled={isLoading}
                 >
                   {isLoading ? (
                     <>
-                      <Loader2 className='mr-2 h-4 w-4 animate-spin' />
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                       লগইন হচ্ছে...
                     </>
                   ) : (
@@ -129,12 +145,12 @@ export default function LoginPage() {
                 </Button>
               </form>
 
-              <div className='mt-6 text-center'>
-                <p className='text-muted-foreground'>
+              <div className="mt-6 text-center">
+                <p className="text-muted-foreground">
                   একাউন্ট নেই?{" "}
                   <Link
-                    href='/auth/register'
-                    className='text-primary hover:text-brand-orange-dark font-medium'
+                    href="/auth/register"
+                    className="text-primary hover:text-brand-orange-dark font-medium"
                   >
                     রেজিস্টার করুন
                   </Link>

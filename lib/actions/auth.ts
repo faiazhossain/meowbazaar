@@ -11,6 +11,17 @@ import { sendPasswordResetEmail } from "@/lib/email";
 export interface ActionResult {
   success: boolean;
   error?: string;
+  role?: string;
+}
+
+export async function getUserRole(
+  email: string
+): Promise<{ role: string } | null> {
+  const user = await db.user.findUnique({
+    where: { email },
+    select: { role: true },
+  });
+  return user ? { role: user.role } : null;
 }
 
 export async function login(
@@ -18,10 +29,10 @@ export async function login(
   password: string,
   redirectTo?: string
 ): Promise<ActionResult> {
-  // First check if user exists to get userId for tracking
+  // First check if user exists to get userId and role for tracking
   const user = await db.user.findUnique({
     where: { email },
-    select: { id: true },
+    select: { id: true, role: true },
   });
 
   try {
@@ -34,7 +45,7 @@ export async function login(
     // Record successful login
     await recordLoginAttempt(email, true, user?.id);
 
-    return { success: true };
+    return { success: true, role: user?.role };
   } catch (error) {
     let failReason = "Unknown error";
 
@@ -147,10 +158,18 @@ export async function forgotPassword(email: string): Promise<ActionResult> {
     // Send email
     const resetLink = `${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/auth/reset-password?token=${token}`;
 
-    await sendPasswordResetEmail({
-      email,
-      resetLink,
-    });
+    try {
+      await sendPasswordResetEmail({
+        email,
+        resetLink,
+      });
+      console.log("Password reset email sent successfully to:", email);
+    } catch (emailError) {
+      console.error("Failed to send password reset email:", emailError);
+      // Note: With Resend free tier using onboarding@resend.dev,
+      // you can only send to your Resend account email.
+      // To send to any email, verify your own domain at https://resend.com/domains
+    }
 
     return { success: true };
   } catch (error) {

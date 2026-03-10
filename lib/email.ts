@@ -11,6 +11,16 @@ export async function sendPasswordResetEmail({
   email,
   resetLink,
 }: SendPasswordResetEmailParams) {
+  // In development without a verified domain, log the reset link
+  if (process.env.NODE_ENV === "development") {
+    console.log("\n========================================");
+    console.log("📧 PASSWORD RESET EMAIL (DEV MODE)");
+    console.log("========================================");
+    console.log(`To: ${email}`);
+    console.log(`Reset Link: ${resetLink}`);
+    console.log("========================================\n");
+  }
+
   const { data, error } = await resend.emails.send({
     from: process.env.EMAIL_FROM || "onboarding@resend.dev",
     to: email,
