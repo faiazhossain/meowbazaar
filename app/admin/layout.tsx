@@ -119,7 +119,7 @@ export default function AdminLayout({
             </Button>
             <div className='flex items-center gap-2'>
               <div className='w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center'>
-                <span className='text-primary font-medium text-sm'>আ</span>
+                <span className='text-primary font-medium text-sm'>Admin</span>
               </div>
               <span className='text-sm font-medium text-foreground hidden sm:inline'>
                 Admin

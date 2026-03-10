@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
 import Image from "next/image";
 import { ChevronRight, Package, ShoppingBag } from "lucide-react";
@@ -73,23 +75,38 @@ const statusSteps = [
 ];
 
 export default function OrdersPage() {
+  const router = useRouter();
+  const { data: session, status } = useSession();
   const [orders, setOrders] = useState<Order[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const fetchOrders = async () => {
-      try {
-        const data = await getOrders();
-        setOrders(data as Order[]);
-      } catch (error) {
-        console.error("Error fetching orders:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+    if (status === "unauthenticated") {
+      router.push("/auth/login?callbackUrl=/account/orders");
+      return;
+    }
 
-    fetchOrders();
-  }, []);
+    if (status === "authenticated") {
+      // Redirect admins to admin dashboard
+      if (session?.user?.role === "ADMIN") {
+        router.push("/admin");
+        return;
+      }
+
+      const fetchOrders = async () => {
+        try {
+          const data = await getOrders();
+          setOrders(data as Order[]);
+        } catch (error) {
+          console.error("Error fetching orders:", error);
+        } finally {
+          setIsLoading(false);
+        }
+      };
+
+      fetchOrders();
+    }
+  }, [status, router, session?.user?.role]);
 
   const formatDate = (date: Date) => {
     return new Date(date).toLocaleDateString("bn-BD", {

@@ -1,6 +1,8 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { useRouter } from "next/navigation"
+import { useSession } from "next-auth/react"
 import { MapPin, Plus, Edit2, Trash2, Check } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -68,9 +70,23 @@ const initialAddresses: Address[] = [
 ]
 
 export default function AddressesPage() {
+  const router = useRouter()
+  const { data: session, status } = useSession()
   const [addresses, setAddresses] = useState<Address[]>(initialAddresses)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [editingAddress, setEditingAddress] = useState<Address | null>(null)
+
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      router.push("/auth/login?callbackUrl=/account/addresses")
+      return
+    }
+
+    if (status === "authenticated" && session?.user?.role === "ADMIN") {
+      router.push("/admin")
+      return
+    }
+  }, [status, router, session?.user?.role])
 
   const handleSetDefault = (id: string) => {
     setAddresses((prev) =>

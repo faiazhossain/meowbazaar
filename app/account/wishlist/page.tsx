@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useEffect, useTransition } from "react";
+import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
 import Image from "next/image";
 import {
@@ -50,6 +52,8 @@ interface WishlistItem {
 }
 
 export default function WishlistPage() {
+  const router = useRouter();
+  const { data: session, status } = useSession();
   const [wishlistItems, setWishlistItems] = useState<WishlistItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [removingIds, setRemovingIds] = useState<Set<string>>(new Set());
@@ -61,22 +65,36 @@ export default function WishlistPage() {
   const { remove: removeFromWishlistHook, refresh: refreshWishlist } =
     useWishlist();
 
-  // Fetch wishlist on mount
+  // Handle authentication and admin redirect
   useEffect(() => {
-    const fetchWishlist = async () => {
-      try {
-        const items = await getWishlist();
-        setWishlistItems(items as WishlistItem[]);
-      } catch (error) {
-        console.error("Error fetching wishlist:", error);
-        toast.error("উইশলিস্ট লোড করা যায়নি");
-      } finally {
-        setIsLoading(false);
-      }
-    };
+    if (status === "unauthenticated") {
+      router.push("/auth/login?callbackUrl=/account/wishlist");
+      return;
+    }
 
-    fetchWishlist();
-  }, []);
+    if (status === "authenticated") {
+      // Redirect admins to admin dashboard
+      if (session?.user?.role === "ADMIN") {
+        router.push("/admin");
+        return;
+      }
+
+      // Fetch wishlist for regular users
+      const fetchWishlist = async () => {
+        try {
+          const items = await getWishlist();
+          setWishlistItems(items as WishlistItem[]);
+        } catch (error) {
+          console.error("Error fetching wishlist:", error);
+          toast.error("উইশলিস্ট লোড করা যায়নি");
+        } finally {
+          setIsLoading(false);
+        }
+      };
+
+      fetchWishlist();
+    }
+  }, [status, router, session?.user?.role]);
 
   const handleRemoveFromWishlist = async (productId: string) => {
     setRemovingIds((prev) => new Set(prev).add(productId));

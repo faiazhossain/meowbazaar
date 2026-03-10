@@ -35,6 +35,11 @@ export default async function AccountDashboard() {
     redirect("/auth/login?callbackUrl=/account");
   }
 
+  // Redirect admins to admin dashboard
+  if (session.user.role === "ADMIN") {
+    redirect("/admin");
+  }
+
   const [profile, orders] = await Promise.all([getProfile(), getOrders()]);
 
   if (!profile) {

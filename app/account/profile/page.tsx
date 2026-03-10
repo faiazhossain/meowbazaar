@@ -52,9 +52,14 @@ export default function ProfilePage() {
     }
 
     if (status === "authenticated") {
+      // Redirect admins to admin dashboard
+      if (session?.user?.role === "ADMIN") {
+        router.push("/admin")
+        return
+      }
       fetchProfile()
     }
-  }, [status, router])
+  }, [status, router, session?.user?.role])
 
   async function fetchProfile() {
     try {
