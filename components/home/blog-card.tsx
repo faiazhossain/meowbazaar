@@ -27,12 +27,12 @@ export function BlogCard({ post }: BlogCardProps) {
             className="object-cover transition-transform duration-300 group-hover:scale-105"
           />
         </div>
-        <div className="p-4">
-          <p className="text-xs text-muted-foreground mb-2">{post.date}</p>
-          <h3 className="font-semibold text-foreground mb-2 line-clamp-2 group-hover:text-primary transition-colors">
+        <div className="p-3 sm:p-4">
+          <p className="text-xs text-muted-foreground mb-1 sm:mb-2">{post.date}</p>
+          <h3 className="font-semibold text-sm sm:text-base text-foreground mb-2 line-clamp-2 group-hover:text-primary transition-colors">
             {post.title}
           </h3>
-          <p className="text-sm text-muted-foreground line-clamp-2 mb-3">
+          <p className="text-xs sm:text-sm text-muted-foreground line-clamp-2 mb-2 sm:mb-3">
             {post.excerpt}
           </p>
           <span className="inline-flex items-center text-sm font-medium text-primary group-hover:text-brand-orange-dark">

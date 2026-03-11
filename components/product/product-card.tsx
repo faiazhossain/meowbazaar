@@ -177,9 +177,10 @@ export function ProductCard({ product, onAddToWishlist }: ProductCardProps) {
           <div
             className={cn(
               "absolute bottom-0 left-0 right-0 p-2 transition-all duration-300",
+              "md:translate-y-full md:opacity-0",
               isHovered
-                ? "translate-y-0 opacity-100"
-                : "translate-y-full opacity-0"
+                ? "md:translate-y-0 md:opacity-100"
+                : ""
             )}
           >
             <Button
@@ -215,9 +216,9 @@ export function ProductCard({ product, onAddToWishlist }: ProductCardProps) {
         </div>
 
         {/* Content */}
-        <div className="p-3">
+        <div className="p-2 sm:p-3">
           {/* Title */}
-          <h3 className="font-medium text-foreground text-sm line-clamp-2 mb-1 min-h-[2.5rem]">
+          <h3 className="font-medium text-foreground text-xs sm:text-sm line-clamp-2 mb-1 min-h-[2.5rem]">
             {product.name}
           </h3>
 

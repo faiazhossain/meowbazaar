@@ -107,24 +107,24 @@ export default function CartPage() {
 
       <main>
         <Section>
-          <h1 className="text-2xl md:text-3xl font-bold text-foreground mb-8">
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-foreground mb-6 md:mb-8">
             শপিং কার্ট ({itemCount} পণ্য)
           </h1>
 
-          <div className="grid lg:grid-cols-3 gap-8">
+          <div className="grid lg:grid-cols-3 gap-6 md:gap-8">
             {/* Cart Items */}
-            <div className="lg:col-span-2 space-y-4">
+            <div className="lg:col-span-2 space-y-3 md:space-y-4">
               {items.map((item) => (
                 <div
                   key={item.id}
-                  className="flex gap-4 p-4 bg-card rounded-lg"
+                  className="flex gap-3 md:gap-4 p-3 md:p-4 bg-card rounded-lg"
                   style={{ boxShadow: "var(--shadow-card)" }}
                 >
                   <Link
                     href={`/products/${item.productId}`}
                     className="shrink-0"
                   >
-                    <div className="relative w-24 h-24 md:w-32 md:h-32 rounded-lg overflow-hidden bg-muted">
+                    <div className="relative w-20 h-20 sm:w-24 sm:h-24 md:w-32 md:h-32 rounded-lg overflow-hidden bg-muted">
                       <Image
                         src={item.image}
                         alt={item.name}
@@ -135,16 +135,16 @@ export default function CartPage() {
                   </Link>
                   <div className="flex-1 min-w-0">
                     <Link href={`/products/${item.productId}`}>
-                      <h3 className="font-medium text-foreground hover:text-primary transition-colors line-clamp-2">
+                      <h3 className="font-medium text-sm sm:text-base text-foreground hover:text-primary transition-colors line-clamp-2">
                         {item.name}
                       </h3>
                     </Link>
                     <div className="flex items-center gap-2 mt-1">
-                      <span className="text-lg font-bold text-primary">
+                      <span className="text-base sm:text-lg font-bold text-primary">
                         ৳{item.price.toLocaleString("bn-BD")}
                       </span>
                       {item.mrp && item.mrp > item.price && (
-                        <span className="text-sm text-muted-foreground line-through">
+                        <span className="text-xs sm:text-sm text-muted-foreground line-through">
                           ৳{item.mrp.toLocaleString("bn-BD")}
                         </span>
                       )}

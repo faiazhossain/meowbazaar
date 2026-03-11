@@ -8,11 +8,11 @@ export function HeroBanner() {
       <div className='container mx-auto px-4 py-12 md:py-20 lg:py-24'>
         <div className='grid lg:grid-cols-2 gap-12 items-center'>
           {/* Content - Left Side */}
-          <div className='text-center lg:text-left space-y-8'>
-            <h1 className='text-4xl md:text-5xl lg:text-6xl font-bold text-foreground leading-tight text-balance'>
+          <div className='text-center lg:text-left space-y-6 lg:space-y-8'>
+            <h1 className='text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-foreground leading-tight text-balance'>
               আপনার পোষা প্রাণীর সবকিছু এক জায়গায়
             </h1>
-            <p className='text-lg md:text-xl text-muted-foreground max-w-xl mx-auto lg:mx-0 text-pretty'>
+            <p className='text-base sm:text-lg md:text-xl text-muted-foreground max-w-xl mx-auto lg:mx-0 text-pretty'>
               বিড়াল, কুকুর, পাখি, মাছ ও অন্যান্য পোষা প্রাণীর জন্য প্রিমিয়াম
               খাবার, খেলনা ও এক্সেসরিজ। সারাদেশে ক্যাশ অন ডেলিভারি।
             </p>
@@ -43,9 +43,29 @@ export function HeroBanner() {
           </div>
 
           {/* Redesigned Visual - Right Side - Interactive Cards */}
-          <div className='relative hidden lg:block h-[600px] select-none'>
+          <div className='relative h-auto lg:h-[600px] select-none'>
+            {/* Mobile Category Grid - Visible only on mobile */}
+            <div className='lg:hidden grid grid-cols-2 gap-3 mb-8'>
+              <Link href='/products?category=cat' className='bg-orange-100 hover:bg-orange-200 rounded-2xl shadow-md p-4 flex flex-col items-center justify-center gap-2 transition-colors'>
+                <span className='text-4xl'>😺</span>
+                <span className='text-sm font-medium text-gray-700'>বিড়াল</span>
+              </Link>
+              <Link href='/products?category=dog' className='bg-purple-100 hover:bg-purple-200 rounded-2xl shadow-md p-4 flex flex-col items-center justify-center gap-2 transition-colors'>
+                <span className='text-4xl'>🐕</span>
+                <span className='text-sm font-medium text-gray-700'>কুকুর</span>
+              </Link>
+              <Link href='/products?category=bird' className='bg-yellow-100 hover:bg-yellow-200 rounded-2xl shadow-md p-4 flex flex-col items-center justify-center gap-2 transition-colors'>
+                <span className='text-4xl'>🦜</span>
+                <span className='text-sm font-medium text-gray-700'>পাখি</span>
+              </Link>
+              <Link href='/products?category=fish' className='bg-blue-100 hover:bg-blue-200 rounded-2xl shadow-md p-4 flex flex-col items-center justify-center gap-2 transition-colors'>
+                <span className='text-4xl'>🐠</span>
+                <span className='text-sm font-medium text-gray-700'>মাছ</span>
+              </Link>
+            </div>
+
             {/* Main Center Circle - Not Interactive */}
-            <div className='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20'>
+            <div className='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 hidden lg:block'>
               <div className='relative w-80 h-80'>
                 {/* Center Logo - Non-interactive */}
                 <div className='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-40 h-40'>
@@ -127,26 +147,26 @@ export function HeroBanner() {
             </div>
 
             {/* Floating Product Icons - Interactive */}
-            <div className='absolute top-20 right-20 animate-float-slow'>
+            <div className='absolute top-20 right-20 animate-float-slow hidden lg:block'>
               <ProductIcon icon='🦴' />
             </div>
 
             <div
-              className='absolute bottom-20 left-20 animate-float-slow'
+              className='absolute bottom-20 left-20 animate-float-slow hidden lg:block'
               style={{ animationDelay: "0.5s" }}
             >
               <ProductIcon icon='🧶' />
             </div>
 
             <div
-              className='absolute top-40 left-40 animate-float-slow'
+              className='absolute top-40 left-40 animate-float-slow hidden lg:block'
               style={{ animationDelay: "1s" }}
             >
               <ProductIcon icon='🥩' />
             </div>
 
             <div
-              className='absolute bottom-40 right-40 animate-float-slow'
+              className='absolute bottom-40 right-40 animate-float-slow hidden lg:block'
               style={{ animationDelay: "1.5s" }}
             >
               <ProductIcon icon='🪶' />
