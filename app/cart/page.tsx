@@ -29,7 +29,8 @@ export default function CartPage() {
   const [couponCode, setCouponCode] = useState("");
 
   // Use both the hook's isAuthenticated and session status for reliability
-  const isUserAuthenticated = isAuthenticated || sessionStatus === "authenticated";
+  const isUserAuthenticated =
+    isAuthenticated || sessionStatus === "authenticated";
   const isSessionLoading = sessionStatus === "loading";
 
   const handleUpdateQuantity = (
@@ -159,13 +160,13 @@ export default function CartPage() {
                               item.quantity - 1
                             )
                           }
-                          className="p-2 hover:bg-muted transition-colors disabled:opacity-50"
+                          className="p-3 md:p-2 hover:bg-muted transition-colors disabled:opacity-50 min-w-[44px] min-h-[44px] flex items-center justify-center"
                           aria-label="Decrease quantity"
                           disabled={isPending}
                         >
                           <Minus className="h-4 w-4" />
                         </button>
-                        <span className="px-4 font-medium">
+                        <span className="px-4 font-medium min-w-[40px] text-center">
                           {item.quantity}
                         </span>
                         <button
@@ -176,7 +177,7 @@ export default function CartPage() {
                               item.quantity + 1
                             )
                           }
-                          className="p-2 hover:bg-muted transition-colors disabled:opacity-50"
+                          className="p-3 md:p-2 hover:bg-muted transition-colors disabled:opacity-50 min-w-[44px] min-h-[44px] flex items-center justify-center"
                           aria-label="Increase quantity"
                           disabled={isPending || item.quantity >= item.stock}
                         >
@@ -187,7 +188,7 @@ export default function CartPage() {
                         onClick={() =>
                           handleRemoveItem(item.id, item.productId)
                         }
-                        className="p-2 text-muted-foreground hover:text-destructive transition-colors disabled:opacity-50"
+                        className="p-3 md:p-2 text-muted-foreground hover:text-destructive transition-colors disabled:opacity-50 min-w-[44px] min-h-[44px] flex items-center justify-center"
                         aria-label="Remove item"
                         disabled={isPending}
                       >
@@ -204,10 +205,10 @@ export default function CartPage() {
               ))}
             </div>
 
-            {/* Order Summary */}
+            {/* Order Summary - Full width on mobile, sticky sidebar on desktop */}
             <div className="lg:col-span-1">
               <div
-                className="bg-card rounded-lg p-6 sticky top-24"
+                className="bg-card rounded-lg p-4 sm:p-6 lg:sticky lg:top-24"
                 style={{ boxShadow: "var(--shadow-card)" }}
               >
                 <h2 className="text-lg font-semibold text-foreground mb-4">

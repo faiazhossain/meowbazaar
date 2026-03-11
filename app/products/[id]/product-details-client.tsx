@@ -353,7 +353,7 @@ export function ProductDetailsClient({
             <div className="flex flex-col sm:flex-row gap-3">
               <Button
                 disabled={!product.inStock || isAddingToCart}
-                className="flex-1 bg-primary hover:bg-brand-orange-dark text-primary-foreground gap-2"
+                className="flex-1 bg-primary hover:bg-brand-orange-dark text-primary-foreground gap-2 p-6 sm:p-2"
                 size="lg"
                 onClick={handleAddToCart}
               >
@@ -367,7 +367,7 @@ export function ProductDetailsClient({
               <Button
                 disabled={!product.inStock || isBuyingNow}
                 variant="outline"
-                className="flex-1 border-primary text-primary hover:bg-primary/5 gap-2"
+                className="flex-1 border-primary text-primary hover:text-orange-600 hover:bg-primary/5 gap-2 p-6 sm:p-2"
                 size="lg"
                 onClick={handleBuyNow}
               >

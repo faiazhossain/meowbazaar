@@ -71,7 +71,11 @@ export function NavbarClient({
           {/* Mobile Menu */}
           <Sheet>
             <SheetTrigger asChild className="lg:hidden">
-              <Button variant="ghost" size="icon" className="text-foreground">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="text-foreground min-w-[44px] min-h-[44px]"
+              >
                 <Menu className="h-6 w-6" />
                 <span className="sr-only">Toggle menu</span>
               </Button>
@@ -205,7 +209,11 @@ export function NavbarClient({
             {/* Mobile Search */}
             <Sheet>
               <SheetTrigger asChild className="md:hidden">
-                <Button variant="ghost" size="icon" className="text-foreground">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="text-foreground min-w-[44px] min-h-[44px]"
+                >
                   <Search className="h-5 w-5" />
                   <span className="sr-only">Search</span>
                 </Button>

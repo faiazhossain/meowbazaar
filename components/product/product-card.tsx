@@ -147,12 +147,14 @@ export function ProductCard({ product, onAddToWishlist }: ProductCardProps) {
             )}
           </div>
 
-          {/* Wishlist Button */}
+          {/* Wishlist Button - Touch-friendly */}
           <button
             onClick={handleWishlistClick}
             disabled={isTogglingWishlist}
             className={cn(
-              "absolute top-2 right-2 p-2 bg-card/80 backdrop-blur-sm rounded-full transition-all hover:bg-card",
+              "absolute top-2 right-2 p-2.5 md:p-2 bg-card/80 backdrop-blur-sm rounded-full transition-all hover:bg-card",
+              "min-w-[44px] min-h-[44px] md:min-w-0 md:min-h-0 flex items-center justify-center",
+              "active:scale-95",
               isTogglingWishlist && "opacity-70"
             )}
             aria-label={
@@ -173,24 +175,30 @@ export function ProductCard({ product, onAddToWishlist }: ProductCardProps) {
             )}
           </button>
 
-          {/* Quick Add Button */}
+          {/* Quick Add Button - Always visible on mobile, hover on desktop */}
           <div
             className={cn(
               "absolute bottom-0 left-0 right-0 p-2 transition-all duration-300",
-              isHovered
-                ? "translate-y-0 opacity-100"
-                : "translate-y-full opacity-0"
+              // Mobile: always visible
+              "translate-y-0 opacity-100",
+              // Desktop: only show on hover
+              "md:translate-y-full md:opacity-0",
+              "md:group-hover:translate-y-0 md:group-hover:opacity-100"
             )}
           >
             <Button
               onClick={handleAddToCart}
               disabled={!product.inStock || isAddingToCart}
               className={cn(
-                "w-full gap-2",
+                "w-full gap-2 min-h-[44px]",
                 justAdded
                   ? "bg-green-600 hover:bg-green-700"
                   : "bg-primary hover:bg-brand-orange-dark",
-                "text-primary-foreground"
+                "text-primary-foreground",
+                // Mobile: smaller text, touch-friendly
+                "text-xs md:text-sm",
+                // Touch feedback for mobile
+                "active:scale-95 transition-transform"
               )}
               size="sm"
             >

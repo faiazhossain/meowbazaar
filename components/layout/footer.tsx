@@ -35,15 +35,15 @@ const footerLinks = {
 export function Footer() {
   return (
     <footer className="bg-foreground text-card">
-      <div className="container mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+      <div className="container mx-auto px-4 py-8 md:py-12">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-10">
           {/* Brand Section */}
-          <div className="space-y-4">
+          <div className="space-y-4 sm:col-span-2 lg:col-span-1">
             <Link href="/" className="flex items-center gap-2">
               <PetLogoWhite />
               <span className="text-xl font-bold text-primary">PetBazaar</span>
             </Link>
-            <p className="text-gray-400 text-sm leading-relaxed">
+            <p className="text-gray-400 text-sm leading-relaxed max-w-xs">
               বাংলাদেশের সবচেয়ে বড় পেট শপ। বিড়াল, কুকুর, পাখি, মাছ ও অন্যান্য
               পোষা প্রাণীর জন্য সেরা মানের পণ্য সরবরাহ করি।
             </p>
@@ -52,27 +52,27 @@ export function Footer() {
                 href="https://facebook.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-gray-400 hover:text-primary transition-colors"
+                className="text-gray-400 hover:text-primary transition-colors p-2 -ml-2 min-w-[44px] min-h-[44px] flex items-center justify-center"
               >
-                <Facebook className="h-5 w-5" />
+                <Facebook className="h-6 w-6" />
                 <span className="sr-only">Facebook</span>
               </a>
               <a
                 href="https://instagram.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-gray-400 hover:text-primary transition-colors"
+                className="text-gray-400 hover:text-primary transition-colors p-2 min-w-[44px] min-h-[44px] flex items-center justify-center"
               >
-                <Instagram className="h-5 w-5" />
+                <Instagram className="h-6 w-6" />
                 <span className="sr-only">Instagram</span>
               </a>
               <a
                 href="https://youtube.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-gray-400 hover:text-primary transition-colors"
+                className="text-gray-400 hover:text-primary transition-colors p-2 min-w-[44px] min-h-[44px] flex items-center justify-center"
               >
-                <Youtube className="h-5 w-5" />
+                <Youtube className="h-6 w-6" />
                 <span className="sr-only">YouTube</span>
               </a>
             </div>
@@ -83,12 +83,12 @@ export function Footer() {
             <h3 className="text-lg font-semibold mb-4 text-card">
               দ্রুত লিঙ্ক
             </h3>
-            <ul className="space-y-2">
+            <ul className="space-y-3">
               {footerLinks.quickLinks.map((link) => (
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-gray-400 hover:text-primary transition-colors text-sm"
+                    className="text-gray-400 hover:text-primary transition-colors text-sm py-1 inline-block min-h-[44px] leading-relaxed"
                   >
                     {link.label}
                   </Link>
@@ -102,12 +102,12 @@ export function Footer() {
             <h3 className="text-lg font-semibold mb-4 text-card">
               পোষা প্রাণী
             </h3>
-            <ul className="space-y-2">
+            <ul className="space-y-3">
               {footerLinks.petTypes.map((link) => (
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-gray-400 hover:text-primary transition-colors text-sm"
+                    className="text-gray-400 hover:text-primary transition-colors text-sm py-1 inline-block min-h-[44px] leading-relaxed"
                   >
                     {link.label}
                   </Link>
