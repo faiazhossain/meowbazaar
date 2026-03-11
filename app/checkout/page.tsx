@@ -34,6 +34,7 @@ import { useCart } from "@/hooks/use-cart";
 import { getAddresses, addAddress } from "@/lib/actions/addresses";
 import { createOrder } from "@/lib/actions/orders";
 import { toast } from "sonner";
+import { useSession } from "next-auth/react";
 
 interface Address {
   id: string;
@@ -62,6 +63,7 @@ type Step = 1 | 2 | 3 | 4;
 export default function CheckoutPage() {
   const router = useRouter();
   const { items, isLoading, isAuthenticated, subtotal, clearCart } = useCart();
+  const { data: session } = useSession();
 
   const [step, setStep] = useState<Step>(1);
   const [addresses, setAddresses] = useState<Address[]>([]);
@@ -81,6 +83,18 @@ export default function CheckoutPage() {
     instructions: "",
     paymentMethod: "cod",
   });
+
+  // Pre-fill form with user data from session when authenticated
+  useEffect(() => {
+    if (isAuthenticated && session?.user) {
+      setFormData((prev) => ({
+        ...prev,
+        fullName: session.user.name || prev.fullName,
+        phone: session.user.phone || prev.phone,
+        email: session.user.email || prev.email,
+      }));
+    }
+  }, [isAuthenticated, session]);
 
   const deliveryFee = subtotal >= 500 ? 0 : 60;
   const total = subtotal + deliveryFee;
