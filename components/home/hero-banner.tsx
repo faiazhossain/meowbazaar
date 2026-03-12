@@ -17,21 +17,21 @@ export function HeroBanner() {
 
   return (
     <section className="relative overflow-hidden bg-gradient-to-br from-cream via-brand-orange-light/20 to-cream">
-      <div className="container mx-auto px-4 py-12 md:py-20 lg:py-24">
+      <div className="container mx-auto px-4 py-12 md:py-20 lg:py-24 relative z-10">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           {/* Content - Left Side */}
-          <div className="text-center lg:text-left space-y-8">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground leading-tight text-balance">
+          <div className="text-center lg:text-left space-y-6 md:space-y-8">
+            <h1 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold text-foreground leading-snug">
               {t("hero.title")}
             </h1>
-            <p className="text-lg md:text-xl text-muted-foreground max-w-xl mx-auto lg:mx-0 text-pretty">
+            <p className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-xl mx-auto lg:mx-0">
               {t("hero.subtitle")}
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center lg:justify-start">
               <Button
                 asChild
                 size="lg"
-                className="bg-primary hover:bg-brand-orange-dark text-primary-foreground px-8 py-6 text-lg cursor-pointer"
+                className="bg-primary hover:bg-brand-orange-dark text-primary-foreground px-6 sm:px-8 py-5 sm:py-6 text-base sm:text-lg cursor-pointer w-full sm:w-auto"
               >
                 <Link href="/products">{t("hero.startShopping")}</Link>
               </Button>
@@ -39,14 +39,14 @@ export function HeroBanner() {
                 asChild
                 size="lg"
                 variant="outline"
-                className="border-primary text-primary hover:bg-primary/5 px-8 py-6 text-lg cursor-pointer"
+                className="border-primary text-primary hover:bg-primary/5 px-6 sm:px-8 py-5 sm:py-6 text-base sm:text-lg cursor-pointer w-full sm:w-auto"
               >
                 <Link href="/products?category=food">{t("hero.viewPetFood")}</Link>
               </Button>
             </div>
 
             {/* Trust Badges */}
-            <div className="flex flex-wrap gap-4 md:gap-6 justify-center lg:justify-start pt-6">
+            <div className="flex flex-wrap gap-2 sm:gap-4 md:gap-6 justify-center lg:justify-start pt-4 sm:pt-6">
               <TrustBadge icon="truck" text={t("hero.nationwideDelivery")} />
               <TrustBadge icon="shield" text={t("hero.original")} />
               <TrustBadge icon="cash" text={t("hero.cashOnDelivery")} />
@@ -208,12 +208,11 @@ export function HeroBanner() {
         </div>
       </div>
 
-      {/* Decorative Elements */}
-      <div className="absolute top-0 right-0 w-96 h-96 bg-primary/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none" />
-      <div className="absolute bottom-0 left-0 w-96 h-96 bg-accent/5 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2 pointer-events-none" />
-
-      <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-primary/3 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-accent/3 rounded-full blur-3xl pointer-events-none" />
+      {/* Decorative Elements - Hidden on mobile to prevent overflow */}
+      <div className="hidden lg:block absolute top-0 right-0 w-96 h-96 bg-primary/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none" />
+      <div className="hidden lg:block absolute bottom-0 left-0 w-96 h-96 bg-accent/5 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2 pointer-events-none" />
+      <div className="hidden md:block absolute top-1/4 left-1/4 w-64 h-64 bg-primary/3 rounded-full blur-3xl pointer-events-none" />
+      <div className="hidden md:block absolute bottom-1/4 right-1/4 w-64 h-64 bg-accent/3 rounded-full blur-3xl pointer-events-none" />
 
       <style jsx>{`
         @keyframes float-slow {
@@ -428,12 +427,12 @@ function TrustBadge({
 }) {
   return (
     <div
-      className="flex items-center gap-3 px-4 py-3 bg-card rounded-full shadow-sm
+      className="flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-3 bg-card rounded-full shadow-sm
       hover:shadow-md transition-all hover:-translate-y-0.5 cursor-default"
     >
       <div
-        className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center
-        group-hover:bg-primary/20 transition-colors"
+        className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-primary/10 flex items-center justify-center
+        group-hover:bg-primary/20 transition-colors shrink-0"
       >
         {icon === "truck" && (
           <svg
@@ -481,7 +480,7 @@ function TrustBadge({
           </svg>
         )}
       </div>
-      <span className="text-sm font-medium text-foreground">{text}</span>
+      <span className="text-xs sm:text-sm font-medium text-foreground whitespace-nowrap">{text}</span>
     </div>
   );
 }
