@@ -1,14 +1,13 @@
 import { Navbar } from "@/components/layout/navbar-server";
 import { Footer } from "@/components/layout/footer";
 import { HeroBanner } from "@/components/home/hero-banner";
-import { OfferBanner } from "@/components/home/offer-banner";
 import { Newsletter } from "@/components/home/newsletter";
 import { BlogCard } from "@/components/home/blog-card";
 import { ProductCard } from "@/components/product/product-card";
 import { CategoryCard } from "@/components/product/category-card";
+import { SectionHeaderClient, OfferBannerClient } from "@/components/home/home-sections";
 import {
   Section,
-  SectionHeader,
   ProductGrid,
   CategoryGrid,
 } from "@/components/ui/section";
@@ -23,34 +22,46 @@ const blogPosts = [
   {
     id: "1",
     title: "কুকুরের খাবার নির্বাচনের সম্পূর্ণ গাইড",
+    titleEn: "Complete Guide to Choosing Dog Food",
     excerpt:
       "আপনার কুকুরের বয়স, জাত এবং স্বাস্থ্য অনুযায়ী সঠিক খাবার বেছে নিন।",
+    excerptEn:
+      "Choose the right food based on your dog's age, breed and health.",
     image:
       "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400&h=300&fit=crop",
     href: "/blog/dog-food-guide",
     date: "২৫ ফেব্রুয়ারি, ২০২৬",
+    dateEn: "February 25, 2026",
     petType: "dog",
   },
   {
     id: "2",
     title: "বিড়ালের খাবার নির্বাচনের গাইড",
+    titleEn: "Guide to Choosing Cat Food",
     excerpt:
       "আপনার বিড়ালের বয়স, স্বাস্থ্য এবং পছন্দ অনুযায়ী সঠিক খাবার নির্বাচন করুন।",
+    excerptEn:
+      "Choose the right food based on your cat's age, health and preferences.",
     image:
       "https://images.unsplash.com/photo-1573865526739-10659fec78a5?w=400&h=300&fit=crop",
     href: "/blog/cat-food-guide",
     date: "২০ ফেব্রুয়ারি, ২০২৬",
+    dateEn: "February 20, 2026",
     petType: "cat",
   },
   {
     id: "3",
     title: "পোষা পাখির যত্ন ও খাওয়ানো",
+    titleEn: "Pet Bird Care and Feeding",
     excerpt:
       "বাজরিগার, ফিঞ্চ ও অন্যান্য পাখির সঠিক যত্ন এবং খাবারের নির্দেশিকা।",
+    excerptEn:
+      "Proper care and feeding guide for budgies, finches and other birds.",
     image:
       "https://images.unsplash.com/photo-1552728089-57bdde30beb3?w=400&h=300&fit=crop",
     href: "/blog/bird-care-guide",
     date: "১৫ ফেব্রুয়ারি, ২০২৬",
+    dateEn: "February 15, 2026",
     petType: "bird",
   },
 ];
@@ -115,9 +126,9 @@ export default async function HomePage() {
 
         {/* Categories Section */}
         <Section>
-          <SectionHeader
-            title="ক্যাটাগরি"
-            subtitle="আপনার পছন্দের পণ্য খুঁজুন"
+          <SectionHeaderClient
+            titleKey="sections.categories"
+            subtitleKey="sections.findProducts"
             href="/products"
           />
           <CategoryGrid>
@@ -129,9 +140,9 @@ export default async function HomePage() {
 
         {/* Bestsellers Section */}
         <Section className="bg-muted/50">
-          <SectionHeader
-            title="বেস্টসেলার পণ্য"
-            subtitle="সবচেয়ে জনপ্রিয় পণ্য"
+          <SectionHeaderClient
+            titleKey="sections.bestsellers"
+            subtitleKey="sections.popularProducts"
             href="/products?sort=bestseller"
           />
           <ProductGrid>
@@ -142,18 +153,13 @@ export default async function HomePage() {
         </Section>
 
         {/* Offer Banner */}
-        <OfferBanner
-          title="বিকাশ/নগদে পেমেন্ট করলে ৫% ক্যাশব্যাক"
-          description="যেকোনো অর্ডারে বিকাশ বা নগদে পেমেন্ট করলে পাচ্ছেন ৫% ক্যাশব্যাক"
-          ctaText="অর্ডার করুন"
-          ctaHref="/products"
-        />
+        <OfferBannerClient ctaHref="/products" />
 
         {/* New Arrivals Section */}
         <Section>
-          <SectionHeader
-            title="নতুন পণ্য"
-            subtitle="সদ্য এসেছে আমাদের স্টোরে"
+          <SectionHeaderClient
+            titleKey="sections.newArrivals"
+            subtitleKey="sections.justArrived"
             href="/products?sort=newest"
           />
           <ProductGrid>
@@ -165,11 +171,11 @@ export default async function HomePage() {
 
         {/* Cat Care Tips Blog Section */}
         <Section className="bg-muted/50">
-          <SectionHeader
-            title="ক্যাট কেয়ার টিপস"
-            subtitle="আপনার বিড়ালের যত্নে প্রয়োজনীয় টিপস"
+          <SectionHeaderClient
+            titleKey="sections.catCareTips"
+            subtitleKey="sections.catCareSubtitle"
             href="/blog"
-            linkText="সব পোস্ট দেখুন"
+            linkTextKey="sections.viewAllPosts"
           />
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {blogPosts.map((post) => (

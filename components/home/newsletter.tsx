@@ -4,10 +4,12 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Mail } from "lucide-react"
+import { useTranslation } from "@/lib/i18n/use-translation"
 
 export function Newsletter() {
   const [email, setEmail] = useState("")
   const [isSubmitted, setIsSubmitted] = useState(false)
+  const { t } = useTranslation()
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -24,31 +26,31 @@ export function Newsletter() {
             <Mail className="w-8 h-8 text-primary" />
           </div>
           <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-3">
-            আমাদের নিউজলেটার সাবস্ক্রাইব করুন
+            {t("newsletter.title")}
           </h2>
           <p className="text-muted-foreground mb-6">
-            নতুন পণ্য, অফার এবং ক্যাট কেয়ার টিপস পেতে সাবস্ক্রাইব করুন
+            {t("newsletter.subtitle")}
           </p>
 
           {isSubmitted ? (
             <div className="p-4 bg-success/10 rounded-lg text-success">
-              ধন্যবাদ! আপনি সফলভাবে সাবস্ক্রাইব করেছেন।
+              {t("newsletter.successMessage")}
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
               <Input
                 type="email"
-                placeholder="আপনার ইমেইল দিন"
+                placeholder={t("newsletter.emailPlaceholder")}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 className="flex-1 bg-card border-border"
               />
-              <Button 
-                type="submit" 
+              <Button
+                type="submit"
                 className="bg-primary hover:bg-brand-orange-dark text-primary-foreground shrink-0"
               >
-                সাবস্ক্রাইব
+                {t("newsletter.subscribe")}
               </Button>
             </form>
           )}

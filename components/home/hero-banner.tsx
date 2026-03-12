@@ -1,8 +1,20 @@
 "use client";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { useTranslation } from "@/lib/i18n/use-translation";
 
 export function HeroBanner() {
+  const { t, locale } = useTranslation();
+
+  const categoryLabels = {
+    cat: locale === "en" ? "Cat" : "বিড়াল",
+    dog: locale === "en" ? "Dog" : "কুকুর",
+    bird: locale === "en" ? "Bird" : "পাখি",
+    fish: locale === "en" ? "Fish" : "মাছ",
+    rabbit: t("hero.rabbit"),
+    other: t("hero.other"),
+  };
+
   return (
     <section className="relative overflow-hidden bg-gradient-to-br from-cream via-brand-orange-light/20 to-cream">
       <div className="container mx-auto px-4 py-12 md:py-20 lg:py-24">
@@ -10,11 +22,10 @@ export function HeroBanner() {
           {/* Content - Left Side */}
           <div className="text-center lg:text-left space-y-8">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground leading-tight text-balance">
-              আপনার পোষা প্রাণীর সবকিছু এক জায়গায়
+              {t("hero.title")}
             </h1>
             <p className="text-lg md:text-xl text-muted-foreground max-w-xl mx-auto lg:mx-0 text-pretty">
-              বিড়াল, কুকুর, পাখি, মাছ ও অন্যান্য পোষা প্রাণীর জন্য প্রিমিয়াম
-              খাবার, খেলনা ও এক্সেসরিজ। সারাদেশে ক্যাশ অন ডেলিভারি।
+              {t("hero.subtitle")}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
               <Button
@@ -22,7 +33,7 @@ export function HeroBanner() {
                 size="lg"
                 className="bg-primary hover:bg-brand-orange-dark text-primary-foreground px-8 py-6 text-lg cursor-pointer"
               >
-                <Link href="/products">শপিং শুরু করুন</Link>
+                <Link href="/products">{t("hero.startShopping")}</Link>
               </Button>
               <Button
                 asChild
@@ -30,15 +41,15 @@ export function HeroBanner() {
                 variant="outline"
                 className="border-primary text-primary hover:bg-primary/5 px-8 py-6 text-lg cursor-pointer"
               >
-                <Link href="/products?category=food">পেট ফুড দেখুন</Link>
+                <Link href="/products?category=food">{t("hero.viewPetFood")}</Link>
               </Button>
             </div>
 
             {/* Trust Badges */}
             <div className="flex flex-wrap gap-4 md:gap-6 justify-center lg:justify-start pt-6">
-              <TrustBadge icon="truck" text="সারাদেশে ডেলিভারি" />
-              <TrustBadge icon="shield" text="১০০% অরিজিনাল" />
-              <TrustBadge icon="cash" text="ক্যাশ অন ডেলিভারি" />
+              <TrustBadge icon="truck" text={t("hero.nationwideDelivery")} />
+              <TrustBadge icon="shield" text={t("hero.original")} />
+              <TrustBadge icon="cash" text={t("hero.cashOnDelivery")} />
             </div>
 
             {/* Mobile Category Grid - Only visible on mobile/tablet */}
@@ -47,37 +58,37 @@ export function HeroBanner() {
                 <MobileCategoryButton
                   href="/products?pet=cat"
                   icon="😺"
-                  label="বিড়াল"
+                  label={categoryLabels.cat}
                   color="bg-orange-100"
                 />
                 <MobileCategoryButton
                   href="/products?pet=dog"
                   icon="🐕"
-                  label="কুকুর"
+                  label={categoryLabels.dog}
                   color="bg-purple-100"
                 />
                 <MobileCategoryButton
                   href="/products?pet=bird"
                   icon="🦜"
-                  label="পাখি"
+                  label={categoryLabels.bird}
                   color="bg-yellow-100"
                 />
                 <MobileCategoryButton
                   href="/products?pet=fish"
                   icon="🐠"
-                  label="মাছ"
+                  label={categoryLabels.fish}
                   color="bg-blue-100"
                 />
                 <MobileCategoryButton
                   href="/products?pet=rabbit"
                   icon="🐰"
-                  label="খরগোশ"
+                  label={categoryLabels.rabbit}
                   color="bg-pink-100"
                 />
                 <MobileCategoryButton
                   href="/products?pet=other"
                   icon="🦔"
-                  label="অন্যান্য"
+                  label={categoryLabels.other}
                   color="bg-green-100"
                 />
               </div>
@@ -104,51 +115,51 @@ export function HeroBanner() {
                 <div className="absolute -top-16 left-1/2 -translate-x-1/2">
                   <CategoryCard
                     icon="😺"
-                    label="বিড়াল"
+                    label={categoryLabels.cat}
                     color="bg-orange-100"
                     hoverColor="group-hover:bg-orange-200"
                     delay="0s"
                   />
                 </div>
 
-                {/* Dog - Right */}
+                {/* Dog- Right */}
                 <div className="absolute top-1/2 -right-16 -translate-y-1/2">
                   <CategoryCard
                     icon="🐕"
-                    label="কুকুর"
+                    label={categoryLabels.dog}
                     color="bg-purple-100"
                     hoverColor="group-hover:bg-purple-200"
                     delay="0.2s"
                   />
                 </div>
 
-                {/* Bird - Bottom */}
+                {/* Bird- Bottom */}
                 <div className="absolute -bottom-16 left-1/2 -translate-x-1/2">
                   <CategoryCard
                     icon="🦜"
-                    label="পাখি"
+                    label={categoryLabels.bird}
                     color="bg-yellow-100"
                     hoverColor="group-hover:bg-yellow-200"
                     delay="0.4s"
                   />
                 </div>
 
-                {/* Fish - Left */}
+                {/* Fish- Left */}
                 <div className="absolute top-1/2 -left-16 -translate-y-1/2">
                   <CategoryCard
                     icon="🐠"
-                    label="মাছ"
+                    label={categoryLabels.fish}
                     color="bg-blue-100"
                     hoverColor="group-hover:bg-blue-200"
                     delay="0.6s"
                   />
                 </div>
 
-                {/* Small Pet - Rabbit */}
+                {/* Small Pet- Rabbit */}
                 <div className="absolute -top-8 -right-8">
                   <SmallCategoryCard
                     icon="🐰"
-                    label="খরগোশ"
+                    label={categoryLabels.rabbit}
                     color="bg-pink-100"
                     hoverColor="group-hover:bg-pink-200"
                     delay="0.8s"
@@ -159,7 +170,7 @@ export function HeroBanner() {
                 <div className="absolute -bottom-8 -left-8">
                   <SmallCategoryCard
                     icon="🦔"
-                    label="অন্যান্য"
+                    label={categoryLabels.other}
                     color="bg-green-100"
                     hoverColor="group-hover:bg-green-200"
                     delay="1s"
@@ -168,7 +179,7 @@ export function HeroBanner() {
               </div>
             </div>
 
-            {/* Floating Product Icons - Interactive */}
+            {/* Floating Product Icons- Interactive */}
             <div className="absolute top-20 right-20 animate-float-slow">
               <ProductIcon icon="🦴" />
             </div>
@@ -271,24 +282,24 @@ function CategoryCard({
         <div
           className={`
           absolute inset-0 ${color} ${hoverColor}
-          rounded-2xl shadow-lg 
+          rounded-2xl shadow-lg
           transition-all duration-300 ease-out
-          group-hover:scale-150 group-hover:shadow-xl 
-          group-hover:-translate-y-2  
+          group-hover:scale-150 group-hover:shadow-xl
+          group-hover:-translate-y-2
           group-hover:rotate-2
         `}
         >
           <div className="h-full flex flex-col items-center justify-center gap-1 p-2">
             <span
-              className="text-4xl filter drop-shadow-sm 
-              transition-transform duration-300 
+              className="text-4xl filter drop-shadow-sm
+              transition-transform duration-300
               group-hover:scale-150 group-hover:rotate-6"
             >
               {icon}
             </span>
             <span
-              className="text-sm font-medium text-gray-700 
-              transition-all duration-300 
+              className="text-sm font-medium text-gray-700
+              transition-all duration-300
               group-hover:font-bold"
             >
               {label}
@@ -299,8 +310,8 @@ function CategoryCard({
         {/* Glow Effect */}
         <div
           className={`
-          absolute -inset-1 ${color.replace("100", "200")} 
-          rounded-3xl blur-md opacity-0 
+          absolute -inset-1 ${color.replace("100", "200")}
+          rounded-3xl blur-md opacity-0
           group-hover:opacity-40 transition-all duration-300
           group-hover:scale-150
         `}
@@ -308,7 +319,7 @@ function CategoryCard({
 
         {/* Shine Effect */}
         <div
-          className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 
+          className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100
           transition-opacity duration-300 pointer-events-none
           bg-gradient-to-tr from-white/0 via-white/30 to-white/0
           group-hover:animate-shine"
@@ -341,23 +352,23 @@ function SmallCategoryCard({
         <div
           className={`
           absolute inset-0 ${color} ${hoverColor}
-          rounded-xl shadow-md 
+          rounded-xl shadow-md
           transition-all duration-300 ease-out
-          group-hover:scale-150 group-hover:shadow-lg 
+          group-hover:scale-150 group-hover:shadow-lg
           group-hover:-translate-y-2
           group-hover:rotate-2
         `}
         >
           <div className="h-full flex flex-col items-center justify-center gap-0.5 p-1">
             <span
-              className="text-2xl transition-transform duration-300 
+              className="text-2xl transition-transform duration-300
               group-hover:scale-150 group-hover:rotate-6"
             >
               {icon}
             </span>
             <span
-              className="text-xs font-medium text-gray-700 
-              transition-all duration-300 
+              className="text-xs font-medium text-gray-700
+              transition-all duration-300
               group-hover:font-bold"
             >
               {label}
@@ -368,8 +379,8 @@ function SmallCategoryCard({
         {/* Glow Effect */}
         <div
           className={`
-          absolute -inset-1 ${color.replace("100", "200")} 
-          rounded-xl blur-md opacity-0 
+          absolute -inset-1 ${color.replace("100", "200")}
+          rounded-xl blur-md opacity-0
           group-hover:opacity-40 transition-all duration-300
           group-hover:scale-150
         `}
@@ -384,15 +395,15 @@ function ProductIcon({ icon }: { icon: string }) {
   return (
     <div className="group cursor-default">
       <div
-        className="w-14 h-14 bg-white/80 backdrop-blur-sm rounded-full shadow-md 
-        flex items-center justify-center 
+        className="w-14 h-14 bg-white/80 backdrop-blur-sm rounded-full shadow-md
+        flex items-center justify-center
         transition-all duration-300 ease-out
-        group-hover:scale-125 group-hover:shadow-xl 
+        group-hover:scale-125 group-hover:shadow-xl
         group-hover:bg-white group-hover:-translate-y-1
         group-hover:rotate-6"
       >
         <span
-          className="text-2xl transition-transform duration-300 
+          className="text-2xl transition-transform duration-300
           group-hover:scale-150 group-hover:rotate-12"
         >
           {icon}
@@ -401,7 +412,7 @@ function ProductIcon({ icon }: { icon: string }) {
 
       {/* Glow Effect */}
       <div
-        className="absolute -inset-2 bg-primary/10 rounded-full blur-md opacity-0 
+        className="absolute -inset-2 bg-primary/10 rounded-full blur-md opacity-0
         group-hover:opacity-40 transition-opacity duration-300 pointer-events-none"
       />
     </div>
@@ -417,7 +428,7 @@ function TrustBadge({
 }) {
   return (
     <div
-      className="flex items-center gap-3 px-4 py-3 bg-card rounded-full shadow-sm 
+      className="flex items-center gap-3 px-4 py-3 bg-card rounded-full shadow-sm
       hover:shadow-md transition-all hover:-translate-y-0.5 cursor-default"
     >
       <div
@@ -435,7 +446,7 @@ function TrustBadge({
               strokeLinecap="round"
               strokeLinejoin="round"
               strokeWidth={2}
-              d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0"
+              d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0 m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0"
             />
           </svg>
         )}
@@ -475,7 +486,7 @@ function TrustBadge({
   );
 }
 
-// Mobile Category Button - Touch-friendly navigation buttons for mobile
+// Mobile Category Button- Touch-friendly navigation buttons for mobile
 function MobileCategoryButton({
   href,
   icon,

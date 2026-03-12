@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import {
   Facebook,
@@ -7,32 +9,35 @@ import {
   Mail,
   MapPin,
 } from "lucide-react";
-
-const footerLinks = {
-  quickLinks: [
-    { href: "/about", label: "আমাদের সম্পর্কে" },
-    { href: "/contact", label: "যোগাযোগ" },
-    { href: "/terms", label: "শর্তাবলী" },
-    { href: "/privacy", label: "গোপনীয়তা নীতি" },
-    { href: "/returns", label: "রিটার্ন পলিসি" },
-  ],
-  petTypes: [
-    { href: "/products?pet=cat", label: "বিড়াল" },
-    { href: "/products?pet=dog", label: "কুকুর" },
-    { href: "/products?pet=bird", label: "পাখি" },
-    { href: "/products?pet=fish", label: "মাছ" },
-    { href: "/products?pet=rabbit", label: "খরগোশ" },
-  ],
-  categories: [
-    { href: "/products?category=food", label: "পেট ফুড" },
-    { href: "/products?category=toys", label: "খেলনা" },
-    { href: "/products?category=accessories", label: "এক্সেসরিজ" },
-    { href: "/products?category=health", label: "স্বাস্থ্য সামগ্রী" },
-    { href: "/products?category=grooming", label: "গ্রুমিং" },
-  ],
-};
+import { useTranslation } from "@/lib/i18n/use-translation";
 
 export function Footer() {
+  const { t } = useTranslation();
+
+  const footerLinks = {
+    quickLinks: [
+      { href: "/about", label: t("footer.aboutUs") },
+      { href: "/contact", label: t("footer.contact") },
+      { href: "/terms", label: t("footer.terms") },
+      { href: "/privacy", label: t("footer.privacy") },
+      { href: "/returns", label: t("footer.returns") },
+    ],
+    petTypes: [
+      { href: "/products?pet=cat", label: t("footer.cat") },
+      { href: "/products?pet=dog", label: t("footer.dog") },
+      { href: "/products?pet=bird", label: t("footer.bird") },
+      { href: "/products?pet=fish", label: t("footer.fish") },
+      { href: "/products?pet=rabbit", label: t("footer.rabbit") },
+    ],
+    categories: [
+      { href: "/products?category=food", label: t("footer.petFood") },
+      { href: "/products?category=toys", label: t("footer.toys") },
+      { href: "/products?category=accessories", label: t("footer.accessories") },
+      { href: "/products?category=health", label: t("footer.healthSupplies") },
+      { href: "/products?category=grooming", label: t("footer.grooming") },
+    ],
+  };
+
   return (
     <footer className="bg-foreground text-card">
       <div className="container mx-auto px-4 py-8 md:py-12">
@@ -44,8 +49,7 @@ export function Footer() {
               <span className="text-xl font-bold text-primary">PetBazaar</span>
             </Link>
             <p className="text-gray-400 text-sm leading-relaxed max-w-xs">
-              বাংলাদেশের সবচেয়ে বড় পেট শপ। বিড়াল, কুকুর, পাখি, মাছ ও অন্যান্য
-              পোষা প্রাণীর জন্য সেরা মানের পণ্য সরবরাহ করি।
+              {t("footer.description")}
             </p>
             <div className="flex gap-4">
               <a
@@ -81,7 +85,7 @@ export function Footer() {
           {/* Quick Links */}
           <div>
             <h3 className="text-lg font-semibold mb-4 text-card">
-              দ্রুত লিঙ্ক
+              {t("footer.quickLinks")}
             </h3>
             <ul className="space-y-3">
               {footerLinks.quickLinks.map((link) => (
@@ -100,7 +104,7 @@ export function Footer() {
           {/* Categories */}
           <div>
             <h3 className="text-lg font-semibold mb-4 text-card">
-              পোষা প্রাণী
+              {t("footer.pets")}
             </h3>
             <ul className="space-y-3">
               {footerLinks.petTypes.map((link) => (
@@ -119,7 +123,7 @@ export function Footer() {
           {/* Contact & Payment */}
           <div className="space-y-6">
             <div>
-              <h3 className="text-lg font-semibold mb-4 text-card">যোগাযোগ</h3>
+              <h3 className="text-lg font-semibold mb-4 text-card">{t("footer.contact")}</h3>
               <ul className="space-y-3">
                 <li className="flex items-center gap-2 text-gray-400 text-sm">
                   <Phone className="h-4 w-4 text-primary" />
@@ -131,13 +135,13 @@ export function Footer() {
                 </li>
                 <li className="flex items-start gap-2 text-gray-400 text-sm">
                   <MapPin className="h-4 w-4 text-primary shrink-0 mt-0.5" />
-                  <span>ঢাকা, বাংলাদেশ</span>
+                  <span>Dhaka, Bangladesh</span>
                 </li>
               </ul>
             </div>
             <div>
               <h3 className="text-lg font-semibold mb-4 text-card">
-                পেমেন্ট পদ্ধতি
+                {t("footer.paymentMethods")}
               </h3>
               <div className="flex flex-wrap gap-2">
                 <PaymentBadge>COD</PaymentBadge>
@@ -152,7 +156,7 @@ export function Footer() {
         {/* Bottom Bar */}
         <div className="border-t border-gray-700 mt-8 pt-8 text-center">
           <p className="text-gray-400 text-sm">
-            © {new Date().getFullYear()} PetBazaar. সর্বস্বত্ব সংরক্ষিত।
+            &copy; {new Date().getFullYear()} PetBazaar. {t("footer.allRightsReserved")}
           </p>
         </div>
       </div>

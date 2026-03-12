@@ -36,6 +36,8 @@ import {
 import { signOut } from "next-auth/react";
 import { CartButton } from "@/components/cart/cart-button";
 import { WishlistButton } from "@/components/wishlist/wishlist-button";
+import { LanguageToggle, LanguageToggleMobile } from "@/components/ui/language-toggle";
+import { useTranslation } from "@/lib/i18n/use-translation";
 
 const navLinks = [
   {
@@ -87,10 +89,10 @@ const quickLinks = [
 ];
 
 const petCategories = [
-  { icon: "🐱", label: "বিড়াল", color: "bg-orange-100 text-orange-700" },
-  { icon: "🐶", label: "কুকুর", color: "bg-amber-100 text-amber-700" },
-  { icon: "🐦", label: "পাখি", color: "bg-orange-100 text-orange-700" },
-  { icon: "🐠", label: "মাছ", color: "bg-amber-100 text-amber-700" },
+  { icon: "🐱", label: "বিড়াল", labelEn: "Cat", color: "bg-orange-100 text-orange-700" },
+  { icon: "🐶", label: "কুকুর", labelEn: "Dog", color: "bg-amber-100 text-amber-700" },
+  { icon: "🐦", label: "পাখি", labelEn: "Bird", color: "bg-orange-100 text-orange-700" },
+  { icon: "🐠", label: "মাছ", labelEn: "Fish", color: "bg-amber-100 text-amber-700" },
 ];
 
 interface NavbarClientProps {
@@ -113,6 +115,7 @@ export function NavbarClient({
   const pathname = usePathname();
   const [searchQuery, setSearchQuery] = useState("");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { t, locale } = useTranslation();
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -136,6 +139,18 @@ export function NavbarClient({
       return pet === currentPet;
     }
     return false;
+  };
+
+  const getNavLabel = (link: typeof navLinks[0]) => {
+    return locale === "en" ? link.labelEn : link.label;
+  };
+
+  const getQuickLinkLabel = (link: typeof quickLinks[0]) => {
+    return locale === "en" ? link.labelEn : link.label;
+  };
+
+  const getPetCategoryLabel = (cat: typeof petCategories[0]) => {
+    return locale === "en" ? cat.labelEn : cat.label;
   };
 
   return (
@@ -192,13 +207,13 @@ export function NavbarClient({
                   <p className="text-sm text-white flex items-center gap-1">
                     <span className="text-lg">👋</span>
                     {user
-                      ? `স্বাগতম, ${user.name?.split(" ")[0] || "পোষ্য প্রেমী"}!`
-                      : "স্বাগতম!"}
+                      ? t("mobileMenu.welcomeUser", { name: user.name?.split(" ")[0] || (locale === "en" ? "Pet Lover" : "পোষ্য প্রেমী") })
+                      : t("mobileMenu.welcome")}
                   </p>
                   <p className="font-medium text-white text-lg">
                     {user
-                      ? "আপনার পোষ্যের জন্য খুঁজুন"
-                      : "আপনার পোষ্যের জন্য সেরা পণ্য"}
+                      ? t("mobileMenu.searchForPet")
+                      : t("mobileMenu.bestProducts")}
                   </p>
                   <div className="flex gap-1 mt-2">
                     <PawPrint className="h-4 w-4 text-white/80" />
@@ -230,7 +245,7 @@ export function NavbarClient({
                             className={`h-5 w-5 ${isActive ? "text-white" : "text-orange-500"}`}
                           />
                           <span className="text-xs font-medium">
-                            {link.label}
+                            {getQuickLinkLabel(link)}
                           </span>
                         </Link>
                       </SheetClose>
@@ -242,7 +257,7 @@ export function NavbarClient({
                 <div className="px-4 py-2 bg-white">
                   <h3 className="mb-2 px-2 text-xs font-semibold uppercase tracking-wider text-orange-600 flex items-center gap-2">
                     <span className="w-1 h-4 bg-orange-500 rounded-full" />
-                    জনপ্রিয় ক্যাটাগরি
+                    {t("mobileMenu.popularCategories")}
                   </h3>
                   <div className="flex flex-wrap gap-2">
                     {petCategories.map((cat, idx) => (
@@ -251,7 +266,7 @@ export function NavbarClient({
                         className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm ${cat.color} border border-orange-200`}
                       >
                         <span>{cat.icon}</span>
-                        <span>{cat.label}</span>
+                        <span>{getPetCategoryLabel(cat)}</span>
                       </span>
                     ))}
                   </div>
@@ -261,7 +276,7 @@ export function NavbarClient({
                 <div className="flex-1 px-4 py-2 bg-white">
                   <h3 className="mb-2 px-2 text-xs font-semibold uppercase tracking-wider text-orange-600 flex items-center gap-2">
                     <span className="w-1 h-4 bg-orange-500 rounded-full" />
-                    পণ্যের তালিকা
+                    {t("mobileMenu.productList")}
                   </h3>
                   <nav
                     className="flex flex-col gap-1"
@@ -290,7 +305,7 @@ export function NavbarClient({
                             {/* Active indicator */}
                             <span
                               className={`
-                                absolute left-0 top-1/2 h-8 w-1 -translate-y-1/2 rounded-r-full 
+                                absolute left-0 top-1/2 h-8 w-1 -translate-y-1/2 rounded-r-full
                                 bg-orange-500 transition-all duration-200
                                 ${isActive ? "scale-y-100" : "scale-y-0 group-hover:scale-y-100"}
                               `}
@@ -311,9 +326,9 @@ export function NavbarClient({
                             )}
 
                             <div className="flex flex-col flex-1">
-                              <span>{link.label}</span>
+                              <span>{getNavLabel(link)}</span>
                               <span className="text-xs text-gray-500 group-hover:text-orange-500/70">
-                                {link.labelEn}
+                                {locale === "en" ? link.label : link.labelEn}
                               </span>
                             </div>
 
@@ -339,7 +354,7 @@ export function NavbarClient({
                         <p className="text-sm text-gray-600">{user.email}</p>
                         {isAdmin && (
                           <span className="inline-block mt-1 text-xs bg-orange-100 text-orange-700 px-2 py-0.5 rounded-full">
-                            অ্যাডমিন
+                            {t("nav.admin")}
                           </span>
                         )}
                       </div>
@@ -353,9 +368,9 @@ export function NavbarClient({
                             <User className="h-5 w-5 text-orange-500" />
                           </div>
                           <div className="flex flex-col flex-1">
-                            <span className="font-medium">আমার একাউন্ট</span>
+                            <span className="font-medium">{t("nav.account")}</span>
                             <span className="text-xs text-gray-500">
-                              প্রোফাইল দেখুন
+                              {t("nav.profileView")}
                             </span>
                           </div>
                           <ChevronRight className="h-4 w-4 text-gray-400 group-hover:text-orange-500 group-hover:translate-x-1 transition-all" />
@@ -371,9 +386,9 @@ export function NavbarClient({
                             <Package className="h-5 w-5 text-orange-500" />
                           </div>
                           <div className="flex flex-col flex-1">
-                            <span className="font-medium">আমার অর্ডার</span>
+                            <span className="font-medium">{t("nav.orders")}</span>
                             <span className="text-xs text-gray-500">
-                              অর্ডার ট্র্যাক করুন
+                              {t("nav.trackOrders")}
                             </span>
                           </div>
                           <ChevronRight className="h-4 w-4 text-gray-400 group-hover:text-orange-500 group-hover:translate-x-1 transition-all" />
@@ -391,10 +406,10 @@ export function NavbarClient({
                             </div>
                             <div className="flex flex-col flex-1">
                               <span className="font-medium">
-                                অ্যাডমিন প্যানেল
+                                {t("nav.adminPanel")}
                               </span>
                               <span className="text-xs text-gray-500">
-                                ম্যানেজ করুন
+                                {t("nav.manage")}
                               </span>
                             </div>
                             <ChevronRight className="h-4 w-4 text-gray-400 group-hover:text-orange-500 group-hover:translate-x-1 transition-all" />
@@ -410,7 +425,7 @@ export function NavbarClient({
                           <LogOut className="h-5 w-5 text-red-500" />
                         </div>
                         <span className="font-medium flex-1 text-left">
-                          লগআউট
+                          {t("nav.logout")}
                         </span>
                         <ChevronRight className="h-4 w-4 text-red-400 group-hover:text-red-500 group-hover:translate-x-1 transition-all" />
                       </button>
@@ -419,7 +434,7 @@ export function NavbarClient({
                     <>
                       <div className="mb-4 text-center bg-white p-4 rounded-xl border border-orange-200">
                         <p className="text-gray-700 mb-3">
-                          একাউন্ট না থাকলে? রেজিস্টার করুন
+                          {t("mobileMenu.noAccount")}
                         </p>
                         <div className="flex gap-2">
                           <SheetClose asChild className="flex-1">
@@ -428,14 +443,14 @@ export function NavbarClient({
                                 variant="outline"
                                 className="w-full border-orange-300 text-orange-600 hover:bg-orange-100 bg-white"
                               >
-                                লগইন
+                                {t("nav.login")}
                               </Button>
                             </Link>
                           </SheetClose>
                           <SheetClose asChild className="flex-1">
                             <Link href="/auth/register">
                               <Button className="w-full bg-orange-500 text-white hover:bg-orange-600">
-                                রেজিস্টার
+                                {t("nav.register")}
                               </Button>
                             </Link>
                           </SheetClose>
@@ -449,21 +464,24 @@ export function NavbarClient({
                 <div className="mx-4 my-3 rounded-xl bg-orange-500 p-4 text-white">
                   <div className="flex items-center gap-2 mb-1">
                     <Star className="h-4 w-4 fill-white" />
-                    <p className="text-sm font-medium">বিশেষ অফার!</p>
+                    <p className="text-sm font-medium">{t("mobileMenu.specialOffer")}</p>
                   </div>
-                  <p className="text-xs opacity-90">প্রথম অর্ডারে ২০% ছাড়</p>
+                  <p className="text-xs opacity-90">{t("mobileMenu.firstOrderDiscount")}</p>
                   <Button
                     variant="secondary"
                     size="sm"
                     className="mt-2 bg-white text-orange-600 hover:bg-orange-50 h-8 text-xs"
                   >
-                    এখনই কিনুন
+                    {t("mobileMenu.buyNow")}
                   </Button>
                 </div>
 
+                {/* Language Toggle */}
+                <LanguageToggleMobile />
+
                 {/* Footer */}
                 <div className="border-t border-orange-200 bg-white p-4 text-center text-xs text-gray-600">
-                  <p>© 2024 PetBazaar. সর্বস্বত্ব সংরক্ষিত</p>
+                  <p>&copy; 2024 PetBazaar. {t("mobileMenu.allRightsReserved")}</p>
                 </div>
               </div>
             </SheetContent>
@@ -498,7 +516,7 @@ export function NavbarClient({
                   `}
                 >
                   {typeof link.icon === "string" && <span>{link.icon}</span>}
-                  {link.label}
+                  {getNavLabel(link)}
                   {isActive && (
                     <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-orange-500 rounded-full" />
                   )}
@@ -516,7 +534,7 @@ export function NavbarClient({
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 transition-colors group-focus-within:text-orange-500" />
               <Input
                 type="search"
-                placeholder="পণ্য খুঁজুন..."
+                placeholder={t("nav.search")}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full pl-10 pr-4 bg-orange-50 border-orange-200 focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all placeholder:text-gray-500"
@@ -547,7 +565,7 @@ export function NavbarClient({
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-orange-400" />
                     <Input
                       type="search"
-                      placeholder="পণ্য খুঁজুন..."
+                      placeholder={t("nav.search")}
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                       className="w-full pl-10 pr-4 bg-orange-50 border-orange-200 focus:ring-2 focus:ring-orange-500"
@@ -560,6 +578,11 @@ export function NavbarClient({
 
             <WishlistButton serverWishlistCount={wishlistCount} />
             <CartButton serverCartCount={cartCount} />
+
+            {/* Language Toggle - Desktop */}
+            <div className="hidden sm:block">
+              <LanguageToggle />
+            </div>
 
             {/* User Menu - Desktop */}
             <div className="hidden sm:block">
@@ -583,7 +606,7 @@ export function NavbarClient({
                       <p className="text-sm text-gray-600">{user.email}</p>
                       {isAdmin && (
                         <span className="inline-block mt-1 text-xs bg-orange-100 text-orange-700 px-2 py-0.5 rounded-full">
-                          অ্যাডমিন
+                          {t("nav.admin")}
                         </span>
                       )}
                     </div>
@@ -594,7 +617,7 @@ export function NavbarClient({
                         className="cursor-pointer hover:text-orange-600 hover:bg-orange-50"
                       >
                         <User className="mr-2 h-4 w-4 text-orange-500" />
-                        আমার একাউন্ট
+                        {t("nav.account")}
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
@@ -603,7 +626,7 @@ export function NavbarClient({
                         className="cursor-pointer hover:text-orange-600 hover:bg-orange-50"
                       >
                         <Package className="mr-2 h-4 w-4 text-orange-500" />
-                        আমার অর্ডার
+                        {t("nav.orders")}
                       </Link>
                     </DropdownMenuItem>
                     {isAdmin && (
@@ -615,7 +638,7 @@ export function NavbarClient({
                             className="cursor-pointer hover:text-orange-600 hover:bg-orange-50"
                           >
                             <Settings className="mr-2 h-4 w-4 text-orange-500" />
-                            অ্যাডমিন প্যানেল
+                            {t("nav.adminPanel")}
                           </Link>
                         </DropdownMenuItem>
                       </>
@@ -626,7 +649,7 @@ export function NavbarClient({
                       className="cursor-pointer text-red-600 hover:text-red-700 hover:bg-red-50"
                     >
                       <LogOut className="mr-2 h-4 w-4" />
-                      লগআউট
+                      {t("nav.logout")}
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
@@ -638,7 +661,7 @@ export function NavbarClient({
                       size="sm"
                       className="text-orange-600 hover:bg-orange-100"
                     >
-                      লগইন
+                      {t("nav.login")}
                     </Button>
                   </Link>
                   <Link href="/auth/register">
@@ -646,7 +669,7 @@ export function NavbarClient({
                       size="sm"
                       className="bg-orange-500 text-white hover:bg-orange-600"
                     >
-                      রেজিস্টার
+                      {t("nav.register")}
                     </Button>
                   </Link>
                 </div>
