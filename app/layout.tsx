@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { Suspense } from "react";
 import { Poppins, Hind_Siliguri } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { AuthProvider } from "@/components/auth-provider";
@@ -72,7 +73,9 @@ export default function RootLayout({
         className={`${poppins.variable} ${hindSiliguri.variable} font-sans antialiased bg-background text-foreground`}
       >
         <AuthProvider>
-          <NavigationProgressProvider>{children}</NavigationProgressProvider>
+          <Suspense fallback={null}>
+            <NavigationProgressProvider>{children}</NavigationProgressProvider>
+          </Suspense>
         </AuthProvider>
         <Toaster position="top-center" richColors closeButton />
         <Analytics />
