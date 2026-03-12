@@ -9,6 +9,34 @@ interface LocaleState {
   setHydrated: (hydrated: boolean) => void;
 }
 
+// Safe storage that works on both server and client
+const safeStorage = {
+  getItem: (name: string): string | null => {
+    if (typeof window === "undefined") return null;
+    try {
+      return localStorage.getItem(name);
+    } catch {
+      return null;
+    }
+  },
+  setItem: (name: string, value: string): void => {
+    if (typeof window === "undefined") return;
+    try {
+      localStorage.setItem(name, value);
+    } catch {
+      // Ignore errors
+    }
+  },
+  removeItem: (name: string): void => {
+    if (typeof window === "undefined") return;
+    try {
+      localStorage.removeItem(name);
+    } catch {
+      // Ignore errors
+    }
+  },
+};
+
 export const useLocaleStore = create<LocaleState>()(
   persist(
     (set) => ({
@@ -25,7 +53,7 @@ export const useLocaleStore = create<LocaleState>()(
     }),
     {
       name: "locale-storage",
-      storage: createJSONStorage(() => localStorage),
+      storage: safeStorage,
       onRehydrateStorage: () => (state) => {
         state?.setHydrated(true);
       },
