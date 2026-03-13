@@ -250,6 +250,9 @@ export function NavbarClient({
                     </div>
                   </div>
 
+                  {/* Language Toggle - Moved here for easy access */}
+                  <LanguageToggleMobile />
+
                   {/* Quick Links with Solid Backgrounds */}
                   <div className="grid grid-cols-3 gap-2 p-4 bg-white">
                     {quickLinks.map((link) => {
@@ -514,11 +517,8 @@ export function NavbarClient({
                     </Button>
                   </div>
 
-                  {/* Language Toggle */}
-                  <LanguageToggleMobile />
-
-                  {/* Footer */}
-                  <div className="border-t border-orange-200 bg-white p-4 text-center text-xs text-gray-600">
+                  {/* Footer with bottom padding */}
+                  <div className="border-t border-orange-200 bg-white p-6 text-center text-xs text-gray-600">
                     <p>
                       &copy; 2024 PetBazaar. {t("mobileMenu.allRightsReserved")}
                     </p>

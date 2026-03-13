@@ -139,18 +139,21 @@ export function Footer() {
               <h4 className="text-sm font-semibold text-white">
                 Subscribe to our newsletter
               </h4>
-              <form onSubmit={handleSubscribe} className="flex gap-2">
+              <form
+                onSubmit={handleSubscribe}
+                className="flex flex-col sm:flex-row gap-2"
+              >
                 <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="Enter your email"
-                  className="flex-1 px-4 py-2.5 bg-gray-900 border border-gray-800 rounded-lg text-sm text-white placeholder-gray-500 focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition-all"
+                  className="w-full sm:flex-1 px-4 py-3 sm:py-2.5 bg-gray-900 border border-gray-800 rounded-lg text-sm text-white placeholder-gray-500 focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition-all"
                   required
                 />
                 <button
                   type="submit"
-                  className="px-4 py-2.5 bg-orange-500 text-black font-medium rounded-lg text-sm transition-all active:scale-95 shadow-lg shadow-orange-500/25"
+                  className="w-full sm:w-auto px-4 py-3 sm:py-2.5 bg-orange-500 text-black font-medium rounded-lg text-sm transition-all active:scale-95 shadow-lg shadow-orange-500/25 hover:bg-orange-400"
                 >
                   Subscribe
                 </button>

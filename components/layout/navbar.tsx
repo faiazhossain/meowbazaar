@@ -316,7 +316,7 @@ export function Navbar({ cartCount = 0, wishlistCount = 0 }: NavbarProps) {
                 </div>
 
                 {/* Footer */}
-                <div className="border-t border-orange-200/50 p-4 text-center text-xs text-gray-500">
+                <div className="border-t border-orange-200/50 p-4 text-center text-xs mb-10 md:mb-0 text-gray-500">
                   <p>© 2024 PetBazaar. সর্বস্বত্ব সংরক্ষিত</p>
                 </div>
               </div>
