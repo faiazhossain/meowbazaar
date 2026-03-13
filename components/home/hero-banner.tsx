@@ -18,7 +18,7 @@ export function HeroBanner() {
   return (
     <section className="relative overflow-hidden bg-gradient-to-br from-cream via-brand-orange-light/20 to-cream">
       <div className="container mx-auto px-4 py-12 md:py-20 lg:py-24 relative z-10">
-        <div className="grid lg:grid-cols-2 gap-12 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           {/* Content - Left Side */}
           <div className="text-center lg:text-left space-y-6 md:space-y-8">
             <h1 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold text-foreground leading-snug">
@@ -41,7 +41,9 @@ export function HeroBanner() {
                 variant="outline"
                 className="border-primary text-primary hover:bg-primary/5 px-6 sm:px-8 py-5 sm:py-6 text-base sm:text-lg cursor-pointer w-full sm:w-auto"
               >
-                <Link href="/products?category=food">{t("hero.viewPetFood")}</Link>
+                <Link href="/products?category=food">
+                  {t("hero.viewPetFood")}
+                </Link>
               </Button>
             </div>
 
@@ -480,7 +482,9 @@ function TrustBadge({
           </svg>
         )}
       </div>
-      <span className="text-xs sm:text-sm font-medium text-foreground whitespace-nowrap">{text}</span>
+      <span className="text-xs sm:text-sm font-medium text-foreground whitespace-nowrap">
+        {text}
+      </span>
     </div>
   );
 }
