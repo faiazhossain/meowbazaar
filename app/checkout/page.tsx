@@ -35,6 +35,8 @@ import { getAddresses, addAddress } from "@/lib/actions/addresses";
 import { createOrder } from "@/lib/actions/orders";
 import { toast } from "sonner";
 import { useSession } from "next-auth/react";
+import { calculateDeliveryFee } from "@/lib/utils/delivery";
+import type { DeliveryFeeResult } from "@/lib/utils/delivery";
 
 interface Address {
   id: string;
@@ -96,7 +98,27 @@ export default function CheckoutPage() {
     }
   }, [isAuthenticated, session]);
 
-  const deliveryFee = subtotal >= 500 ? 0 : 60;
+  const [deliveryResult, setDeliveryResult] =
+    useState<DeliveryFeeResult | null>(null);
+
+  // Calculate delivery fee based on settings
+  useEffect(() => {
+    const calculateDelivery = async () => {
+      // Get division from selected address
+      let division = undefined;
+      if (selectedAddressId && addresses.length > 0) {
+        const selectedAddress = addresses.find(
+          (a) => a.id === selectedAddressId
+        );
+        division = selectedAddress?.division;
+      }
+      const result = await calculateDeliveryFee(subtotal, division);
+      setDeliveryResult(result);
+    };
+    calculateDelivery();
+  }, [subtotal, selectedAddressId, addresses]);
+
+  const deliveryFee = deliveryResult?.fee || 0;
   const total = subtotal + deliveryFee;
 
   // Fetch addresses on mount
@@ -592,7 +614,7 @@ export default function CheckoutPage() {
                       <div className="flex-1">
                         <p className="font-medium text-foreground">বিকাশ</p>
                         <p className="text-sm text-muted-foreground">
-                          বিকাশে পেমেন্ট করলে ৫% ক্যাশব্যাক
+                          বিকাশে পেমেন্ট
                         </p>
                       </div>
                     </label>
@@ -609,7 +631,7 @@ export default function CheckoutPage() {
                       <div className="flex-1">
                         <p className="font-medium text-foreground">নগদ</p>
                         <p className="text-sm text-muted-foreground">
-                          নগদে পেমেন্ট করলে ৫% ক্যাশব্যাক
+                          নগদে পেমেন্ট
                         </p>
                       </div>
                     </label>

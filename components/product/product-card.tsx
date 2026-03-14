@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { useCart } from "@/hooks/use-cart";
 import { useWishlist } from "@/hooks/use-wishlist";
+import { useTranslation } from "@/lib/i18n/use-translation";
 import { toast } from "sonner";
 
 export interface Product {
@@ -25,6 +26,7 @@ export interface Product {
   discount?: number;
   hasCOD?: boolean;
   category: string;
+  categoryEn?: string;
   petType?: string;
   stock?: number;
 }
@@ -40,6 +42,7 @@ export function ProductCard({ product, onAddToWishlist }: ProductCardProps) {
   const [isTogglingWishlist, setIsTogglingWishlist] = useState(false);
   const [justAdded, setJustAdded] = useState(false);
 
+  const { t, locale } = useTranslation();
   const { addItem } = useCart();
   const {
     isInWishlist,
@@ -49,12 +52,32 @@ export function ProductCard({ product, onAddToWishlist }: ProductCardProps) {
 
   const isWishlisted = isInWishlist(product.id);
 
+  // Helper function to get localized product name
+  const getLocalizedName = (name: string, nameEn?: string) => {
+    return locale === "en" && nameEn ? nameEn : name;
+  };
+
+  // Helper function to format price based on locale
+  const formatPrice = (price: number) => {
+    if (locale === "en") {
+      return `৳${price.toLocaleString("en-US")}`;
+    }
+    return `৳${price.toLocaleString("bn-BD")}`;
+  };
+
+  // Localized product and category names
+  const localizedName = getLocalizedName(product.name, product.nameEn);
+  const localizedCategoryName = getLocalizedName(
+    product.category,
+    product.categoryEn
+  );
+
   const handleWishlistClick = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
 
     if (!isAuthenticated) {
-      toast.error("উইশলিস্টে যোগ করতে লগইন করুন");
+      toast.error(t("product.loginToWishlist"));
       return;
     }
 
@@ -66,12 +89,12 @@ export function ProductCard({ product, onAddToWishlist }: ProductCardProps) {
 
     if (result.success) {
       if (result.action === "added") {
-        toast.success(`${product.name} উইশলিস্টে যোগ করা হয়েছে`);
+        toast.success(t("product.addedToWishlist"));
       } else {
-        toast.success(`${product.name} উইশলিস্ট থেকে সরানো হয়েছে`);
+        toast.success(t("product.removedFromWishlist"));
       }
     } else {
-      toast.error(result.error || "সমস্যা হয়েছে");
+      toast.error(result.error || t("product.error"));
     }
 
     onAddToWishlist?.(product);
@@ -100,10 +123,10 @@ export function ProductCard({ product, onAddToWishlist }: ProductCardProps) {
 
     if (result.success) {
       setJustAdded(true);
-      toast.success(`${product.name} কার্টে যোগ করা হয়েছে`);
+      toast.success(`${localizedName} ${t("product.addedToCart")}`);
       setTimeout(() => setJustAdded(false), 2000);
     } else {
-      toast.error(result.error || "কার্টে যোগ করা যায়নি");
+      toast.error(result.error || t("product.addToCartError"));
     }
   };
 
@@ -132,12 +155,12 @@ export function ProductCard({ product, onAddToWishlist }: ProductCardProps) {
           <div className="absolute top-2 left-2 flex flex-col gap-1">
             {product.isNew && (
               <Badge className="bg-primary text-primary-foreground text-xs">
-                নতুন
+                {t("product.new")}
               </Badge>
             )}
             {discountPercentage && discountPercentage > 0 && (
               <Badge className="bg-destructive text-destructive-foreground text-xs">
-                {discountPercentage}% ছাড়
+                {discountPercentage}% {t("product.discount")}
               </Badge>
             )}
             {product.hasCOD && (
@@ -205,17 +228,19 @@ export function ProductCard({ product, onAddToWishlist }: ProductCardProps) {
               {isAddingToCart ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin" />
-                  যোগ হচ্ছে...
+                  Loading...
                 </>
               ) : justAdded ? (
                 <>
                   <Check className="h-4 w-4" />
-                  যোগ হয়েছে
+                  {t("product.addedToCart")}
                 </>
               ) : (
                 <>
                   <ShoppingCart className="h-4 w-4" />
-                  {product.inStock ? "কার্টে যোগ করুন" : "স্টক শেষ"}
+                  {product.inStock
+                    ? t("product.addToCart")
+                    : t("product.outOfStock")}
                 </>
               )}
             </Button>
@@ -226,7 +251,7 @@ export function ProductCard({ product, onAddToWishlist }: ProductCardProps) {
         <div className="p-3">
           {/* Title */}
           <h3 className="font-medium text-foreground text-sm line-clamp-2 mb-1 min-h-[2.5rem]">
-            {product.name}
+            {localizedName}
           </h3>
 
           {/* Rating */}
@@ -252,11 +277,11 @@ export function ProductCard({ product, onAddToWishlist }: ProductCardProps) {
           {/* Price */}
           <div className="flex items-center gap-2">
             <span className="text-lg font-bold text-primary">
-              ৳{product.price.toLocaleString("bn-BD")}
+              {formatPrice(product.price)}
             </span>
             {product.mrp && product.mrp > product.price && (
               <span className="text-sm text-muted-foreground line-through">
-                ৳{product.mrp.toLocaleString("bn-BD")}
+                {formatPrice(product.mrp)}
               </span>
             )}
           </div>
@@ -269,7 +294,7 @@ export function ProductCard({ product, onAddToWishlist }: ProductCardProps) {
                 product.inStock ? "text-success" : "text-destructive"
               )}
             >
-              {product.inStock ? "স্টকে আছে" : "স্টক শেষ"}
+              {product.inStock ? t("product.inStock") : t("product.outOfStock")}
             </span>
           </div>
         </div>

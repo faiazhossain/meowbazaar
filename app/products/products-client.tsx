@@ -26,20 +26,23 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { Slider } from "@/components/ui/slider";
 import { SlidersHorizontal, X } from "lucide-react";
+import { useTranslation } from "@/lib/i18n/use-translation";
 
 interface Category {
   id: string;
   name: string;
+  nameEn?: string;
   slug: string;
 }
 
 const brands = ["Royal Canin", "Whiskas", "Me-O", "Kit Cat", "Fancy Feast"];
+
 const sortOptions = [
-  { value: "newest", label: "নতুন পণ্য" },
-  { value: "price-low", label: "মূল্য: কম থেকে বেশি" },
-  { value: "price-high", label: "মূল্য: বেশি থেকে কম" },
-  { value: "bestseller", label: "বেস্টসেলার" },
-  { value: "rating", label: "রেটিং" },
+  { value: "newest", label: "products.sort.newest" },
+  { value: "price-low", label: "products.sort.priceLow" },
+  { value: "price-high", label: "products.sort.priceHigh" },
+  { value: "bestseller", label: "products.sort.bestseller" },
+  { value: "rating", label: "products.sort.rating" },
 ];
 
 interface ProductsClientProps {
@@ -62,9 +65,15 @@ export function ProductsClient({
   cartCount,
   wishlistCount,
 }: ProductsClientProps) {
+  const { t, locale } = useTranslation();
   const searchParams = useSearchParams();
-  const categoryParam = searchParams.get("category");
+  const categoryParam = searchParams.get("pet") || searchParams.get("category");
   const searchParam = searchParams.get("search");
+
+  // Helper function to get localized category name
+  const getLocalizedName = (name: string, nameEn?: string) => {
+    return locale === "en" && nameEn ? nameEn : name;
+  };
 
   const [selectedCategory, setSelectedCategory] = useState<string>(
     categoryParam || "all"
@@ -136,8 +145,13 @@ export function ProductsClient({
   };
 
   const categoryTitle = searchParam
-    ? `"${searchParam}" এর ফলাফল`
-    : categories.find((c) => c.slug === selectedCategory)?.name || "সব পণ্য";
+    ? t("products.searchResults", { search: searchParam })
+    : selectedCategory === "all"
+      ? t("products.title")
+      : getLocalizedName(
+          categories.find((c) => c.slug === selectedCategory)?.name || "",
+          categories.find((c) => c.slug === selectedCategory)?.nameEn
+        );
 
   return (
     <div className="min-h-screen bg-background">
@@ -155,7 +169,7 @@ export function ProductsClient({
               {categoryTitle}
             </h1>
             <p className="text-muted-foreground mt-1">
-              {filteredProducts.length} পণ্য পাওয়া গেছে
+              {filteredProducts.length} {t("products.resultsFound")}
             </p>
           </div>
         </div>
@@ -176,6 +190,9 @@ export function ProductsClient({
                   inStockOnly={inStockOnly}
                   setInStockOnly={setInStockOnly}
                   clearFilters={clearFilters}
+                  t={t}
+                  locale={locale}
+                  getLocalizedName={getLocalizedName}
                 />
               </div>
             </aside>
@@ -189,12 +206,12 @@ export function ProductsClient({
                   <SheetTrigger asChild className="lg:hidden">
                     <Button variant="outline" className="gap-2">
                       <SlidersHorizontal className="h-4 w-4" />
-                      ফিল্টার
+                      {t("products.filter")}
                     </Button>
                   </SheetTrigger>
                   <SheetContent side="bottom" className="h-[85vh] bg-card">
                     <SheetHeader className="mb-6">
-                      <SheetTitle>ফিল্টার করুন</SheetTitle>
+                      <SheetTitle>{t("products.filterTitle")}</SheetTitle>
                     </SheetHeader>
                     <div className="overflow-auto h-full pb-20">
                       <FilterSection
@@ -208,6 +225,9 @@ export function ProductsClient({
                         inStockOnly={inStockOnly}
                         setInStockOnly={setInStockOnly}
                         clearFilters={clearFilters}
+                        t={t}
+                        locale={locale}
+                        getLocalizedName={getLocalizedName}
                       />
                     </div>
                   </SheetContent>
@@ -219,7 +239,7 @@ export function ProductsClient({
                     htmlFor="sort"
                     className="text-sm text-muted-foreground hidden sm:inline"
                   >
-                    সাজান:
+                    {t("products.sortBy")}
                   </Label>
                   <Select value={sortBy} onValueChange={setSortBy}>
                     <SelectTrigger className="w-[180px]">
@@ -228,7 +248,7 @@ export function ProductsClient({
                     <SelectContent>
                       {sortOptions.map((option) => (
                         <SelectItem key={option.value} value={option.value}>
-                          {option.label}
+                          {t(option.label)}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -246,14 +266,14 @@ export function ProductsClient({
               ) : (
                 <div className="text-center py-12">
                   <p className="text-muted-foreground text-lg">
-                    কোনো পণ্য পাওয়া যায়নি
+                    {t("products.noProducts")}
                   </p>
                   <Button
                     onClick={clearFilters}
                     variant="link"
                     className="text-primary mt-2"
                   >
-                    ফিল্টার রিসেট করুন
+                    {t("products.clearFilters")}
                   </Button>
                 </div>
               )}
@@ -262,7 +282,7 @@ export function ProductsClient({
               {filteredProducts.length > 0 && (
                 <div className="mt-8 text-center">
                   <Button variant="outline" className="px-8">
-                    আরও দেখুন
+                    {t("products.loadMore")}
                   </Button>
                 </div>
               )}
@@ -287,6 +307,9 @@ interface FilterSectionProps {
   inStockOnly: boolean;
   setInStockOnly: (value: boolean) => void;
   clearFilters: () => void;
+  t: any;
+  locale: string;
+  getLocalizedName: (name: string, nameEn?: string) => string;
 }
 
 function FilterSection({
@@ -300,12 +323,17 @@ function FilterSection({
   inStockOnly,
   setInStockOnly,
   clearFilters,
+  t,
+  locale,
+  getLocalizedName,
 }: FilterSectionProps) {
   return (
     <div className="space-y-6">
       {/* Clear Filters */}
       <div className="flex items-center justify-between">
-        <h3 className="font-semibold text-foreground">ফিল্টার</h3>
+        <h3 className="font-semibold text-foreground">
+          {t("products.filter")}
+        </h3>
         <Button
           variant="ghost"
           size="sm"
@@ -313,20 +341,22 @@ function FilterSection({
           className="text-xs text-primary"
         >
           <X className="h-3 w-3 mr-1" />
-          রিসেট
+          {t("common.reset")}
         </Button>
       </div>
 
       {/* Category Filter */}
       <div>
-        <h4 className="font-medium text-foreground mb-3">ক্যাটাগরি</h4>
+        <h4 className="font-medium text-foreground mb-3">
+          {t("products.category")}
+        </h4>
         <div className="space-y-2">
           <label className="flex items-center gap-2 cursor-pointer">
             <Checkbox
               checked={selectedCategory === "all"}
               onCheckedChange={() => setSelectedCategory("all")}
             />
-            <span className="text-sm">সব পণ্য</span>
+            <span className="text-sm">{t("products.allProducts")}</span>
           </label>
           {categories.map((category) => (
             <label
@@ -337,7 +367,9 @@ function FilterSection({
                 checked={selectedCategory === category.slug}
                 onCheckedChange={() => setSelectedCategory(category.slug)}
               />
-              <span className="text-sm">{category.name}</span>
+              <span className="text-sm">
+                {getLocalizedName(category.name, category.nameEn)}
+              </span>
             </label>
           ))}
         </div>
@@ -345,7 +377,9 @@ function FilterSection({
 
       {/* Brand Filter */}
       <div>
-        <h4 className="font-medium text-foreground mb-3">ব্র্যান্ড</h4>
+        <h4 className="font-medium text-foreground mb-3">
+          {t("products.brand")}
+        </h4>
         <div className="space-y-2">
           {brands.map((brand) => (
             <label
@@ -372,7 +406,9 @@ function FilterSection({
 
       {/* Price Filter */}
       <div>
-        <h4 className="font-medium text-foreground mb-3">মূল্য</h4>
+        <h4 className="font-medium text-foreground mb-3">
+          {t("products.price")}
+        </h4>
         <div className="px-2">
           <Slider
             value={priceRange}
@@ -411,7 +447,7 @@ function FilterSection({
             checked={inStockOnly}
             onCheckedChange={(checked) => setInStockOnly(!!checked)}
           />
-          <span className="text-sm">শুধু স্টকে আছে</span>
+          <span className="text-sm">{t("products.inStockOnly")}</span>
         </label>
       </div>
     </div>

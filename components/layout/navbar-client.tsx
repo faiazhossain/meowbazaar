@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useRouter, usePathname } from "next/navigation";
+import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import {
   Search,
   User,
@@ -136,6 +136,7 @@ export function NavbarClient({
 }: NavbarClientProps) {
   const router = useRouter();
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const [searchQuery, setSearchQuery] = useState("");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { t, locale } = useTranslation();
@@ -158,7 +159,7 @@ export function NavbarClient({
     if (href === pathname) return true;
     if (href.includes("?") && pathname === "/products") {
       const pet = new URLSearchParams(href.split("?")[1]).get("pet");
-      const currentPet = new URLSearchParams(window.location.search).get("pet");
+      const currentPet = searchParams.get("pet");
       return pet === currentPet;
     }
     return false;

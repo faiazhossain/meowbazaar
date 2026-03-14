@@ -5,17 +5,19 @@ import { Newsletter } from "@/components/home/newsletter";
 import { BlogCard } from "@/components/home/blog-card";
 import { ProductCard } from "@/components/product/product-card";
 import { CategoryCard } from "@/components/product/category-card";
-import { SectionHeaderClient, OfferBannerClient } from "@/components/home/home-sections";
 import {
-  Section,
-  ProductGrid,
-  CategoryGrid,
-} from "@/components/ui/section";
+  SectionHeaderClient,
+  OfferBannerClient,
+} from "@/components/home/home-sections";
+import { Section, ProductGrid, CategoryGrid } from "@/components/ui/section";
 import {
   getCategories,
   getBestsellers,
   getNewArrivals,
 } from "@/lib/actions/products";
+import { getActiveOffers } from "@/lib/actions/admin";
+import { useTranslation } from "@/lib/i18n/use-translation";
+import { Button } from "@/components/ui/button";
 
 // Static blog posts for homepage
 const blogPosts = [
@@ -67,11 +69,13 @@ const blogPosts = [
 ];
 
 export default async function HomePage() {
-  const [categoriesData, bestsellersData, newArrivalsData] = await Promise.all([
-    getCategories(),
-    getBestsellers(4),
-    getNewArrivals(4),
-  ]);
+  const [categoriesData, bestsellersData, newArrivalsData, activeOffers] =
+    await Promise.all([
+      getCategories(),
+      getBestsellers(4),
+      getNewArrivals(4),
+      getActiveOffers(),
+    ]);
 
   // Transform categories for CategoryCard component
   const categories = categoriesData.map((cat) => ({
@@ -152,8 +156,11 @@ export default async function HomePage() {
           </ProductGrid>
         </Section>
 
-        {/* Offer Banner */}
-        <OfferBannerClient ctaHref="/products" />
+        {/* Offer Banners */}
+        {activeOffers.length > 0 &&
+          activeOffers.map((offer) => (
+            <DynamicOfferBanner key={offer.id} offer={offer} />
+          ))}
 
         {/* New Arrivals Section */}
         <Section>
@@ -190,5 +197,53 @@ export default async function HomePage() {
 
       <Footer />
     </div>
+  );
+}
+
+// Dynamic Offer Banner Component
+interface DynamicOfferBannerProps {
+  offer: {
+    title: string;
+    titleEn: string;
+    description: string;
+    descriptionEn: string;
+    ctaText: string;
+    ctaTextEn: string;
+    ctaLink: string;
+    variant: string;
+  };
+}
+
+function DynamicOfferBanner({ offer }: DynamicOfferBannerProps) {
+  const bgClass =
+    offer.variant === "primary"
+      ? "bg-gradient-to-r from-primary to-brand-orange-dark"
+      : "bg-gradient-to-r from-accent to-mint";
+
+  const buttonText = offer.ctaText || offer.ctaTextEn;
+
+  return (
+    <section className={`${bgClass} py-10 md:py-14`}>
+      <div className="container mx-auto px-4 text-center">
+        <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-primary-foreground mb-3 text-balance">
+          {offer.title}
+        </h2>
+        <p className="text-primary-foreground/90 text-lg mb-6 max-w-2xl mx-auto text-pretty">
+          {offer.description}
+        </p>
+        <a href={offer.ctaLink}>
+          <Button
+            size="lg"
+            className={
+              offer.variant === "primary"
+                ? "bg-card text-primary hover:bg-card/90"
+                : "bg-card text-accent hover:bg-card/90"
+            }
+          >
+            {buttonText}
+          </Button>
+        </a>
+      </div>
+    </section>
   );
 }

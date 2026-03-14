@@ -12,6 +12,7 @@ import {
   Settings,
   Menu,
   Bell,
+  Gift,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -24,9 +25,11 @@ const sidebarLinks = [
   { href: "/admin/orders", label: "অর্ডার", icon: ShoppingCart },
   { href: "/admin/products", label: "পণ্য", icon: Package },
   { href: "/admin/categories", label: "ক্যাটাগরি", icon: FolderTree },
+  { href: "/admin/offers", label: "অফার", icon: Gift },
   { href: "/admin/customers", label: "কাস্টমার", icon: Users },
   { href: "/admin/notification", label: "নোটিফিকেশন", icon: Bell },
   { href: "/admin/analytics", label: "অ্যানালিটিক্স", icon: BarChart3 },
+  { href: "/admin/settings/delivery", label: "ডেলিভারি সেটিংস", icon: Settings },
   { href: "/admin/settings", label: "সেটিংস", icon: Settings },
 ];
 

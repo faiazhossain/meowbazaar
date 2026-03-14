@@ -25,11 +25,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 import { useCart } from "@/hooks/use-cart";
 import { useWishlist } from "@/hooks/use-wishlist";
+import { useTranslation } from "@/lib/i18n/use-translation";
 import { toast } from "sonner";
 
 interface ProductData {
   id: string;
   name: string;
+  nameEn?: string;
   slug: string;
   description: string | null;
   price: number;
@@ -45,6 +47,7 @@ interface ProductData {
   category: {
     id: string;
     name: string;
+    nameEn: string;
     slug: string;
   };
 }
@@ -59,6 +62,7 @@ export function ProductDetailsClient({
   relatedProducts,
 }: ProductDetailsClientProps) {
   const router = useRouter();
+  const { t, locale } = useTranslation();
   const [quantity, setQuantity] = useState(1);
   const [selectedImage, setSelectedImage] = useState(0);
   const [isAddingToCart, setIsAddingToCart] = useState(false);
@@ -74,6 +78,26 @@ export function ProductDetailsClient({
 
   const isWishlisted = isInWishlist(product.id);
 
+  // Helper function to get localized product name
+  const getLocalizedName = (name: string, nameEn?: string) => {
+    return locale === "en" && nameEn ? nameEn : name;
+  };
+
+  // Helper function to format price based on locale
+  const formatPrice = (price: number) => {
+    if (locale === "en") {
+      return `৳${price.toLocaleString("en-US")}`;
+    }
+    return `৳${price.toLocaleString("bn-BD")}`;
+  };
+
+  // Localized product and category names
+  const localizedName = getLocalizedName(product.name, product.nameEn);
+  const localizedCategoryName = getLocalizedName(
+    product.category.name,
+    product.category.nameEn
+  );
+
   // Parse additional images
   const additionalImages: string[] = product.images
     ? JSON.parse(product.images)
@@ -86,7 +110,7 @@ export function ProductDetailsClient({
 
   const handleWishlistToggle = async () => {
     if (!isAuthenticated) {
-      toast.error("উইশলিস্টে যোগ করতে লগইন করুন");
+      toast.error(t("product.loginToWishlist"));
       router.push(
         "/auth/login?callbackUrl=" +
           encodeURIComponent(`/products/${product.id}`)
@@ -99,12 +123,12 @@ export function ProductDetailsClient({
 
     if (result.success) {
       if (result.action === "added") {
-        toast.success("উইশলিস্টে যোগ করা হয়েছে");
+        toast.success(t("product.addedToWishlist"));
       } else {
-        toast.success("উইশলিস্ট থেকে সরানো হয়েছে");
+        toast.success(t("product.removedFromWishlist"));
       }
     } else {
-      toast.error(result.error || "সমস্যা হয়েছে");
+      toast.error(result.error || t("product.error"));
     }
 
     setIsTogglingWishlist(false);
@@ -124,13 +148,13 @@ export function ProductDetailsClient({
         quantity
       );
       if (result.success) {
-        toast.success(`${product.name} কার্টে যোগ করা হয়েছে`);
+        toast.success(`${product.name} ${t("product.addedToCart")}`);
       } else {
-        toast.error(result.error || "কার্টে যোগ করতে সমস্যা হয়েছে");
+        toast.error(result.error || t("product.addToCartError"));
       }
     } catch (error) {
       console.error("Add to cart error:", error);
-      toast.error("কার্টে যোগ করতে সমস্যা হয়েছে");
+      toast.error(t("product.addToCartError"));
     } finally {
       setIsAddingToCart(false);
     }
@@ -152,12 +176,12 @@ export function ProductDetailsClient({
       if (result.success) {
         router.push("/checkout");
       } else {
-        toast.error(result.error || "সমস্যা হয়েছে, আবার চেষ্টা করুন");
+        toast.error(result.error || t("product.buyNowError"));
         setIsBuyingNow(false);
       }
     } catch (error) {
       console.error("Buy now error:", error);
-      toast.error("সমস্যা হয়েছে, আবার চেষ্টা করুন");
+      toast.error(t("product.buyNowError"));
       setIsBuyingNow(false);
     }
   };
@@ -168,22 +192,22 @@ export function ProductDetailsClient({
       <div className="container mx-auto px-4 py-4">
         <nav className="flex items-center gap-2 text-sm text-muted-foreground">
           <Link href="/" className="hover:text-primary">
-            হোম
+            {t("product.home")}
           </Link>
           <ChevronRight className="h-4 w-4" />
           <Link href="/products" className="hover:text-primary">
-            পণ্য
+            {t("product.products")}
           </Link>
           <ChevronRight className="h-4 w-4" />
           <Link
             href={`/products?category=${product.category.slug}`}
             className="hover:text-primary"
           >
-            {product.category.name}
+            {localizedCategoryName}
           </Link>
           <ChevronRight className="h-4 w-4" />
           <span className="text-foreground truncate max-w-[200px]">
-            {product.name}
+            {localizedName}
           </span>
         </nav>
       </div>
@@ -205,12 +229,12 @@ export function ProductDetailsClient({
               <div className="absolute top-4 left-4 flex flex-col gap-2">
                 {product.isNew && (
                   <Badge className="bg-primary text-primary-foreground">
-                    নতুন
+                    {t("product.new")}
                   </Badge>
                 )}
                 {discountPercentage > 0 && (
                   <Badge className="bg-destructive text-destructive-foreground">
-                    {discountPercentage}% ছাড়
+                    {discountPercentage}% {t("product.discount")}
                   </Badge>
                 )}
               </div>
@@ -247,10 +271,10 @@ export function ProductDetailsClient({
             {/* Title */}
             <div>
               <h1 className="text-2xl md:text-3xl font-bold text-foreground mb-2">
-                {product.name}
+                {localizedName}
               </h1>
               <p className="text-muted-foreground text-sm">
-                ক্যাটাগরি: {product.category.name}
+                {t("product.category")}: {localizedCategoryName}
               </p>
             </div>
 
@@ -270,25 +294,26 @@ export function ProductDetailsClient({
                 ))}
               </div>
               <span className="text-muted-foreground">
-                {product.rating.toFixed(1)} ({product.reviewCount} রিভিউ)
+                {product.rating.toFixed(1)} ({product.reviewCount}{" "}
+                {t("product.ratingText")})
               </span>
             </div>
 
             {/* Price */}
             <div className="flex items-baseline gap-3">
               <span className="text-3xl font-bold text-primary">
-                ৳{product.price.toLocaleString("bn-BD")}
+                {formatPrice(product.price)}
               </span>
               {product.mrp && product.mrp > product.price && (
                 <>
                   <span className="text-xl text-muted-foreground line-through">
-                    ৳{product.mrp.toLocaleString("bn-BD")}
+                    {formatPrice(product.mrp)}
                   </span>
                   <Badge
                     variant="secondary"
                     className="bg-destructive/10 text-destructive"
                   >
-                    {discountPercentage}% সেভ করুন
+                    {discountPercentage}% {t("product.save")}
                   </Badge>
                 </>
               )}
@@ -305,12 +330,12 @@ export function ProductDetailsClient({
                 )}
               >
                 {product.inStock
-                  ? `স্টকে আছে (${product.stock} টি)`
-                  : "স্টক শেষ"}
+                  ? `${t("product.inStock")} (${product.stock} ${t("product.available")})`
+                  : t("product.outOfStock")}
               </span>
               {product.hasCOD && (
                 <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-accent/10 text-accent">
-                  ক্যাশ অন ডেলিভারি
+                  {t("product.cashOnDelivery")}
                 </span>
               )}
             </div>
@@ -318,7 +343,9 @@ export function ProductDetailsClient({
             {/* Description Preview */}
             {product.description && (
               <div className="space-y-2 py-4 border-y border-border">
-                <h3 className="font-medium text-foreground">বিবরণ:</h3>
+                <h3 className="font-medium text-foreground">
+                  {t("product.descriptionTitle")}
+                </h3>
                 <p className="text-sm text-muted-foreground line-clamp-3">
                   {product.description}
                 </p>
@@ -327,7 +354,9 @@ export function ProductDetailsClient({
 
             {/* Quantity Selector */}
             <div className="flex items-center gap-4">
-              <span className="font-medium text-foreground">পরিমাণ:</span>
+              <span className="font-medium text-foreground">
+                {t("product.quantity")}:
+              </span>
               <div className="flex items-center border border-border rounded-lg">
                 <button
                   onClick={() => setQuantity(Math.max(1, quantity - 1))}
@@ -362,7 +391,7 @@ export function ProductDetailsClient({
                 ) : (
                   <ShoppingCart className="h-5 w-5" />
                 )}
-                কার্টে যোগ করুন
+                {t("product.addToCart")}
               </Button>
               <Button
                 disabled={!product.inStock || isBuyingNow}
@@ -374,7 +403,7 @@ export function ProductDetailsClient({
                 {isBuyingNow ? (
                   <Loader2 className="h-5 w-5 animate-spin" />
                 ) : null}
-                এখনই কিনুন
+                {t("product.buyNow")}
               </Button>
               <Button
                 variant="outline"
@@ -406,23 +435,29 @@ export function ProductDetailsClient({
             <div className="grid grid-cols-3 gap-4 pt-4">
               <div className="flex flex-col items-center text-center p-3 bg-muted rounded-lg">
                 <Truck className="h-6 w-6 text-primary mb-2" />
-                <span className="text-xs font-medium">ফ্রি ডেলিভারি</span>
+                <span className="text-xs font-medium">
+                  {t("product.freeDelivery")}
+                </span>
                 <span className="text-xs text-muted-foreground">
-                  ৫০০+ অর্ডারে
+                  {t("product.freeDeliveryDesc")}
                 </span>
               </div>
               <div className="flex flex-col items-center text-center p-3 bg-muted rounded-lg">
                 <Shield className="h-6 w-6 text-primary mb-2" />
-                <span className="text-xs font-medium">১০০% অরিজিনাল</span>
+                <span className="text-xs font-medium">
+                  {t("product.original")}
+                </span>
                 <span className="text-xs text-muted-foreground">
-                  গ্যারান্টিড
+                  {t("product.originalDesc")}
                 </span>
               </div>
               <div className="flex flex-col items-center text-center p-3 bg-muted rounded-lg">
                 <RotateCcw className="h-6 w-6 text-primary mb-2" />
-                <span className="text-xs font-medium">সহজ রিটার্ন</span>
+                <span className="text-xs font-medium">
+                  {t("product.easyReturn")}
+                </span>
                 <span className="text-xs text-muted-foreground">
-                  ৭ দিনের মধ্যে
+                  {t("product.easyReturnDesc")}
                 </span>
               </div>
             </div>
@@ -438,13 +473,13 @@ export function ProductDetailsClient({
               value="description"
               className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent py-3 px-6"
             >
-              বিবরণ
+              {t("product.description")}
             </TabsTrigger>
             <TabsTrigger
               value="reviews"
               className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent py-3 px-6"
             >
-              রিভিউ ({product.reviewCount})
+              {t("product.reviews")} ({product.reviewCount})
             </TabsTrigger>
           </TabsList>
           <TabsContent value="description" className="mt-0">
@@ -455,7 +490,7 @@ export function ProductDetailsClient({
                 </p>
               ) : (
                 <p className="text-muted-foreground">
-                  এই পণ্যের কোন বিবরণ নেই।
+                  {t("product.noDescription")}
                 </p>
               )}
             </div>
@@ -482,18 +517,18 @@ export function ProductDetailsClient({
                     ))}
                   </div>
                   <div className="text-sm text-muted-foreground mt-1">
-                    {product.reviewCount} রিভিউ
+                    {product.reviewCount} {t("product.ratingText")}
                   </div>
                 </div>
               </div>
 
               {product.reviewCount === 0 ? (
                 <div className="text-center py-8 text-muted-foreground">
-                  এই পণ্যে এখনো কোন রিভিউ নেই।
+                  {t("product.noReviews")}
                 </div>
               ) : (
                 <div className="text-center py-4 text-muted-foreground">
-                  রিভিউ লোড হচ্ছে...
+                  {t("product.loadingReviews")}
                 </div>
               )}
             </div>
@@ -505,7 +540,7 @@ export function ProductDetailsClient({
       {relatedProducts.length > 0 && (
         <Section>
           <SectionHeader
-            title="সম্পর্কিত পণ্য"
+            title={t("product.relatedProducts")}
             href={`/products?category=${product.category.slug}`}
           />
           <ProductGrid>

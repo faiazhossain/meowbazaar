@@ -31,6 +31,7 @@ async function getProductsData() {
     categories: categories.map((c) => ({
       id: c.id,
       name: c.name,
+      nameEn: c.nameEn || undefined,
       slug: c.slug,
     })),
   };

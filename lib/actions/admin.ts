@@ -807,3 +807,209 @@ export async function markAllNotificationsRead() {
   revalidatePath("/admin");
   return { success: true };
 }
+
+// ==================== OFFER MANAGEMENT ====================
+
+interface CreateOfferData {
+  title: string;
+  titleEn: string;
+  description: string;
+  descriptionEn: string;
+  ctaText?: string;
+  ctaTextEn?: string;
+  ctaLink?: string;
+  variant?: string;
+  isActive?: boolean;
+  priority?: number;
+  startDate?: Date;
+  endDate?: Date;
+}
+
+interface UpdateOfferData extends Partial<CreateOfferData> {
+  id: string;
+}
+
+// Get active offers for homepage
+export async function getActiveOffers() {
+  try {
+    const now = new Date();
+
+    const offers = await db.offer.findMany({
+      where: {
+        isActive: true,
+        OR: [
+          { startDate: null },
+          { startDate: { lte: now } },
+        ],
+        OR: [
+          { endDate: null },
+          { endDate: { gte: now } },
+        ],
+      },
+      orderBy: [
+        { priority: "desc" },
+        { createdAt: "desc" },
+      ],
+    });
+
+    return offers;
+  } catch (error) {
+    console.error("Get active offers error:", error);
+    return [];
+  }
+}
+
+// Get all offers for admin
+export async function getAdminOffers() {
+  const session = await auth();
+  if (!session?.user?.id || session.user.role !== "ADMIN") {
+    return [];
+  }
+
+  try {
+    const offers = await db.offer.findMany({
+      orderBy: [
+        { priority: "desc" },
+        { createdAt: "desc" },
+      ],
+    });
+
+    return offers;
+  } catch (error) {
+    console.error("Get admin offers error:", error);
+    return [];
+  }
+}
+
+// Get single offer by ID
+export async function getOfferById(id: string) {
+  const session = await auth();
+  if (!session?.user?.id || session.user.role !== "ADMIN") {
+    return null;
+  }
+
+  try {
+    const offer = await db.offer.findUnique({
+      where: { id },
+    });
+
+    return offer;
+  } catch (error) {
+    console.error("Get offer error:", error);
+    return null;
+  }
+}
+
+// Create offer (Admin only)
+export async function createOffer(data: CreateOfferData) {
+  const session = await auth();
+  if (!session?.user?.id || session.user.role !== "ADMIN") {
+    return { success: false, error: "অনুমতি নেই" };
+  }
+
+  try {
+    const offer = await db.offer.create({
+      data: {
+        title: data.title,
+        titleEn: data.titleEn,
+        description: data.description,
+        descriptionEn: data.descriptionEn,
+        ctaText: data.ctaText || "এখনই অর্ডার করুন",
+        ctaTextEn: data.ctaTextEn || "Order Now",
+        ctaLink: data.ctaLink || "/products",
+        variant: data.variant || "primary",
+        isActive: data.isActive ?? true,
+        priority: data.priority ?? 0,
+        startDate: data.startDate,
+        endDate: data.endDate,
+      },
+    });
+
+    revalidatePath("/admin/offers");
+    revalidatePath("/");
+
+    return { success: true, offer };
+  } catch (error) {
+    console.error("Create offer error:", error);
+    return { success: false, error: "অফার তৈরি করা যায়নি" };
+  }
+}
+
+// Update offer (Admin only)
+export async function updateOffer(data: UpdateOfferData) {
+  const session = await auth();
+  if (!session?.user?.id || session.user.role !== "ADMIN") {
+    return { success: false, error: "অনুমতি নেই" };
+  }
+
+  try {
+    const { id, ...updateData } = data;
+
+    const offer = await db.offer.update({
+      where: { id },
+      data: updateData,
+    });
+
+    revalidatePath("/admin/offers");
+    revalidatePath("/");
+
+    return { success: true, offer };
+  } catch (error) {
+    console.error("Update offer error:", error);
+    return { success: false, error: "অফার আপডেট করা যায়নি" };
+  }
+}
+
+// Delete offer (Admin only)
+export async function deleteOffer(offerId: string) {
+  const session = await auth();
+  if (!session?.user?.id || session.user.role !== "ADMIN") {
+    return { success: false, error: "অনুমতি নেই" };
+  }
+
+  try {
+    await db.offer.delete({
+      where: { id: offerId },
+    });
+
+    revalidatePath("/admin/offers");
+    revalidatePath("/");
+
+    return { success: true };
+  } catch (error) {
+    console.error("Delete offer error:", error);
+    return { success: false, error: "অফার মুছে ফেলা যায়নি" };
+  }
+}
+
+// Toggle offer active status (Admin only)
+export async function toggleOffer(offerId: string) {
+  const session = await auth();
+  if (!session?.user?.id || session.user.role !== "ADMIN") {
+    return { success: false, error: "অনুমতি নেই" };
+  }
+
+  try {
+    const offer = await db.offer.findUnique({
+      where: { id: offerId },
+      select: { isActive: true },
+    });
+
+    if (!offer) {
+      return { success: false, error: "অফার পাওয়া যায়নি" };
+    }
+
+    await db.offer.update({
+      where: { id: offerId },
+      data: { isActive: !offer.isActive },
+    });
+
+    revalidatePath("/admin/offers");
+    revalidatePath("/");
+
+    return { success: true, isActive: !offer.isActive };
+  } catch (error) {
+    console.error("Toggle offer error:", error);
+    return { success: false, error: "অফার স্ট্যাটাস পরিবর্তন করা যায়নি" };
+  }
+}

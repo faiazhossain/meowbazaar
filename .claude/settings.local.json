@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cd \"D:/My projects/catproject\" && npx prisma generate)",
+      "Bash(cd \"D:/My projects/catproject\" && npx prisma migrate dev --name add_offers_table)",
+      "Bash(cd \"D:/My projects/catproject\" && npx prisma db push)",
+      "Bash(npx prisma:*)",
+      "Bash(npx tsx:*)"
+    ]
+  }
+}

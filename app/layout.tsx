@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Suspense } from "react";
-import { Poppins, Hind_Siliguri } from "next/font/google";
+import { Poppins, Noto_Sans_Bengali } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { AuthProvider } from "@/components/auth-provider";
 import { NavigationProgressProvider } from "@/components/navigation-progress";
@@ -13,10 +13,10 @@ const poppins = Poppins({
   variable: "--font-poppins",
 });
 
-const hindSiliguri = Hind_Siliguri({
-  subsets: ["latin", "bengali"],
+const notoSansBengali = Noto_Sans_Bengali({
+  subsets: ["bengali"],
   weight: ["400", "500", "600", "700"],
-  variable: "--font-hind-siliguri",
+  variable: "--font-noto-sans-bengali",
 });
 
 export const metadata: Metadata = {
@@ -68,9 +68,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="bn">
+    <html lang="bn" suppressHydrationWarning>
       <body
-        className={`${poppins.variable} ${hindSiliguri.variable} font-sans antialiased bg-background text-foreground`}
+        className={`${poppins.variable} ${notoSansBengali.variable} font-sans antialiased bg-background text-foreground`}
+        suppressHydrationWarning
       >
         <AuthProvider>
           <Suspense fallback={null}>

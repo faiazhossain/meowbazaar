@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -13,6 +13,8 @@ import { Input } from "@/components/ui/input";
 import { CatLoader } from "@/components/ui/cat-loader";
 import { Minus, Plus, X, ShoppingBag, ArrowRight, LogIn } from "lucide-react";
 import { useCart } from "@/hooks/use-cart";
+import { calculateDeliveryFee, formatDeliveryMessage } from "@/lib/utils/delivery";
+import type { DeliveryFeeResult } from "@/lib/utils/delivery";
 
 export default function CartPage() {
   const router = useRouter();
@@ -58,7 +60,18 @@ export default function CartPage() {
     (acc, item) => acc + item.price * item.quantity,
     0
   );
-  const deliveryFee = subtotal >= 500 ? 0 : 60;
+  const [deliveryResult, setDeliveryResult] = useState<DeliveryFeeResult | null>(null);
+
+  // Calculate delivery fee based on settings
+  useEffect(() => {
+    const calculateDelivery = async () => {
+      const result = await calculateDeliveryFee(subtotal);
+      setDeliveryResult(result);
+    };
+    calculateDelivery();
+  }, [subtotal]);
+
+  const deliveryFee = deliveryResult?.fee || 0;
   const total = subtotal + deliveryFee;
 
   // Loading state - wait for both cart and session to load
@@ -251,17 +264,22 @@ export default function CartPage() {
                       ডেলিভারি চার্জ
                     </span>
                     <span className="font-medium text-foreground">
-                      {deliveryFee === 0 ? (
-                        <span className="text-success">ফ্রি</span>
+                      {deliveryResult ? (
+                        <span
+                          dangerouslySetInnerHTML={{
+                            __html: deliveryResult.fee === 0
+                              ? '<span class="text-success">ফ্রি</span>'
+                              : `৳${deliveryFee.toLocaleString("bn-BD")}`,
+                          }}
+                        />
                       ) : (
-                        `৳${deliveryFee.toLocaleString("bn-BD")}`
+                        <span className="text-muted-foreground">লোড হচ্ছে...</span>
                       )}
                     </span>
                   </div>
-                  {subtotal < 500 && subtotal > 0 && (
+                  {deliveryResult && !deliveryResult.thresholdReached && deliveryResult.amountToFree && (
                     <p className="text-xs text-muted-foreground">
-                      ৳{(500 - subtotal).toLocaleString("bn-BD")} আরও কিনলে ফ্রি
-                      ডেলিভারি!
+                      {formatDeliveryMessage(deliveryResult, "bn")}
                     </p>
                   )}
                   <div className="flex justify-between pt-3 border-t border-border">

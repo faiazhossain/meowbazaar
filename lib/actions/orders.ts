@@ -8,6 +8,7 @@ import {
   triggerNewOrderNotification,
   NewOrderNotificationPayload,
 } from "@/lib/pusher";
+import { getDeliveryFee } from "@/lib/actions/settings";
 
 // Generate order number
 function generateOrderNumber() {
@@ -60,12 +61,21 @@ export async function createOrder(data: CreateOrderData) {
       return { success: false, error: "কার্ট খালি" };
     }
 
+    // Get delivery address to determine division
+    const address = await db.address.findUnique({
+      where: { id: data.addressId },
+      select: { division: true },
+    });
+
     // Calculate totals
     const subtotal = cart.items.reduce(
       (acc, item) => acc + item.product.price * item.quantity,
       0
     );
-    const deliveryFee = subtotal >= 500 ? 0 : 60;
+
+    // Calculate delivery fee based on division settings
+    const deliveryResult = await getDeliveryFee(subtotal, address?.division);
+    const deliveryFee = deliveryResult.fee;
     const total = subtotal + deliveryFee;
 
     // Create order

@@ -349,3 +349,66 @@ model AdminNotification {
   @@index([isRead])
   @@index([createdAt])
 }
+
+// ==================== OFFERS ====================
+model Offer {
+  id            String   @id @default(cuid())
+  title         String   // Bengali title
+  titleEn       String   // English title
+  description   String   // Bengali description
+  descriptionEn String   // English description
+  ctaText       String   @default("এখনই অর্ডার করুন") // Button text
+  ctaTextEn     String   @default("Order Now")
+  ctaLink       String   @default("/products")
+  variant       String   @default("primary") // primary or accent
+  isActive      Boolean  @default(true)
+  priority      Int      @default(0) // For ordering
+  startDate     DateTime?
+  endDate       DateTime?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([isActive, priority])
+  @@index([startDate, endDate])
+}
+
+// ==================== SYSTEM SETTINGS ====================
+
+model SystemSettings {
+  id          String     @id @default(cuid())
+  key         String     @unique
+  value       String
+  type        SettingType
+  category    String?
+  description String?
+  updatedAt   DateTime   @updatedAt
+  createdAt   DateTime   @default(now())
+}
+
+enum SettingType {
+  NUMBER
+  STRING
+  BOOLEAN
+  JSON
+}
+
+// ==================== DELIVERY SETTINGS ====================
+
+model DeliverySettings {
+  id                   String          @id @default(cuid())
+  division             String          @unique
+  freeDeliveryThreshold Float
+  standardDeliveryFee   Float
+  freeDeliveryType     FreeDeliveryType @default(FREE)
+  discountPercentage    Float?          // Used when type is PERCENTAGE
+  isActive             Boolean         @default(true)
+  createdAt            DateTime        @default(now())
+  updatedAt            DateTime        @updatedAt
+
+  @@index([isActive])
+}
+
+enum FreeDeliveryType {
+  FREE
+  PERCENTAGE
+}

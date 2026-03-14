@@ -26,7 +26,7 @@ export default async function ProductDetailsPage({ params }: ProductPageProps) {
   const transformedRelated = relatedProducts.map((p) => ({
     id: p.id,
     name: p.name,
-    nameEn: undefined,
+    nameEn: p.nameEn ?? undefined,
     price: p.price,
     mrp: p.mrp ?? undefined,
     image: p.image,
@@ -36,6 +36,7 @@ export default async function ProductDetailsPage({ params }: ProductPageProps) {
     isNew: p.isNew,
     hasCOD: p.hasCOD,
     category: product.category.name,
+    categoryEn: product.category.nameEn ?? undefined,
     stock: p.stock,
   }));
 
@@ -47,6 +48,7 @@ export default async function ProductDetailsPage({ params }: ProductPageProps) {
         product={{
           id: product.id,
           name: product.name,
+          nameEn: product.nameEn ?? undefined,
           slug: product.slug,
           description: product.description,
           price: product.price,
