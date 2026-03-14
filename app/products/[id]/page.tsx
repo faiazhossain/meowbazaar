@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { getProductById, getRelatedProducts } from "@/lib/actions/products";
-import { Navbar } from "@/components/layout/navbar";
+import { Navbar } from "@/components/layout/navbar-server";
 import { Footer } from "@/components/layout/footer";
 import { ProductDetailsClient } from "./product-details-client";
 

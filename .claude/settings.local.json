@@ -5,7 +5,8 @@
       "Bash(cd \"D:/My projects/catproject\" && npx prisma migrate dev --name add_offers_table)",
       "Bash(cd \"D:/My projects/catproject\" && npx prisma db push)",
       "Bash(npx prisma:*)",
-      "Bash(npx tsx:*)"
+      "Bash(npx tsx:*)",
+      "Bash(cd \"D:\\\\My projects\\\\catproject\" && grep -n 'from \"@/components/layout/navbar\"' app/checkout/page.tsx app/cart/page.tsx app/auth/register/page.tsx app/auth/login/page.tsx app/auth/reset-password/page.tsx app/auth/forgot-password/page.tsx)"
     ]
   }
 }

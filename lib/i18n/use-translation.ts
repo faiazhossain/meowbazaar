@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { useLocaleStore } from "@/lib/stores/locale-store";
 import { translations, type Locale } from "./translations";
 
@@ -26,8 +27,17 @@ export function useTranslation() {
   const locale = useLocaleStore((state) => state.locale);
   const isHydrated = useLocaleStore((state) => state.isHydrated);
 
+  // Force re-render when hydration completes
+  const [isClientReady, setIsClientReady] = useState(false);
+
+  useEffect(() => {
+    setIsClientReady(true);
+  }, []);
+
   const t = (key: TranslationKeys, params?: Record<string, string>): string => {
-    let text = getNestedValue(translations[locale] as unknown as Record<string, unknown>, key);
+    // Only use the locale after hydration is complete or on client-side navigation
+    const effectiveLocale = isHydrated || isClientReady ? locale : "bn";
+    let text = getNestedValue(translations[effectiveLocale] as unknown as Record<string, unknown>, key);
 
     if (params) {
       Object.entries(params).forEach(([paramKey, paramValue]) => {
@@ -40,7 +50,7 @@ export function useTranslation() {
 
   return {
     t,
-    locale,
+    locale: isHydrated || isClientReady ? locale : "bn",
     isHydrated,
   };
 }

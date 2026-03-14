@@ -4,7 +4,7 @@ import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Navbar } from "@/components/layout/navbar";
+import { Navbar } from "@/components/layout/navbar-server";
 import { Footer } from "@/components/layout/footer";
 import { Section } from "@/components/ui/section";
 import { Button } from "@/components/ui/button";

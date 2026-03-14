@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { Navbar } from "@/components/layout/navbar";
+import { Navbar } from "@/components/layout/navbar-server";
 import { Footer } from "@/components/layout/footer";
 import { Section } from "@/components/ui/section";
 import { Button } from "@/components/ui/button";
