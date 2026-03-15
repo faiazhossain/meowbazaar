@@ -4,7 +4,7 @@ import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Navbar } from "@/components/layout/navbar-server";
+import { NavbarClient } from "@/components/layout/navbar-client";
 import { Footer } from "@/components/layout/footer";
 import { Section } from "@/components/ui/section";
 import { Button } from "@/components/ui/button";
@@ -230,7 +230,7 @@ function ResetPasswordContent() {
 export default function ResetPasswordPage() {
   return (
     <div className="min-h-screen bg-background">
-      <Navbar />
+      <NavbarClient />
 
       <main>
         <Section className="py-16">

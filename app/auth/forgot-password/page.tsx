@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Navbar } from "@/components/layout/navbar-server";
+import { NavbarClient } from "@/components/layout/navbar-client";
 import { Footer } from "@/components/layout/footer";
 import { Section } from "@/components/ui/section";
 import { Button } from "@/components/ui/button";
@@ -35,7 +35,7 @@ export default function ForgotPasswordPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <Navbar />
+      <NavbarClient />
 
       <main>
         <Section className="py-16">
