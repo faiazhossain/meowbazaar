@@ -54,8 +54,14 @@ interface ProductsClientProps {
     email?: string | null;
     role?: string;
   } | null;
-  cartCount: number;
+    cartCount: number;
   wishlistCount: number;
+  showSearchOnly?: boolean;
+  searchQuery?: string;
+  selectedCategory?: string;
+  selectedSort?: string;
+  title?: string;
+  titleEn?: string;
 }
 
 export function ProductsClient({
@@ -64,6 +70,12 @@ export function ProductsClient({
   user,
   cartCount,
   wishlistCount,
+  showSearchOnly = false,
+  searchQuery = "",
+  selectedCategory = "",
+  selectedSort = "newest",
+  title = "সব পণ্য",
+  titleEn = "Products",
 }: ProductsClientProps) {
   const { t, locale } = useTranslation();
   const searchParams = useSearchParams();

@@ -107,16 +107,20 @@ export async function createOrder(data: CreateOrderData) {
       },
     });
 
-    // Update product stock
-    for (const item of cart.items) {
-      await db.product.update({
-        where: { id: item.productId },
-        data: {
-          stock: {
-            decrement: item.quantity,
-          },
-        },
-      });
+    // Update product stock - Use batch update to avoid N+1 queries
+    if (cart.items.length > 0) {
+      await db.$transaction(
+        cart.items.map(item =>
+          db.product.update({
+            where: { id: item.productId },
+            data: {
+              stock: {
+                decrement: item.quantity,
+              },
+            },
+          })
+        )
+      );
     }
 
     // Clear cart

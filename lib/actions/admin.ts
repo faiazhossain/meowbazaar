@@ -1013,3 +1013,154 @@ export async function toggleOffer(offerId: string) {
     return { success: false, error: "অফার স্ট্যাটাস পরিবর্তন করা যায়নি" };
   }
 }
+
+// ==================== INVENTORY ACTIONS ====================
+
+// Get inventory overview (Admin only)
+export async function getInventoryOverview() {
+  const session = await auth();
+  if (!session?.user?.id || session.user.role !== "ADMIN") {
+    return { totalProducts: 0, inStock: 0, lowStock: 0, outOfStock: 0, categories: [] };
+  }
+
+  try {
+    const [totalProducts, inStock, lowStock, outOfStock] = await Promise.all([
+      db.product.count(),
+      db.product.count({ where: { inStock: true } }),
+      db.product.count({ where: { stock: { gt: 0, lte: 10 } } }),
+      db.product.count({ where: { inStock: false } }),
+    ]);
+
+    const categoryStock = await db.category.findMany({
+      include: {
+        _count: {
+          select: { products: true },
+        },
+      },
+      take: 10,
+    });
+
+    return {
+      totalProducts,
+      inStock,
+      lowStock,
+      outOfStock,
+      categories: categoryStock,
+    };
+  } catch (error) {
+    console.error("Get inventory overview error:", error);
+    return { totalProducts: 0, inStock: 0, lowStock: 0, outOfStock: 0, categories: [] };
+  }
+}
+
+// Get low stock products (Admin only)
+export async function getLowStockProducts(threshold: number = 10) {
+  const session = await auth();
+  if (!session?.user?.id || session.user.role !== "ADMIN") {
+    return [];
+  }
+
+  try {
+    const products = await db.product.findMany({
+      where: {
+        stock: { lte: threshold },
+      },
+      include: {
+        category: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
+      orderBy: { stock: "asc" },
+      take: 50,
+    });
+
+    return products;
+  } catch (error) {
+    console.error("Get low stock products error:", error);
+    return [];
+  }
+}
+
+// Batch update stock (Admin only)
+export async function batchUpdateStock(
+  updates: Array<{ productId: string; stock: number }>
+) {
+  const session = await auth();
+  if (!session?.user?.id || session.user.role !== "ADMIN") {
+    return { success: false, error: "অনুমতি নেই" };
+  }
+
+  try {
+    // Update each product in a transaction
+    await db.$transaction(
+      updates.map((update) =>
+        db.product.update({
+          where: { id: update.productId },
+          data: {
+            stock: update.stock,
+            inStock: update.stock > 0,
+          },
+        })
+      )
+    );
+
+    revalidatePath("/admin/inventory");
+    revalidatePath("/admin/products");
+
+    return { success: true };
+  } catch (error) {
+    console.error("Batch update stock error:", error);
+    return { success: false, error: "স্টক আপডেট করা যায়নি" };
+  }
+}
+
+// Adjust stock with reason (Admin only)
+export async function adjustStock(
+  productId: string,
+  adjustment: number,
+  reason: string
+) {
+  const session = await auth();
+  if (!session?.user?.id || session.user.role !== "ADMIN") {
+    return { success: false, error: "অনুমতি নেই" };
+  }
+
+  try {
+    const product = await db.product.findUnique({
+      where: { id: productId },
+      select: { stock: true },
+    });
+
+    if (!product) {
+      return { success: false, error: "পণ্য পাওয়া যায়নি" };
+    }
+
+    const newStock = product.stock + adjustment;
+
+    if (newStock < 0) {
+      return { success: false, error: "স্টক নেতিবাচক হতে পারে না" };
+    }
+
+    await db.product.update({
+      where: { id: productId },
+      data: {
+        stock: newStock,
+        inStock: newStock > 0,
+      },
+    });
+
+    // Log the adjustment (you could create an InventoryLog table)
+    console.log(`Stock adjustment: Product ${productId}, ${adjustment}, Reason: ${reason}`);
+
+    revalidatePath("/admin/inventory");
+    revalidatePath("/admin/products");
+
+    return { success: true };
+  } catch (error) {
+    console.error("Adjust stock error:", error);
+    return { success: false, error: "স্টক সমন্বয় করা যায়নি" };
+  }
+}

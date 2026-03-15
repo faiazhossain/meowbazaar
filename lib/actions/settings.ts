@@ -260,7 +260,7 @@ export async function initializeDefaultDeliverySettings() {
       if (!existing) {
         const settings = await db.deliverySettings.create({
           data: {
-            division,
+            division: division,
             freeDeliveryThreshold: 500,
             standardDeliveryFee: 60,
             freeDeliveryType: "FREE",

@@ -35,6 +35,7 @@ model User {
   reviews       Review[]
   activities    UserActivity[]
   loginAttempts LoginAttempt[]
+  blogPosts     BlogPost[]
 }
 
 enum Role {
@@ -145,6 +146,11 @@ model Product {
   orderItems    OrderItem[]
   wishlistItems WishlistItem[]
   reviews       Review[]
+
+  @@index([categoryId])           // Add: Category filtering
+  @@index([inStock, price])       // Add: Price filtering and stock status
+  @@index([isNew, createdAt])      // Add: New arrivals filtering
+  @@index([rating, reviewCount])  // Add: Bestseller sorting
 }
 
 // ==================== CART ====================
@@ -206,6 +212,11 @@ model Order {
   address Address     @relation(fields: [addressId], references: [id])
   items   OrderItem[]
   timeline OrderTimeline[]
+  payments Payment[]
+
+  @@index([userId, createdAt])       // Add: User orders filtering
+  @@index([status, createdAt])       // Add: Status filtering
+  @@index([orderNumber])            // Add: Order number lookup
 }
 
 enum OrderStatus {
@@ -244,6 +255,36 @@ model OrderTimeline {
   createdAt DateTime @default(now())
 
   order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+}
+
+// ==================== PAYMENT ====================
+
+model Payment {
+  id             String   @id @default(cuid())
+  orderId        String
+  gateway        String   // SSLCOMMERZ, BKASH, NAGAD, CASH
+  sessionId      String?  // Gateway session/payment ID
+  transactionId  String?  // Final transaction ID after success
+  amount         Float
+  currency       String   @default("BDT")
+  status         PaymentStatusEnum @default(PENDING)
+  metadata       String?  // JSON for additional gateway data
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([orderId])
+  @@index([sessionId])
+  @@index([transactionId])
+}
+
+enum PaymentStatusEnum {
+  PENDING
+  COMPLETED
+  FAILED
+  CANCELLED
+  REFUNDED
 }
 
 // ==================== REVIEW ====================
@@ -411,4 +452,34 @@ model DeliverySettings {
 enum FreeDeliveryType {
   FREE
   PERCENTAGE
+}
+
+// ==================== BLOG ====================
+
+model BlogPost {
+  id          String   @id @default(cuid())
+  title       String   // Bengali title
+  titleEn     String   // English title
+  slug        String   @unique
+  excerpt     String   // Bengali excerpt
+  excerptEn   String   // English excerpt
+  content     String   // Bengali content (Markdown)
+  contentEn   String   // English content (Markdown)
+  image       String
+  category    String   // e.g., "cat-care", "dog-training", "nutrition"
+  petType     String   // "cat", "dog", "bird", etc.
+  published   Boolean  @default(false)
+  featured    Boolean  @default(false)
+  viewCount   Int      @default(0)
+  authorId    String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  author User? @relation(fields: [authorId], references: [id])
+
+  @@index([published])
+  @@index([category])
+  @@index([petType])
+  @@index([featured])
+  @@index([createdAt])
 }

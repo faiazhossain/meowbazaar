@@ -13,6 +13,9 @@ import {
   Menu,
   Bell,
   Gift,
+  FileText,
+  MessageSquare,
+  TrendingUp,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -25,6 +28,9 @@ const sidebarLinks = [
   { href: "/admin/orders", label: "অর্ডার", icon: ShoppingCart },
   { href: "/admin/products", label: "পণ্য", icon: Package },
   { href: "/admin/categories", label: "ক্যাটাগরি", icon: FolderTree },
+  { href: "/admin/inventory", label: "ইনভেন্টরি", icon: TrendingUp },
+  { href: "/admin/blog", label: "ব্লগ", icon: FileText },
+  { href: "/admin/reviews", label: "রিভিউ", icon: MessageSquare },
   { href: "/admin/offers", label: "অফার", icon: Gift },
   { href: "/admin/customers", label: "কাস্টমার", icon: Users },
   { href: "/admin/notification", label: "নোটিফিকেশন", icon: Bell },

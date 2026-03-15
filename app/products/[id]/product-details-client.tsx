@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -16,7 +16,11 @@ import {
   RotateCcw,
   Share2,
   Loader2,
+  User,
+  ThumbsUp,
+  Flag,
 } from "lucide-react";
+import { submitReview } from "@/lib/actions/reviews";
 import { ProductCard, type Product } from "@/components/product/product-card";
 import { Section, SectionHeader, ProductGrid } from "@/components/ui/section";
 import { Button } from "@/components/ui/button";
@@ -52,14 +56,37 @@ interface ProductData {
   };
 }
 
+interface Review {
+  id: string;
+  productId: string;
+  userId: string;
+  userName: string;
+  userImage: string | null;
+  rating: number;
+  comment: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+interface UserData {
+  id: string;
+  name: string | null;
+  email: string | null;
+  image: string | null;
+}
+
 interface ProductDetailsClientProps {
   product: ProductData;
   relatedProducts: Product[];
+  reviews: Review[];
+  user: UserData | null;
 }
 
 export function ProductDetailsClient({
   product,
   relatedProducts,
+  reviews: initialReviews,
+  user,
 }: ProductDetailsClientProps) {
   const router = useRouter();
   const { t, locale } = useTranslation();
@@ -68,6 +95,12 @@ export function ProductDetailsClient({
   const [isAddingToCart, setIsAddingToCart] = useState(false);
   const [isBuyingNow, setIsBuyingNow] = useState(false);
   const [isTogglingWishlist, setIsTogglingWishlist] = useState(false);
+  const [reviews, setReviews] = useState<Review[]>(initialReviews);
+  const [rating, setRating] = useState(0);
+  const [hoveredRating, setHoveredRating] = useState(0);
+  const [comment, setComment] = useState("");
+  const [isSubmittingReview, setIsSubmittingReview] = useState(false);
+  const [showReviewForm, setShowReviewForm] = useState(false);
 
   const { addItem } = useCart();
   const {
@@ -183,6 +216,46 @@ export function ProductDetailsClient({
       console.error("Buy now error:", error);
       toast.error(t("product.buyNowError"));
       setIsBuyingNow(false);
+    }
+  };
+
+  const handleSubmitReview = async () => {
+    if (!user) {
+      toast.error("লগইন করে রিভিউ দিন");
+      router.push(
+        "/auth/login?callbackUrl=" +
+          encodeURIComponent(`/products/${product.id}`)
+      );
+      return;
+    }
+
+    if (rating === 0) {
+      toast.error("রেটিং নির্বাচন করুন");
+      return;
+    }
+
+    setIsSubmittingReview(true);
+    try {
+      const result = await submitReview({
+        productId: product.id,
+        rating,
+        comment: comment || undefined,
+      });
+
+      if (result.success && result.review) {
+        toast.success("রিভিউ সফলভাবে জমা দেওয়া হয়েছে");
+        setReviews([result.review as Review, ...reviews]);
+        setRating(0);
+        setComment("");
+        setShowReviewForm(false);
+      } else {
+        toast.error(result.error || "রিভিউ জমা দিতে ব্যর্থ হয়েছে");
+      }
+    } catch (error) {
+      console.error("Submit review error:", error);
+      toast.error("রিভিউ জমা দিতে ব্যর্থ হয়েছে");
+    } finally {
+      setIsSubmittingReview(false);
     }
   };
 
@@ -520,17 +593,184 @@ export function ProductDetailsClient({
                     {product.reviewCount} {t("product.ratingText")}
                   </div>
                 </div>
+
+                {/* Rating Distribution */}
+                <div className="flex-1 space-y-1">
+                  {[5, 4, 3, 2, 1].map((stars) => {
+                    const count = reviews.filter(r => Math.floor(r.rating) === stars).length;
+                    const percentage = product.reviewCount > 0
+                      ? Math.round((count / product.reviewCount) * 100)
+                      : 0;
+                    return (
+                      <div key={stars} className="flex items-center gap-2">
+                        <span className="text-xs w-3">{stars}</span>
+                        <Star className="h-3 w-3 text-amber-400 fill-amber-400" />
+                        <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
+                          <div
+                            className="h-full bg-amber-400 rounded-full transition-all"
+                            style={{ width: `${percentage}%` }}
+                          />
+                        </div>
+                        <span className="text-xs w-6 text-right">{count}</span>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
 
-              {product.reviewCount === 0 ? (
-                <div className="text-center py-8 text-muted-foreground">
-                  {t("product.noReviews")}
-                </div>
-              ) : (
-                <div className="text-center py-4 text-muted-foreground">
-                  {t("product.loadingReviews")}
+              {/* Review Form */}
+              {user && (
+                <div className="bg-card rounded-lg p-6">
+                  {!showReviewForm ? (
+                    <Button
+                      onClick={() => setShowReviewForm(true)}
+                      className="w-full"
+                    >
+                      {t("product.writeReview")}
+                    </Button>
+                  ) : (
+                    <div className="space-y-4">
+                      <div>
+                        <label className="block text-sm font-medium mb-2">
+                          {t("product.yourRating")}
+                        </label>
+                        <div className="flex items-center gap-1">
+                          {[...Array(5)].map((_, i) => (
+                            <button
+                              key={i}
+                              type="button"
+                              onMouseEnter={() => setHoveredRating(i + 1)}
+                              onMouseLeave={() => setHoveredRating(0)}
+                              onClick={() => setRating(i + 1)}
+                              className="transition-transform hover:scale-110"
+                            >
+                              <Star
+                                className={cn(
+                                  "h-6 w-6",
+                                  (hoveredRating || rating) > i
+                                    ? "fill-amber-400 text-amber-400"
+                                    : "text-gray-300"
+                                )}
+                              />
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div>
+                        <label htmlFor="comment" className="block text-sm font-medium mb-2">
+                          {t("product.yourComment")}
+                        </label>
+                        <textarea
+                          id="comment"
+                          value={comment}
+                          onChange={(e) => setComment(e.target.value)}
+                          placeholder="আপনার রিভিউ লিখুন..."
+                          className="w-full min-h-[100px] p-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                          maxLength={1000}
+                        />
+                        <p className="text-xs text-muted-foreground mt-1">
+                          {comment.length}/1000
+                        </p>
+                      </div>
+
+                      <div className="flex gap-2">
+                        <Button
+                          onClick={handleSubmitReview}
+                          disabled={isSubmittingReview || rating === 0}
+                          className="flex-1"
+                        >
+                          {isSubmittingReview ? (
+                            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                          ) : null}
+                          {t("product.submitReview")}
+                        </Button>
+                        <Button
+                          variant="outline"
+                          onClick={() => {
+                            setShowReviewForm(false);
+                            setRating(0);
+                            setComment("");
+                          }}
+                        >
+                          {t("common.cancel")}
+                        </Button>
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
+
+              {/* Reviews List */}
+              <div className="space-y-4">
+                {reviews.length === 0 ? (
+                  <div className="text-center py-8 text-muted-foreground">
+                    {t("product.noReviews")}
+                  </div>
+                ) : (
+                  reviews.map((review) => (
+                    <div key={review.id} className="bg-card rounded-lg p-6">
+                      <div className="flex items-start justify-between mb-4">
+                        <div className="flex items-center gap-3">
+                          {review.userImage ? (
+                            <Image
+                              src={review.userImage}
+                              alt={review.userName}
+                              width={40}
+                              height={40}
+                              className="rounded-full"
+                            />
+                          ) : (
+                            <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center">
+                              <User className="h-5 w-5 text-muted-foreground" />
+                            </div>
+                          )}
+                          <div>
+                            <div className="font-medium">{review.userName}</div>
+                            <div className="text-xs text-muted-foreground">
+                              {new Date(review.createdAt).toLocaleDateString("bn-BD", {
+                                year: "numeric",
+                                month: "long",
+                                day: "numeric",
+                              })}
+                            </div>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          {[...Array(5)].map((_, i) => (
+                            <Star
+                              key={i}
+                              className={cn(
+                                "h-4 w-4",
+                                i < review.rating
+                                  ? "fill-amber-400 text-amber-400"
+                                  : "text-gray-300"
+                              )}
+                            />
+                          ))}
+                        </div>
+                      </div>
+
+                      {review.comment && (
+                        <p className="text-sm text-muted-foreground mb-4">
+                          {review.comment}
+                        </p>
+                      )}
+
+                      <div className="flex items-center gap-4">
+                        <Button variant="ghost" size="sm" className="text-xs">
+                          <ThumbsUp className="h-3 w-3 mr-1" />
+                          সহায়ক
+                        </Button>
+                        <Button variant="ghost" size="sm" className="text-xs">
+                          <Flag className="h-3 w-3 mr-1" />
+                          রিপোর্ট
+                        </Button>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
             </div>
           </TabsContent>
         </Tabs>

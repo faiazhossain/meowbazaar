@@ -1,8 +1,10 @@
 import { notFound } from "next/navigation";
 import { getProductById, getRelatedProducts } from "@/lib/actions/products";
+import { getProductReviews } from "@/lib/actions/reviews";
 import { Navbar } from "@/components/layout/navbar-server";
 import { Footer } from "@/components/layout/footer";
 import { ProductDetailsClient } from "./product-details-client";
+import { auth } from "@/lib/auth";
 
 interface ProductPageProps {
   params: Promise<{ id: string }>;
@@ -21,6 +23,10 @@ export default async function ProductDetailsPage({ params }: ProductPageProps) {
     product.id,
     product.categoryId
   );
+
+  // Fetch reviews and current user
+  const reviews = await getProductReviews(id);
+  const session = await auth();
 
   // Transform related products for ProductCard compatibility
   const transformedRelated = relatedProducts.map((p) => ({
@@ -64,6 +70,13 @@ export default async function ProductDetailsPage({ params }: ProductPageProps) {
           category: product.category,
         }}
         relatedProducts={transformedRelated}
+        reviews={reviews}
+        user={session?.user ? {
+          id: session.user.id,
+          name: session.user.name || null,
+          email: session.user.email || null,
+          image: session.user.image || null,
+        } : null}
       />
 
       <Footer />

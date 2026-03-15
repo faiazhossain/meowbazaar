@@ -7,6 +7,11 @@ import { AuthError } from "next-auth";
 import { randomBytes } from "crypto";
 import { recordLoginAttempt, recordRegistration } from "./analytics";
 import { sendPasswordResetEmail } from "@/lib/email";
+import {
+  checkAuthRateLimit,
+  checkPasswordResetRateLimit,
+  checkRegistrationRateLimit,
+} from "@/lib/rate-limit";
 
 export interface ActionResult {
   success: boolean;
@@ -29,6 +34,16 @@ export async function login(
   password: string,
   redirectTo?: string
 ): Promise<ActionResult> {
+  // Check rate limit before processing login
+  const rateLimitCheck = await checkAuthRateLimit(email);
+
+  if (!rateLimitCheck.success) {
+    return {
+      success: false,
+      error: rateLimitCheck.message || "খুব দ্রুত অপেক্ষা করুন।",
+    };
+  }
+
   // First check if user exists to get userId and role for tracking
   const user = await db.user.findUnique({
     where: { email },
@@ -77,6 +92,16 @@ export async function register(
   phone: string,
   password: string
 ): Promise<ActionResult> {
+  // Check rate limit before processing registration
+  const rateLimitCheck = await checkRegistrationRateLimit(email);
+
+  if (!rateLimitCheck.success) {
+    return {
+      success: false,
+      error: rateLimitCheck.message || "খুব দ্রুত অপেক্ষা করুন।",
+    };
+  }
+
   try {
     // Check if user already exists
     const existingUser = await db.user.findUnique({
@@ -128,6 +153,16 @@ export async function logout() {
 }
 
 export async function forgotPassword(email: string): Promise<ActionResult> {
+  // Check rate limit before processing password reset
+  const rateLimitCheck = await checkPasswordResetRateLimit(email);
+
+  if (!rateLimitCheck.success) {
+    return {
+      success: false,
+      error: rateLimitCheck.message || "খুব দ্রুত অপেক্ষা করুন।",
+    };
+  }
+
   try {
     const user = await db.user.findUnique({
       where: { email },
@@ -155,8 +190,8 @@ export async function forgotPassword(email: string): Promise<ActionResult> {
       },
     });
 
-    // Send email
-    const resetLink = `${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/auth/reset-password?token=${token}`;
+    // Send email - Use hash fragment instead of query param for security
+    const resetLink = `${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/auth/reset-password#${token}`;
 
     try {
       await sendPasswordResetEmail({

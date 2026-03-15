@@ -16,7 +16,12 @@ import { resetPassword, validateResetToken } from "@/lib/actions/auth";
 function ResetPasswordContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const token = searchParams.get("token");
+
+  // Get token from URL hash fragment for security (instead of query parameter)
+  // This prevents the token from being exposed in browser history, logs, referrers
+  const token = typeof window !== 'undefined'
+    ? window.location.hash.replace('#', '')
+    : searchParams.get("token");
 
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
