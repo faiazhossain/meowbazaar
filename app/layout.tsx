@@ -5,6 +5,7 @@ import { Analytics } from "@vercel/analytics/next";
 import { AuthProvider } from "@/components/auth-provider";
 import { NavigationProgressProvider } from "@/components/navigation-progress";
 import { Toaster } from "@/components/ui/sonner";
+import { WhatsAppWidget } from "@/components/support/whatsapp-widget";
 import "./globals.css";
 
 const poppins = Poppins({
@@ -80,6 +81,7 @@ export default function RootLayout({
         </AuthProvider>
         <Toaster position="top-center" richColors closeButton />
         <Analytics />
+        <WhatsAppWidget />
       </body>
     </html>
   );

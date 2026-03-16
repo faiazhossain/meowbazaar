@@ -16,6 +16,8 @@ import {
   FileText,
   MessageSquare,
   TrendingUp,
+  HelpCircle,
+  Mail,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -32,6 +34,8 @@ const sidebarLinks = [
   { href: "/admin/blog", label: "ব্লগ", icon: FileText },
   { href: "/admin/reviews", label: "রিভিউ", icon: MessageSquare },
   { href: "/admin/offers", label: "অফার", icon: Gift },
+  { href: "/admin/faq", label: "FAQ", icon: HelpCircle },
+  { href: "/admin/contact", label: "কন্টাক্ট", icon: Mail },
   { href: "/admin/customers", label: "কাস্টমার", icon: Users },
   { href: "/admin/notification", label: "নোটিফিকেশন", icon: Bell },
   { href: "/admin/analytics", label: "অ্যানালিটিক্স", icon: BarChart3 },

@@ -35,7 +35,9 @@ model User {
   reviews       Review[]
   activities    UserActivity[]
   loginAttempts LoginAttempt[]
-  blogPosts     BlogPost[]
+  blogPosts       BlogPost[]
+  sharedWishlists SharedWishlist[]
+  compareItems    CompareItem[]
 }
 
 enum Role {
@@ -146,6 +148,7 @@ model Product {
   orderItems    OrderItem[]
   wishlistItems WishlistItem[]
   reviews       Review[]
+  compareItems  CompareItem[]
 
   @@index([categoryId])           // Add: Category filtering
   @@index([inStock, price])       // Add: Price filtering and stock status
@@ -482,4 +485,59 @@ model BlogPost {
   @@index([petType])
   @@index([featured])
   @@index([createdAt])
+}
+
+// ==================== WISHLIST SHARING ====================
+model SharedWishlist {
+  id        String    @id @default(cuid())
+  userId    String
+  token     String    @unique
+  expiresAt DateTime?
+  viewCount Int       @default(0)
+  createdAt DateTime  @default(now())
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([token])
+}
+
+// ==================== PRODUCT COMPARISON ====================
+model CompareItem {
+  id        String   @id @default(cuid())
+  userId    String
+  productId String
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, productId])
+}
+
+// ==================== FAQ SYSTEM ====================
+model FAQ {
+  id         String   @id @default(cuid())
+  question   String
+  questionEn String
+  answer     String
+  answerEn   String
+  category   String?
+  order      Int      @default(0)
+  isActive   Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([isActive, order])
+}
+
+// ==================== CONTACT MESSAGES ====================
+model ContactMessage {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  phone     String?
+  subject   String?
+  message   String
+  status    String   @default("NEW")
+  createdAt DateTime @default(now())
+
+  @@index([status])
 }

@@ -1,3 +1,5 @@
+"use server";
+
 import { Resend } from "resend";
 
 // Lazy initialization to avoid issues if API key is missing
@@ -22,7 +24,7 @@ export async function sendPasswordResetEmail({
   // In development without a verified domain, log the reset link
   if (process.env.NODE_ENV === "development") {
     console.log("\n========================================");
-    console.log("📧 PASSWORD RESET EMAIL (DEV MODE)");
+    console.log("PASSWORD RESET EMAIL (DEV MODE)");
     console.log("========================================");
     console.log(`To: ${email}`);
     console.log(`Reset Link: ${resetLink}`);
@@ -87,11 +89,11 @@ export async function sendOrderConfirmationEmail({
 }: SendOrderConfirmationEmailParams) {
   if (process.env.NODE_ENV === "development") {
     console.log("\n========================================");
-    console.log("📧 ORDER CONFIRMATION EMAIL (DEV MODE)");
+    console.log("ORDER CONFIRMATION EMAIL (DEV MODE)");
     console.log("========================================");
     console.log(`To: ${to}`);
     console.log(`Order Number: ${orderNumber}`);
-    console.log(`Total: ৳${total}`);
+    console.log(`Total: Tk${total}`);
     console.log("========================================\n");
   }
 
@@ -119,7 +121,7 @@ export async function sendOrderConfirmationEmail({
               <p style="margin: 0 0 20px 0; font-size: 18px; font-weight: bold;">${orderNumber}</p>
 
               <p style="margin: 0 0 10px 0; color: #666; font-size: 14px;">Total Amount</p>
-              <p style="margin: 0; font-size: 24px; color: #f97316; font-weight: bold;">৳${total.toLocaleString()}</p>
+              <p style="margin: 0; font-size: 24px; color: #f97316; font-weight: bold;">Tk${total.toLocaleString()}</p>
             </div>
 
             <p style="margin-bottom: 20px;">You can track your order status at any time by visiting our website and entering your order number.</p>
@@ -165,7 +167,7 @@ export async function sendOrderStatusEmail({
 }: SendOrderStatusEmailParams) {
   if (process.env.NODE_ENV === "development") {
     console.log("\n========================================");
-    console.log("📧 ORDER STATUS EMAIL (DEV MODE)");
+    console.log("ORDER STATUS EMAIL (DEV MODE)");
     console.log("========================================");
     console.log(`To: ${to}`);
     console.log(`Order Number: ${orderNumber}`);
@@ -227,6 +229,69 @@ export async function sendOrderStatusEmail({
 
   if (error) {
     console.error("Failed to send order status email:", error);
+    throw new Error("Failed to send email");
+  }
+
+  return data;
+}
+
+interface SendWishlistShareEmailParams {
+  to: string;
+  shareUrl: string;
+}
+
+export async function sendWishlistShareEmail({
+  to,
+  shareUrl,
+}: SendWishlistShareEmailParams) {
+  if (process.env.NODE_ENV === "development") {
+    console.log("\n========================================");
+    console.log("WISHLIST SHARE EMAIL (DEV MODE)");
+    console.log("========================================");
+    console.log(`To: ${to}`);
+    console.log(`Share URL: ${shareUrl}`);
+    console.log("========================================\n");
+  }
+
+  const resend = getResendClient();
+  const { data, error } = await resend.emails.send({
+    from: process.env.EMAIL_FROM || "onboarding@resend.dev",
+    to,
+    subject: "Check out my Wishlist - PetBazaar",
+    html: `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>Check out my Wishlist</title>
+        </head>
+        <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+          <div style="background: #f9f9f9; border-radius: 10px; padding: 30px; margin-top: 20px;">
+            <h1 style="color: #f97316; margin-bottom: 20px;">Check out my Wishlist!</h1>
+            <p style="margin-bottom: 20px;">Hello,</p>
+            <p style="margin-bottom: 20px;">Someone has shared their PetBazaar wishlist with you! Take a look at their favorite pet products.</p>
+
+            <div style="text-align: center; margin: 30px 0;">
+              <a href="${shareUrl}" style="background: #f97316; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; display: inline-block; font-weight: bold;">View Wishlist</a>
+            </div>
+
+            <p style="margin-bottom: 20px; color: #666; font-size: 14px;">This link will expire in 7 days.</p>
+
+            <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;">
+            <p style="color: #888; font-size: 12px;">If the button above doesn't work, copy and paste this link into your browser:</p>
+            <p style="color: #888; font-size: 12px; word-break: break-all;">${shareUrl}</p>
+          </div>
+          <p style="text-align: center; color: #888; font-size: 12px; margin-top: 20px;">
+            PetBazaar - Your trusted pet marketplace
+          </p>
+        </body>
+      </html>
+    `,
+  });
+
+  if (error) {
+    console.error("Failed to send wishlist share email:", error);
     throw new Error("Failed to send email");
   }
 

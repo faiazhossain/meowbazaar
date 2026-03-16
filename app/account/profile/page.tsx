@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { getProfile, updateProfile, changePassword } from "@/lib/actions/profile"
 import { CatLoader } from "@/components/ui/cat-loader"
+import { AvatarUpload } from "@/components/profile/avatar-upload"
 
 interface UserProfile {
   id: string
@@ -26,6 +27,7 @@ export default function ProfilePage() {
   const [isChangingPassword, setIsChangingPassword] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState<string | null>(null)
+  const [profileData, setProfileData] = useState<UserProfile | null>(null)
   const [originalData, setOriginalData] = useState({
     fullName: "",
     phone: "",
