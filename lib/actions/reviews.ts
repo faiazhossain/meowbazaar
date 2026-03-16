@@ -364,6 +364,7 @@ export async function getAllReviews(options?: {
               email: true,
             },
           },
+        },
         orderBy: { createdAt: "desc" },
         skip,
         take: options?.limit || 20,

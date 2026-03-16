@@ -87,8 +87,8 @@ export function ProductsClient({
     return locale === "en" && nameEn ? nameEn : name;
   };
 
-  const [selectedCategory, setSelectedCategory] = useState<string>(
-    categoryParam || "all"
+  const [categoryFilter, setCategoryFilter] = useState<string>(
+    categoryParam || selectedCategory || "all"
   );
   const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 5000]);
@@ -109,8 +109,8 @@ export function ProductsClient({
     }
 
     // Filter by category
-    if (selectedCategory !== "all") {
-      filtered = filtered.filter((p) => p.category === selectedCategory);
+    if (categoryFilter !== "all") {
+      filtered = filtered.filter((p) => p.category === categoryFilter);
     }
 
     // Filter by price
@@ -142,7 +142,7 @@ export function ProductsClient({
     return filtered;
   }, [
     initialProducts,
-    selectedCategory,
+    categoryFilter,
     priceRange,
     sortBy,
     inStockOnly,
@@ -150,7 +150,7 @@ export function ProductsClient({
   ]);
 
   const clearFilters = () => {
-    setSelectedCategory("all");
+    setCategoryFilter("all");
     setSelectedBrands([]);
     setPriceRange([0, 5000]);
     setInStockOnly(false);
@@ -158,11 +158,11 @@ export function ProductsClient({
 
   const categoryTitle = searchParam
     ? t("products.searchResults", { search: searchParam })
-    : selectedCategory === "all"
+    : categoryFilter === "all"
       ? t("products.title")
       : getLocalizedName(
-          categories.find((c) => c.slug === selectedCategory)?.name || "",
-          categories.find((c) => c.slug === selectedCategory)?.nameEn
+          categories.find((c) => c.slug === categoryFilter)?.name || "",
+          categories.find((c) => c.slug === categoryFilter)?.nameEn
         );
 
   return (
@@ -193,8 +193,8 @@ export function ProductsClient({
               <div className="sticky top-24 space-y-6">
                 <FilterSection
                   categories={categories}
-                  selectedCategory={selectedCategory}
-                  setSelectedCategory={setSelectedCategory}
+                  selectedCategory={categoryFilter}
+                  setSelectedCategory={setCategoryFilter}
                   selectedBrands={selectedBrands}
                   setSelectedBrands={setSelectedBrands}
                   priceRange={priceRange}
@@ -228,8 +228,8 @@ export function ProductsClient({
                     <div className="overflow-auto h-full pb-20">
                       <FilterSection
                         categories={categories}
-                        selectedCategory={selectedCategory}
-                        setSelectedCategory={setSelectedCategory}
+                        selectedCategory={categoryFilter}
+                        setSelectedCategory={setCategoryFilter}
                         selectedBrands={selectedBrands}
                         setSelectedBrands={setSelectedBrands}
                         priceRange={priceRange}

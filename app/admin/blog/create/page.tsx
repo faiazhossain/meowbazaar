@@ -22,8 +22,6 @@ import Link from "next/link";
 import {
   createBlogPost,
 } from "@/lib/actions/blog";
-import Image from "next/image";
-import Link from "next/link";
 
 export default function CreateBlogPostPage() {
   const router = useRouter();

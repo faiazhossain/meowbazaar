@@ -1,7 +1,7 @@
 "use server";
 
-import { prisma } from "@/lib/prisma";
-import { auth } from "@/auth";
+import { db } from "@/lib/db";
+import { auth } from "@/lib/auth";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 
@@ -57,7 +57,7 @@ export async function addToComparison(productId: string) {
     const session = await auth();
 
     if (session?.user?.id) {
-      const existingCount = await prisma.compareItem.count({
+      const existingCount = await db.compareItem.count({
         where: { userId: session.user.id },
       });
 
@@ -68,7 +68,7 @@ export async function addToComparison(productId: string) {
         };
       }
 
-      const existing = await prisma.compareItem.findUnique({
+      const existing = await db.compareItem.findUnique({
         where: {
           userId_productId: {
             userId: session.user.id,
@@ -81,7 +81,7 @@ export async function addToComparison(productId: string) {
         return { success: true, message: "Already in comparison" };
       }
 
-      await prisma.compareItem.create({
+      await db.compareItem.create({
         data: {
           userId: session.user.id,
           productId,
@@ -121,7 +121,7 @@ export async function removeFromComparison(productId: string) {
     const session = await auth();
 
     if (session?.user?.id) {
-      await prisma.compareItem.deleteMany({
+      await db.compareItem.deleteMany({
         where: {
           userId: session.user.id,
           productId,
@@ -146,7 +146,7 @@ export async function clearComparison() {
     const session = await auth();
 
     if (session?.user?.id) {
-      await prisma.compareItem.deleteMany({
+      await db.compareItem.deleteMany({
         where: { userId: session.user.id },
       });
     } else {
@@ -167,7 +167,7 @@ export async function getComparisonItems(): Promise<ComparisonProduct[]> {
     let productIds: string[] = [];
 
     if (session?.user?.id) {
-      const items = await prisma.compareItem.findMany({
+      const items = await db.compareItem.findMany({
         where: { userId: session.user.id },
         select: { productId: true },
         orderBy: { createdAt: "asc" },
@@ -181,7 +181,7 @@ export async function getComparisonItems(): Promise<ComparisonProduct[]> {
       return [];
     }
 
-    const products = await prisma.product.findMany({
+    const products = await db.product.findMany({
       where: {
         id: { in: productIds },
       },
@@ -224,9 +224,9 @@ export async function getComparisonCount(): Promise<number> {
     const session = await auth();
 
     if (session?.user?.id) {
-      return await prisma.compareItem.count({
-        where: { userId: session.user.id },
-      });
+    return await db.compareItem.count({
+      where: { userId: session.user.id },
+    });
     } else {
       return getGuestComparisonIds().length;
     }

@@ -1,7 +1,7 @@
 "use server";
 
-import { prisma } from "@/lib/prisma";
-import { auth } from "@/auth";
+import { db } from "@/lib/db";
+import { auth } from "@/lib/auth";
 import { revalidatePath } from "next/cache";
 
 const CLOUDINARY_CLOUD_NAME = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
@@ -46,8 +46,8 @@ export async function uploadProfilePicture(formData: FormData): Promise<UploadRe
     // Check if Cloudinary is configured
     if (!CLOUDINARY_CLOUD_NAME || !CLOUDINARY_UPLOAD_PRESET) {
       // Fallback: just store a placeholder URL for development
-      const placeholderUrl = `/placeholder-avatar.png`;
-      await prisma.user.update({
+      const placeholderUrl = "/placeholder-avatar.png";
+      await db.user.update({
         where: { id: session.user.id },
         data: { image: placeholderUrl },
       });
@@ -66,7 +66,7 @@ export async function uploadProfilePicture(formData: FormData): Promise<UploadRe
       `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`,
       {
         method: "POST",
-        body: cloudinaryFormData,
+        body: cloudinaryFormData
       }
     );
 
@@ -74,13 +74,13 @@ export async function uploadProfilePicture(formData: FormData): Promise<UploadRe
       const errorData = await response.json();
       console.error("Cloudinary upload error:", errorData);
       return { success: false, error: "Failed to upload image" };
-    }
+      }
 
     const data = await response.json();
     const imageUrl = data.secure_url as string;
 
     // Update user's image in database
-    await prisma.user.update({
+    await db.user.update({
       where: { id: session.user.id },
       data: { image: imageUrl },
     });
@@ -100,7 +100,7 @@ export async function removeProfilePicture(): Promise<UploadResult> {
       return { success: false, error: "Unauthorized" };
     }
 
-    await prisma.user.update({
+    await db.user.update({
       where: { id: session.user.id },
       data: { image: null },
     });

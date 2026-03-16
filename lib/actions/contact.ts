@@ -1,7 +1,7 @@
 "use server";
 
-import { prisma } from "@/lib/prisma";
-import { auth } from "@/auth";
+import { db } from "@/lib/db";
+import { auth } from "@/lib/auth";
 import { revalidatePath } from "next/cache";
 
 export interface ContactFormData {
@@ -32,7 +32,7 @@ export async function submitContactForm(data: ContactFormData) {
     }
 
     // Create contact message
-    await prisma.contactMessage.create({
+    await db.contactMessage.create({
       data: {
         name: data.name,
         email: data.email,
@@ -67,7 +67,7 @@ export async function getContactMessages(status?: string) {
 
     const where = status ? { status } : {};
 
-    const messages = await prisma.contactMessage.findMany({
+    const messages = await db.contactMessage.findMany({
       where,
       orderBy: {
         createdAt: "desc",
@@ -88,7 +88,7 @@ export async function getContactMessageById(id: string) {
       return null;
     }
 
-    const message = await prisma.contactMessage.findUnique({
+    const message = await db.contactMessage.findUnique({
       where: { id },
     });
 
@@ -106,7 +106,7 @@ export async function updateContactMessageStatus(id: string, status: string) {
       return { success: false, error: "Unauthorized" };
     }
 
-    await prisma.contactMessage.update({
+    await db.contactMessage.update({
       where: { id },
       data: { status },
     });
@@ -126,7 +126,7 @@ export async function deleteContactMessage(id: string) {
       return { success: false, error: "Unauthorized" };
     }
 
-    await prisma.contactMessage.delete({
+    await db.contactMessage.delete({
       where: { id },
     });
 
@@ -146,10 +146,10 @@ export async function getContactStats() {
     }
 
     const [total, newMessages, read, resolved] = await Promise.all([
-      prisma.contactMessage.count(),
-      prisma.contactMessage.count({ where: { status: "NEW" } }),
-      prisma.contactMessage.count({ where: { status: "READ" } }),
-      prisma.contactMessage.count({ where: { status: "RESOLVED" } }),
+      db.contactMessage.count(),
+      db.contactMessage.count({ where: { status: "NEW" } }),
+      db.contactMessage.count({ where: { status: "READ" } }),
+      db.contactMessage.count({ where: { status: "RESOLVED" } }),
     ]);
 
     return { total, newMessages, read, resolved };

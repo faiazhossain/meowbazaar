@@ -1,7 +1,7 @@
 "use server";
 
-import { prisma } from "@/lib/prisma";
-import { auth } from "@/auth";
+import { db } from "@/lib/db";
+import { auth } from "@/lib/auth";
 import { revalidatePath } from "next/cache";
 import { randomBytes } from "crypto";
 
@@ -50,7 +50,7 @@ export async function createSharedWishlist(expiresInDays?: number) {
       : null;
 
     // Create shared wishlist entry
-    const sharedWishlist = await prisma.sharedWishlist.create({
+    const sharedWishlist = await db.sharedWishlist.create({
       data: {
         userId: session.user.id,
         token,
@@ -74,7 +74,7 @@ export async function createSharedWishlist(expiresInDays?: number) {
 export async function getSharedWishlistByToken(token: string): Promise<SharedWishlistWithProducts | null> {
   try {
     // Find the shared wishlist entry
-    const sharedWishlist = await prisma.sharedWishlist.findUnique({
+    const sharedWishlist = await db.sharedWishlist.findUnique({
       where: { token },
       include: {
         user: {
@@ -87,21 +87,21 @@ export async function getSharedWishlistByToken(token: string): Promise<SharedWis
 
     if (!sharedWishlist) {
       return null;
-    }
+      }
 
     // Check if expired
     if (sharedWishlist.expiresAt && new Date() > sharedWishlist.expiresAt) {
       return null;
-    }
+      }
 
     // Increment view count
-    await prisma.sharedWishlist.update({
+    await db.sharedWishlist.update({
       where: { token },
       data: { viewCount: { increment: 1 } },
     });
 
     // Get user's wishlist products
-    const wishlistItems = await prisma.wishlistItem.findMany({
+    const wishlistItems = await db.wishlistItem.findMany({
       where: { userId: sharedWishlist.userId },
       include: {
         product: {
@@ -149,7 +149,7 @@ export async function getUserSharedWishlists() {
       return [];
     }
 
-    const sharedWishlists = await prisma.sharedWishlist.findMany({
+    const sharedWishlists = await db.sharedWishlist.findMany({
       where: { userId: session.user.id },
       orderBy: { createdAt: "desc" },
     });
@@ -169,7 +169,7 @@ export async function deleteSharedWishlist(token: string) {
     }
 
     // Verify ownership
-    const sharedWishlist = await prisma.sharedWishlist.findUnique({
+    const sharedWishlist = await db.sharedWishlist.findUnique({
       where: { token },
     });
 
@@ -177,7 +177,7 @@ export async function deleteSharedWishlist(token: string) {
       return { success: false, error: "Not found or unauthorized" };
     }
 
-    await prisma.sharedWishlist.delete({
+    await db.sharedWishlist.delete({
       where: { token },
     });
 

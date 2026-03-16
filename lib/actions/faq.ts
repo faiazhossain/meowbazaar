@@ -1,7 +1,7 @@
 "use server";
 
-import { prisma } from "@/lib/prisma";
-import { auth } from "@/auth";
+import { db } from "@/lib/db";
+import { auth } from "@/lib/auth";
 import { revalidatePath } from "next/cache";
 
 export interface FAQData {
@@ -16,7 +16,7 @@ export interface FAQData {
 
 export async function getActiveFAQs() {
   try {
-    const faqs = await prisma.fAQ.findMany({
+    const faqs = await db.fAQ.findMany({
       where: { isActive: true },
       orderBy: [{ order: "asc" }, { createdAt: "desc" }],
     });
@@ -28,27 +28,49 @@ export async function getActiveFAQs() {
   }
 }
 
-export async function getAllFAQs() {
+export async function getAllFAQs(options?: {
+  page?: number;
+  limit?: number;
+  category?: string;
+  isActive?: boolean;
+}) {
   try {
     const session = await auth();
     if (session?.user?.role !== "ADMIN") {
-      return [];
+      return { faqs: [], total: 0 };
     }
 
-    const faqs = await prisma.fAQ.findMany({
-      orderBy: [{ order: "asc" }, { createdAt: "desc" }],
-    });
+    const page = options?.page || 1;
+    const skip = (page - 1) * (options?.limit || 20);
 
-    return faqs;
+    const where: any = {};
+    if (options?.category) {
+      where.category = options.category;
+    }
+    if (options?.isActive !== undefined) {
+      where.isActive = options.isActive;
+    }
+
+    const [faqs, total] = await Promise.all([
+      db.fAQ.findMany({
+        where,
+        orderBy: [{ order: "asc" }, { createdAt: "desc" }],
+        skip,
+        take: options?.limit || 20,
+      }),
+      db.fAQ.count({ where }),
+    ]);
+
+    return { faqs, total };
   } catch (error) {
     console.error("Error fetching all FAQs:", error);
-    return [];
+    return { faqs: [], total: 0 };
   }
 }
 
 export async function getFAQById(id: string) {
   try {
-    const faq = await prisma.fAQ.findUnique({
+    const faq = await db.fAQ.findUnique({
       where: { id },
     });
 
@@ -66,7 +88,7 @@ export async function createFAQ(data: FAQData) {
       return { success: false, error: "Unauthorized" };
     }
 
-    const faq = await prisma.fAQ.create({
+    const faq = await db.fAQ.create({
       data: {
         question: data.question,
         questionEn: data.questionEn,
@@ -95,7 +117,7 @@ export async function updateFAQ(id: string, data: Partial<FAQData>) {
       return { success: false, error: "Unauthorized" };
     }
 
-    const faq = await prisma.fAQ.update({
+    const faq = await db.fAQ.update({
       where: { id },
       data: {
         question: data.question,
@@ -125,7 +147,7 @@ export async function deleteFAQ(id: string) {
       return { success: false, error: "Unauthorized" };
     }
 
-    await prisma.fAQ.delete({
+    await db.fAQ.delete({
       where: { id },
     });
 
@@ -146,7 +168,7 @@ export async function toggleFAQStatus(id: string) {
       return { success: false, error: "Unauthorized" };
     }
 
-    const faq = await prisma.fAQ.findUnique({
+    const faq = await db.fAQ.findUnique({
       where: { id },
       select: { isActive: true },
     });
@@ -155,7 +177,7 @@ export async function toggleFAQStatus(id: string) {
       return { success: false, error: "FAQ not found" };
     }
 
-    await prisma.fAQ.update({
+    await db.fAQ.update({
       where: { id },
       data: { isActive: !faq.isActive },
     });
@@ -167,5 +189,20 @@ export async function toggleFAQStatus(id: string) {
   } catch (error) {
     console.error("Error toggling FAQ status:", error);
     return { success: false, error: "Failed to toggle FAQ status" };
+  }
+}
+
+export async function getFAQCategories() {
+  try {
+    const categories = await db.fAQ.findMany({
+      where: { isActive: true, category: { not: null } },
+      select: { category: true },
+      distinct: ["category"],
+    });
+
+    return categories.map((f) => f.category).filter(Boolean) as string[];
+  } catch (error) {
+    console.error("Error fetching FAQ categories:", error);
+    return [];
   }
 }
