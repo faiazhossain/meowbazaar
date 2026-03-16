@@ -18,6 +18,9 @@ import { getDashboardStats } from "@/lib/actions/analytics";
 import { formatDistanceToNow } from "date-fns";
 import { bn } from "date-fns/locale";
 
+// Force dynamic rendering to avoid database calls during build
+export const dynamic = "force-dynamic";
+
 export default async function AdminDashboard() {
   const result = await getDashboardStats();
 

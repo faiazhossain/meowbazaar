@@ -19,6 +19,9 @@ import { getActiveOffers } from "@/lib/actions/admin";
 import { useTranslation } from "@/lib/i18n/use-translation";
 import { Button } from "@/components/ui/button";
 
+// Force dynamic rendering to avoid database calls during build
+export const dynamic = "force-dynamic";
+
 // Static blog posts for homepage
 const blogPosts = [
   {

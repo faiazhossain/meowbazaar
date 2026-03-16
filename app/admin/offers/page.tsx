@@ -2,6 +2,9 @@ import { Suspense } from "react";
 import { getAdminOffers } from "@/lib/actions/admin";
 import { OffersClient } from "./offers-client";
 
+// Force dynamic rendering to avoid database calls during build
+export const dynamic = "force-dynamic";
+
 export default async function AdminOffersPage() {
   const offers = await getAdminOffers();
 

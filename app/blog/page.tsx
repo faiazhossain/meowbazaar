@@ -6,6 +6,9 @@ import { Section } from "@/components/ui/section";
 import { Button } from "@/components/ui/button";
 import { BlogFilter } from "@/components/blog/blog-filter";
 
+// Force dynamic rendering to avoid database calls during build
+export const dynamic = "force-dynamic";
+
 export default async function BlogPage({
   searchParams,
 }: {

@@ -4,6 +4,9 @@ import { db } from "@/lib/db";
 import { ProductsClient } from "./products-client";
 import { Spinner } from "@/components/ui/spinner";
 
+// Force dynamic rendering to avoid database calls during build
+export const dynamic = "force-dynamic";
+
 async function getProductsData() {
   const [products, categories] = await Promise.all([
     db.product.findMany({

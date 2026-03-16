@@ -12,6 +12,9 @@ import { ArrowLeft, Calendar, Eye, User } from "lucide-react";
 import { SectionHeaderClient } from "@/components/home/home-sections";
 import { SectionHeader } from "@/components/ui/section";
 
+// Force dynamic rendering to avoid database calls during build
+export const dynamic = "force-dynamic";
+
 interface BlogPageProps {
   params: Promise<{ slug: string }>;
 }

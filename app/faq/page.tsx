@@ -2,6 +2,9 @@ import { getActiveFAQs } from "@/lib/actions/faq";
 import { FAQAccordion } from "@/components/support/faq-accordion";
 import { HelpCircle } from "lucide-react";
 
+// Force dynamic rendering to avoid database calls during build
+export const dynamic = "force-dynamic";
+
 export default async function FAQPage() {
   const faqs = await getActiveFAQs();
 

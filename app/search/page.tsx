@@ -3,6 +3,9 @@ import { getProducts } from "@/lib/actions/products";
 import { ProductsClient } from "../products/products-client";
 import { Spinner } from "@/components/ui/spinner";
 
+// Force dynamic rendering to avoid database calls during build
+export const dynamic = "force-dynamic";
+
 interface SearchPageProps {
   searchParams: {
     q?: string;
