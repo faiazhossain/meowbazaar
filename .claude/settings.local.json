@@ -11,7 +11,16 @@
       "Bash(cd:*)",
       "Bash(grep:*)",
       "Bash(npm install:*)",
-      "Bash(pnpm run build:*)"
+      "Bash(pnpm run build:*)",
+      "Bash(timeout 10 npm start:*)",
+      "Bash(xxd:*)",
+      "Bash(lsof:*)",
+      "Bash(xargs kill:*)",
+      "Bash(node:*)",
+      "Bash(for:*)",
+      "Bash(do echo:*)",
+      "Bash(done:*)",
+      "Bash(curl:*)"
     ]
   }
 }
