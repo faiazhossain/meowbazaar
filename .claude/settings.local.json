@@ -20,7 +20,10 @@
       "Bash(for:*)",
       "Bash(do echo:*)",
       "Bash(done:*)",
-      "Bash(curl:*)"
+      "Bash(curl:*)",
+      "Bash(pkill:*)",
+      "Bash(/bin/sleep:*)",
+      "Bash(npm start)"
     ]
   }
 }
