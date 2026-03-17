@@ -74,7 +74,7 @@ export function Footer() {
     <footer className="bg-black text-gray-300 border-t border-orange-500/20">
       {/* Features Bar */}
       <div className="border-b border-orange-500/20 bg-black/95">
-        <div className="container mx-auto px-4 py-6">
+        <div className="container mx-auto px-4 py-6 max-w-7xl">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
             {features.map((feature, index) => {
               const Icon = feature.icon;
@@ -108,7 +108,7 @@ export function Footer() {
         </div>
       </div>
 
-      <div className="container mx-auto px-4 py-12 md:py-16">
+      <div className="container mx-auto px-4 py-12 md:py-16 max-w-7xl">
         {/* Main Footer Content */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
           {/* Brand Section - Larger on mobile */}

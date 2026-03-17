@@ -179,7 +179,7 @@ export function NavbarClient({
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-orange-200 bg-white shadow-md">
-      <div className="container mx-auto px-4">
+      <div className="container mx-auto px-4 max-w-7xl">
         {/* Top Bar */}
         <div className="flex h-16 items-center justify-between gap-4">
           {/* Mobile Menu */}

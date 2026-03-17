@@ -41,7 +41,7 @@ export default async function BlogPage({
       <main>
         {/* Page Header */}
         <div className="bg-gradient-to-br from-primary/10 via-accent/10 to-mint/10 py-12 md:py-16">
-          <div className="container mx-auto px-4 text-center">
+          <div className="container mx-auto px-4 text-center max-w-7xl">
             <h1 className="text-4xl md:text-5xl font-bold mb-4">
               পোষা যত্ন গাইড
             </h1>

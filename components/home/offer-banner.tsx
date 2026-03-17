@@ -22,7 +22,7 @@ export function OfferBanner({
 
   return (
     <section className={`${bgClass} py-10 md:py-14`}>
-      <div className="container mx-auto px-4 text-center">
+      <div className="container mx-auto px-4 text-center max-w-7xl">
         <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-primary-foreground mb-3 text-balance">
           {title}
         </h2>

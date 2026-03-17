@@ -16,7 +16,7 @@ export function HeroBanner() {
 
   return (
     <section className='relative overflow-hidden bg-gradient-to-br from-cream via-brand-orange-light/20 to-cream'>
-      <div className='container mx-auto px-4 py-12 md:py-20 lg:py-24 relative z-10'>
+      <div className='container mx-auto px-4 py-12 md:py-20 lg:py-24 relative z-10 max-w-7xl'>
         <div className='grid grid-cols-1 lg:grid-cols-2 gap-12 items-center'>
           {/* Content - Left Side */}
           <div className='text-center lg:text-left space-y-6 md:space-y-8'>

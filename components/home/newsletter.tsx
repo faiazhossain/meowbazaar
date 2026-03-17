@@ -20,7 +20,7 @@ export function Newsletter() {
 
   return (
     <section className="py-12 md:py-16 bg-muted">
-      <div className="container mx-auto px-4">
+      <div className="container mx-auto px-4 max-w-7xl">
         <div className="max-w-2xl mx-auto text-center">
           <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
             <Mail className="w-8 h-8 text-primary" />

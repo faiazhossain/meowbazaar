@@ -176,7 +176,7 @@ export function ProductsClient({
       <main>
         {/* Page Header */}
         <div className="bg-muted py-8">
-          <div className="container mx-auto px-4">
+          <div className="container mx-auto px-4 max-w-7xl">
             <h1 className="text-2xl md:text-3xl font-bold text-foreground">
               {categoryTitle}
             </h1>

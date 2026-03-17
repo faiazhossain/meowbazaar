@@ -138,6 +138,13 @@
   }
 }
 
+/* Container max-width fix for Tailwind CSS 4.x */
+@layer utilities {
+  .container {
+    @apply max-w-7xl;
+  }
+}
+
 /* Cat Loader Animations */
 @keyframes wiggle {
   0%,
