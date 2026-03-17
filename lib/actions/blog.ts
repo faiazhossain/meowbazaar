@@ -8,6 +8,7 @@ export interface BlogPostData {
   title: string;
   titleEn: string;
   slug: string;
+  slugEn?: string;
   excerpt: string;
   excerptEn: string;
   content: string;
@@ -24,6 +25,7 @@ export interface BlogPostResult {
   title: string;
   titleEn: string;
   slug: string;
+  slugEn?: string;
   excerpt: string;
   excerptEn: string;
   content: string;
@@ -59,8 +61,13 @@ export async function createBlogPost(
 
   try {
     // Check if slug already exists
-    const existingPost = await db.blogPost.findUnique({
-      where: { slug: data.slug },
+    const existingPost = await db.blogPost.findFirst({
+      where: {
+        OR: [
+          { slug: data.slug },
+          ...(data.slugEn ? [{ slugEn: data.slugEn }] : []),
+        ],
+      },
     });
 
     if (existingPost) {
@@ -72,6 +79,7 @@ export async function createBlogPost(
         title: data.title,
         titleEn: data.titleEn,
         slug: data.slug,
+        slugEn: data.slugEn,
         excerpt: data.excerpt,
         excerptEn: data.excerptEn,
         content: data.content,
@@ -126,6 +134,7 @@ export async function updateBlogPost(
         ...(data.title && { title: data.title }),
         ...(data.titleEn && { titleEn: data.titleEn }),
         ...(data.slug && { slug: data.slug }),
+        ...(data.slugEn && { slugEn: data.slugEn }),
         ...(data.excerpt && { excerpt: data.excerpt }),
         ...(data.excerptEn && { excerptEn: data.excerptEn }),
         ...(data.content && { content: data.content }),
@@ -148,7 +157,7 @@ export async function updateBlogPost(
     });
 
     revalidatePath("/blog");
-    revalidatePath(`/blog/${blogPost.slug}`);
+    revalidatePath(`/blog/${blogPost.slugEn || blogPost.slug}`);
     revalidatePath("/admin/blog");
 
     return { success: true, data: blogPost as BlogPostResult };
@@ -174,7 +183,7 @@ export async function deleteBlogPost(
   try {
     const blogPost = await db.blogPost.findUnique({
       where: { id },
-      select: { slug: true },
+      select: { slug: true, slugEn: true },
     });
 
     if (!blogPost) {
@@ -186,7 +195,7 @@ export async function deleteBlogPost(
     });
 
     revalidatePath("/blog");
-    revalidatePath(`/blog/${blogPost.slug}`);
+    revalidatePath(`/blog/${blogPost.slugEn || blogPost.slug}`);
     revalidatePath("/admin/blog");
 
     return { success: true };
@@ -335,8 +344,9 @@ export async function getBlogPostBySlug(
     // Decode URL-encoded slug (handles Bengali characters)
     const decodedSlug = decodeURIComponent(slug);
 
-    const blogPost = await db.blogPost.findUnique({
-      where: { slug: decodedSlug },
+    // First try to find by English slug (preferred for URLs)
+    let blogPost = await db.blogPost.findUnique({
+      where: { slugEn: decodedSlug },
       include: {
         author: {
           select: {
@@ -347,6 +357,22 @@ export async function getBlogPostBySlug(
         },
       },
     });
+
+    // If not found by English slug, try by Bangla slug (for backwards compatibility)
+    if (!blogPost) {
+      blogPost = await db.blogPost.findUnique({
+        where: { slug: decodedSlug },
+        include: {
+          author: {
+            select: {
+              id: true,
+              name: true,
+              image: true,
+            },
+          },
+        },
+      });
+    }
 
     if (!blogPost || !blogPost.published) {
       return null;

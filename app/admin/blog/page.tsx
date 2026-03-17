@@ -374,7 +374,7 @@ export default function AdminBlogPage() {
                   <TableCell>
                     <div className="flex items-center gap-1">
                       <Button variant="ghost" size="icon" asChild>
-                        <Link href={`/blog/${post.slug}`} target="_blank">
+                        <Link href={`/blog/${post.slugEn || post.slug}`} target="_blank">
                           <Eye className="h-4 w-4" />
                         </Link>
                       </Button>

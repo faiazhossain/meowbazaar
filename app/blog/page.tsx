@@ -86,7 +86,7 @@ export default async function BlogPage({
                   excerpt: post.excerpt,
                   excerptEn: post.excerptEn,
                   image: post.image,
-                  href: `/blog/${post.slug}`,
+                  href: `/blog/${post.slugEn || post.slug}`,
                   date: new Intl.DateTimeFormat("bn-BD", {
                     year: "numeric",
                     month: "long",

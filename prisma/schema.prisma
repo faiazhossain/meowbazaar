@@ -364,6 +364,7 @@ model BlogPost {
   title     String
   titleEn   String
   slug      String   @unique
+  slugEn    String?  @unique
   excerpt   String
   excerptEn String
   content   String

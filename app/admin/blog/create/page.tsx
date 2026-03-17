@@ -24,6 +24,7 @@ import {
 } from "@/lib/actions/blog";
 import { BlogPreview } from "@/components/admin/blog-preview";
 import { MarkdownEditor } from "@/components/admin/markdown-editor";
+import { generateSlug } from "@/lib/utils";
 
 export default function CreateBlogPostPage() {
   const router = useRouter();
@@ -33,6 +34,7 @@ export default function CreateBlogPostPage() {
     title: "",
     titleEn: "",
     slug: "",
+    slugEn: "",
     excerpt: "",
     excerptEn: "",
     content: "",
@@ -46,16 +48,6 @@ export default function CreateBlogPostPage() {
 
   const [imagePreview, setImagePreview] = useState("");
   const [showPreview, setShowPreview] = useState(false);
-
-  // Generate slug from title
-  const generateSlug = (text: string) => {
-    return text
-      .toLowerCase()
-      .replace(/[^ঁ-৯a-z0-9\s-]/g, "")
-      .replace(/\s+/g, "-")
-      .replace(/-+/g, "-")
-      .trim();
-  };
 
   // Handle image upload (client-side, you'll need to implement actual upload)
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -71,9 +63,22 @@ export default function CreateBlogPostPage() {
   useEffect(() => {
     // Auto-generate slug from Bengali title
     if (formData.title) {
-      setFormData({ ...formData, slug: generateSlug(formData.title) });
+      const banglaSlug = formData.title
+        .toLowerCase()
+        .replace(/[^ঁ-৯a-z0-9\s-]/g, "")
+        .replace(/\s+/g, "-")
+        .replace(/-+/g, "-")
+        .trim();
+      setFormData({ ...formData, slug: banglaSlug });
     }
   }, [formData.title]);
+
+  useEffect(() => {
+    // Auto-generate English slug from English title
+    if (formData.titleEn) {
+      setFormData({ ...formData, slugEn: generateSlug(formData.titleEn) });
+    }
+  }, [formData.titleEn]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -120,7 +125,7 @@ export default function CreateBlogPostPage() {
           </Button>
           {formData.published && (
             <Button variant="outline" asChild>
-              <Link href={`/blog/${formData.slug}`} target="_blank">
+              <Link href={`/blog/${formData.slugEn || formData.slug}`} target="_blank">
                 <Eye className="mr-2 h-4 w-4" />
                 সাইটে দেখুন
               </Link>
@@ -258,6 +263,23 @@ export default function CreateBlogPostPage() {
                 />
                 <p className="text-xs text-muted-foreground">
                   ইউনিক URL স্লাগ (অটো-জেনারেট হয়)
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="slugEn">
+                  English Slug <span className="text-muted-foreground">(recommended)</span>
+                </Label>
+                <Input
+                  id="slugEn"
+                  value={formData.slugEn}
+                  onChange={(e) =>
+                    setFormData({ ...formData, slugEn: e.target.value })
+                  }
+                  placeholder="blog-post-slug"
+                />
+                <p className="text-xs text-muted-foreground">
+                  URL slug for English (auto-generated from English title)
                 </p>
               </div>
 

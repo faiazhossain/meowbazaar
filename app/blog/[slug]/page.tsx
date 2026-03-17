@@ -217,7 +217,7 @@ export default async function BlogPostPage({ params }: BlogPageProps) {
                     excerpt: relatedPost.excerpt,
                     excerptEn: relatedPost.excerptEn,
                     image: relatedPost.image,
-                    href: `/blog/${relatedPost.slug}`,
+                    href: `/blog/${relatedPost.slugEn || relatedPost.slug}`,
                     date: formatDate(relatedPost.createdAt),
                     dateEn: formatDateEn(relatedPost.createdAt),
                     petType: relatedPost.petType,
