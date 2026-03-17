@@ -20,8 +20,8 @@ export interface RateLimitResult {
 }
 
 export interface RateLimitOptions {
-  windowMs?: number;      // Time window in milliseconds (default: 10 minutes)
-  maxRequests?: number;   // Maximum requests per window (default: 10)
+  windowMs?: number; // Time window in milliseconds (default: 10 minutes)
+  maxRequests?: number; // Maximum requests per window (default: 10)
 }
 
 /**
@@ -76,7 +76,9 @@ export async function checkRateLimit(
  * Get user-friendly rate limit message
  */
 function getRateLimitMessage(options: RateLimitOptions): string {
-  const windowMinutes = Math.round((options.windowMs || 10 * 60 * 1000) / 60 / 1000);
+  const windowMinutes = Math.round(
+    (options.windowMs || 10 * 60 * 1000) / 60 / 1000
+  );
 
   if (windowMinutes <= 1) {
     return `খুব দ্রুত অপেক্ষা 1 মিনিটে আবার চেষ্টা করুন।`;
@@ -130,42 +132,48 @@ export async function getRateLimitInfo(
 // Pre-configured rate limiters for common use cases
 export const rateLimiters = {
   auth: {
-    windowMs: 15 * 60 * 1000,  // 15 minutes
-    maxRequests: 5,               // 5 attempts
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    maxRequests: 5, // 5 attempts
   },
   passwordReset: {
-    windowMs: 60 * 60 * 1000,  // 1 hour
-    maxRequests: 3,               // 3 attempts
+    windowMs: 60 * 60 * 1000, // 1 hour
+    maxRequests: 3, // 3 attempts
   },
   registration: {
-    windowMs: 60 * 60 * 1000,  // 1 hour
-    maxRequests: 3,               // 3 attempts
+    windowMs: 60 * 60 * 1000, // 1 hour
+    maxRequests: 3, // 3 attempts
   },
   api: {
-    windowMs: 1 * 60 * 1000,   // 1 minute
-    maxRequests: 60,              // 60 requests
+    windowMs: 1 * 60 * 1000, // 1 minute
+    maxRequests: 60, // 60 requests
   },
   cart: {
-    windowMs: 1 * 60 * 1000,   // 1 minute
-    maxRequests: 20,              // 20 actions
+    windowMs: 1 * 60 * 1000, // 1 minute
+    maxRequests: 20, // 20 actions
   },
   checkout: {
-    windowMs: 10 * 60 * 1000,  // 10 minutes
-    maxRequests: 5,               // 5 attempts
+    windowMs: 10 * 60 * 1000, // 10 minutes
+    maxRequests: 5, // 5 attempts
   },
 };
 
 /**
  * Helper function to check rate limit with pre-configured settings
  */
-export async function checkAuthRateLimit(identifier: string): Promise<RateLimitResult> {
+export async function checkAuthRateLimit(
+  identifier: string
+): Promise<RateLimitResult> {
   return checkRateLimit(identifier, rateLimiters.auth);
 }
 
-export async function checkPasswordResetRateLimit(identifier: string): Promise<RateLimitResult> {
+export async function checkPasswordResetRateLimit(
+  identifier: string
+): Promise<RateLimitResult> {
   return checkRateLimit(identifier, rateLimiters.passwordReset);
 }
 
-export async function checkRegistrationRateLimit(identifier: string): Promise<RateLimitResult> {
+export async function checkRegistrationRateLimit(
+  identifier: string
+): Promise<RateLimitResult> {
   return checkRateLimit(identifier, rateLimiters.registration);
 }

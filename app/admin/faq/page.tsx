@@ -47,7 +47,7 @@ export default function AdminFAQPage() {
     setIsLoading(true);
     try {
       const data = await getAllFAQs();
-      setFaqs(data as FAQ[]);
+      setFaqs((data as { faqs: FAQ[]; total: number }).faqs);
     } catch (error) {
       console.error("Error fetching FAQs:", error);
     } finally {

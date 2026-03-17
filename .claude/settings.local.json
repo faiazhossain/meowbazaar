@@ -23,7 +23,10 @@
       "Bash(curl:*)",
       "Bash(pkill:*)",
       "Bash(/bin/sleep:*)",
-      "Bash(npm start)"
+      "Bash(npm start)",
+      "Bash(git restore:*)",
+      "mcp__ide__getDiagnostics",
+      "Bash(git add:*)"
     ]
   }
 }

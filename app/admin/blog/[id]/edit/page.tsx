@@ -20,15 +20,15 @@ import { toast } from "sonner";
 import { ArrowLeft, Upload, X, Save, Globe, Eye } from "lucide-react";
 import Link from "next/link";
 import {
-  createBlogPost,
   updateBlogPost,
+  getBlogPostById,
 } from "@/lib/actions/blog";
-import Image from "next/image";
+import { BlogPreview } from "@/components/admin/blog-preview";
+import { MarkdownEditor } from "@/components/admin/markdown-editor";
 
 export default function BlogPostEditPage() {
   const params = useParams();
   const router = useRouter();
-  const isEditing = params.id !== "new";
   const [isPending, startTransition] = useTransition();
 
   const [formData, setFormData] = useState({
@@ -46,8 +46,10 @@ export default function BlogPostEditPage() {
     featured: false,
   });
 
-  const [isLoading, setIsLoading] = useState(isEditing);
+  const [isLoading, setIsLoading] = useState(true);
   const [imagePreview, setImagePreview] = useState("");
+  const [showPreview, setShowPreview] = useState(false);
+  const [postId, setPostId] = useState("");
 
   // Generate slug from title
   const generateSlug = (text: string) => {
@@ -71,46 +73,62 @@ export default function BlogPostEditPage() {
   };
 
   useEffect(() => {
-    if (isEditing) {
-      // Fetch existing post
-      fetch(`/api/admin/blog/${params.id}`)
-        .then((res) => res.json())
-        .then((data) => {
-          if (data.success) {
-            setFormData(data.data);
-            setImagePreview(data.data.image);
+    const loadPost = async () => {
+      const id = params.id as string;
+      if (id && id !== "new") {
+        try {
+          const post = await getBlogPostById(id);
+          if (post) {
+            setFormData({
+              title: post.title || "",
+              titleEn: post.titleEn || "",
+              slug: post.slug || "",
+              excerpt: post.excerpt || "",
+              excerptEn: post.excerptEn || "",
+              content: post.content || "",
+              contentEn: post.contentEn || "",
+              image: post.image || "",
+              category: post.category || "",
+              petType: post.petType || "",
+              published: post.published || false,
+              featured: post.featured || false,
+            });
+            setImagePreview(post.image || "");
+            setPostId(post.id);
+          } else {
+            toast.error("ব্লগ পোস্ট পাওয়া যায়নি");
+            router.push("/admin/blog");
           }
-        })
-        .catch(() => {
+        } catch (error) {
+          console.error("Failed to load blog post:", error);
           toast.error("ব্লগ পোস্ট লোড করতে সমস্যা হয়েছে");
-        })
-        .finally(() => {
+          router.push("/admin/blog");
+        } finally {
           setIsLoading(false);
-        });
-    }
-  }, [isEditing, params.id]);
+        }
+      } else {
+        setIsLoading(false);
+      }
+    };
+
+    loadPost();
+  }, [params.id, router]);
 
   useEffect(() => {
-    // Auto-generate slug from Bengali title
-    if (formData.title && !isEditing) {
+    // Auto-generate slug from Bengali title (only for new posts)
+    if (formData.title && !postId) {
       setFormData({ ...formData, slug: generateSlug(formData.title) });
     }
-  }, [formData.title, isEditing]);
+  }, [formData.title, postId]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
     startTransition(async () => {
-      const result = isEditing
-        ? await updateBlogPost(params.id as string, formData)
-        : await createBlogPost(formData);
+      const result = await updateBlogPost(postId, formData);
 
       if (result.success) {
-        toast.success(
-          isEditing
-            ? "ব্লগ পোস্ট আপডেট হয়েছে"
-            : "ব্লগ পোস্ট তৈরি হয়েছে"
-        );
+        toast.success("ব্লগ পোস্ট আপডেট হয়েছে");
         router.push("/admin/blog");
       } else {
         toast.error(result.error);
@@ -138,7 +156,7 @@ export default function BlogPostEditPage() {
           </Button>
           <div>
             <h1 className="text-2xl font-bold">
-              {isEditing ? "ব্লগ পোস্ট এডিট করুন" : "নতুন ব্লগ পোস্ট"}
+              ব্লগ পোস্ট এডিট করুন
             </h1>
             <p className="text-muted-foreground">
               ব্লগ পোস্টের তথ্য পূরণ করুন
@@ -146,16 +164,25 @@ export default function BlogPostEditPage() {
           </div>
         </div>
         <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            onClick={() => setShowPreview(true)}
+            disabled={!formData.title && !formData.titleEn && !formData.excerpt && !formData.excerptEn && !formData.content && !formData.contentEn}
+          >
+            <Eye className="mr-2 h-4 w-4" />
+            প্রিভিউ দেখুন
+          </Button>
           {formData.published && (
             <Button variant="outline" asChild>
               <Link href={`/blog/${formData.slug}`} target="_blank">
                 <Eye className="mr-2 h-4 w-4" />
-                প্রিভিউ দেখুন
+                সাইটে দেখুন
               </Link>
             </Button>
           )}
-          <Button onClick={handleSubmit} disabled={isPending}>
+          <Button onClick={handleSubmit} disabled={isPending || isLoading}>
             {isPending ? <Spinner className="mr-2 h-4 w-4" /> : null}
+            {isLoading ? <Spinner className="mr-2 h-4 w-4" /> : null}
             <Save className="mr-2 h-4 w-4" />
             সংরক্ষণ করুন
           </Button>
@@ -207,20 +234,14 @@ export default function BlogPostEditPage() {
               <Label htmlFor="content">
                 কন্টেন্ট (Markdown) <span className="text-destructive">*</span>
               </Label>
-              <Textarea
-                id="content"
+              <MarkdownEditor
                 value={formData.content}
-                onChange={(e) =>
-                  setFormData({ ...formData, content: e.target.value })
+                onChange={(value) =>
+                  setFormData({ ...formData, content: value })
                 }
                 placeholder="ব্লগ পোস্টের কন্টেন্ট লিখুন (Markdown ফরম্যাটে)..."
                 rows={15}
-                required
-                className="font-mono text-sm"
               />
-              <p className="text-xs text-muted-foreground">
-                Markdown ফরম্যাট সমর্থিত। আপনি সাধারণ টেক্সট এবং Markdown সিনট্যাক্স ব্যবহার করতে পারেন।
-              </p>
             </div>
           </CardContent>
         </Card>
@@ -258,15 +279,13 @@ export default function BlogPostEditPage() {
 
             <div className="space-y-2">
               <Label htmlFor="contentEn">Content (Markdown)</Label>
-              <Textarea
-                id="contentEn"
+              <MarkdownEditor
                 value={formData.contentEn}
-                onChange={(e) =>
-                  setFormData({ ...formData, contentEn: e.target.value })
+                onChange={(value) =>
+                  setFormData({ ...formData, contentEn: value })
                 }
                 placeholder="Blog post content in English (Markdown format)..."
                 rows={15}
-                className="font-mono text-sm"
               />
             </div>
           </CardContent>
@@ -460,6 +479,12 @@ export default function BlogPostEditPage() {
           </CardContent>
         </Card>
       </form>
+
+      <BlogPreview
+        open={showPreview}
+        onOpenChange={setShowPreview}
+        data={formData}
+      />
     </div>
   );
 }

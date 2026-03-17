@@ -11,6 +11,8 @@ import { Section } from "@/components/ui/section";
 import { ArrowLeft, Calendar, Eye, User } from "lucide-react";
 import { SectionHeaderClient } from "@/components/home/home-sections";
 import { SectionHeader } from "@/components/ui/section";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 // Force dynamic rendering to avoid database calls during build
 export const dynamic = "force-dynamic";
@@ -121,11 +123,78 @@ export default async function BlogPostPage({ params }: BlogPageProps) {
             </header>
 
             {/* Content */}
-            <div className="prose prose-lg max-w-none">
-              <div
-                dangerouslySetInnerHTML={{ __html: post.content }}
-                className="whitespace-pre-wrap"
-              />
+            <div className="prose prose-lg max-w-none markdown-content">
+              <ReactMarkdown
+                remarkPlugins={[remarkGfm]}
+                components={{
+                  // Custom components for better styling
+                  h1: ({ children }) => (
+                    <h1 className="text-3xl font-bold mb-6 mt-8 first:mt-0">{children}</h1>
+                  ),
+                  h2: ({ children }) => (
+                    <h2 className="text-2xl font-bold mb-4 mt-6">{children}</h2>
+                  ),
+                  h3: ({ children }) => (
+                    <h3 className="text-xl font-bold mb-3 mt-5">{children}</h3>
+                  ),
+                  p: ({ children }) => (
+                    <p className="mb-4 leading-relaxed">{children}</p>
+                  ),
+                  ul: ({ children }) => (
+                    <ul className="list-disc pl-6 mb-4 space-y-2">{children}</ul>
+                  ),
+                  ol: ({ children }) => (
+                    <ol className="list-decimal pl-6 mb-4 space-y-2">{children}</ol>
+                  ),
+                  li: ({ children }) => (
+                    <li className="leading-relaxed">{children}</li>
+                  ),
+                  blockquote: ({ children }) => (
+                    <blockquote className="border-l-4 border-primary pl-4 italic my-4 bg-muted/50 py-2 pr-4 rounded-r">{children}</blockquote>
+                  ),
+                  code: ({ children }) => (
+                    <code className="bg-muted px-2 py-1 rounded text-sm font-mono text-foreground">{children}</code>
+                  ),
+                  pre: ({ children }) => (
+                    <pre className="bg-muted p-4 rounded-lg overflow-x-auto my-4">
+                      <code className="text-sm font-mono">{children}</code>
+                    </pre>
+                  ),
+                  a: ({ children, href }) => (
+                    <a href={href} className="text-primary hover:text-primary/80 underline underline-offset-4">
+                      {children}
+                    </a>
+                  ),
+                  img: ({ src, alt }) => (
+                    <img src={src} alt={alt} className="rounded-lg my-4 max-w-full" />
+                  ),
+                  hr: () => (
+                    <hr className="my-8 border-border" />
+                  ),
+                  table: ({ children }) => (
+                    <div className="overflow-x-auto my-4">
+                      <table className="min-w-full border-collapse">{children}</table>
+                    </div>
+                  ),
+                  thead: ({ children }) => (
+                    <thead className="bg-muted/50">{children}</thead>
+                  ),
+                  tbody: ({ children }) => (
+                    <tbody>{children}</tbody>
+                  ),
+                  tr: ({ children }) => (
+                    <tr className="border-b border-border last:border-0">{children}</tr>
+                  ),
+                  th: ({ children }) => (
+                    <th className="px-4 py-2 text-left font-semibold">{children}</th>
+                  ),
+                  td: ({ children }) => (
+                    <td className="px-4 py-2">{children}</td>
+                  ),
+                }}
+              >
+                {post.content}
+              </ReactMarkdown>
             </div>
           </article>
         </Section>

@@ -22,6 +22,8 @@ import Link from "next/link";
 import {
   createBlogPost,
 } from "@/lib/actions/blog";
+import { BlogPreview } from "@/components/admin/blog-preview";
+import { MarkdownEditor } from "@/components/admin/markdown-editor";
 
 export default function CreateBlogPostPage() {
   const router = useRouter();
@@ -43,6 +45,7 @@ export default function CreateBlogPostPage() {
   });
 
   const [imagePreview, setImagePreview] = useState("");
+  const [showPreview, setShowPreview] = useState(false);
 
   // Generate slug from title
   const generateSlug = (text: string) => {
@@ -107,11 +110,19 @@ export default function CreateBlogPostPage() {
           </div>
         </div>
         <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            onClick={() => setShowPreview(true)}
+            disabled={!formData.title && !formData.titleEn && !formData.excerpt && !formData.excerptEn && !formData.content && !formData.contentEn}
+          >
+            <Eye className="mr-2 h-4 w-4" />
+            প্রিভিউ দেখুন
+          </Button>
           {formData.published && (
             <Button variant="outline" asChild>
               <Link href={`/blog/${formData.slug}`} target="_blank">
                 <Eye className="mr-2 h-4 w-4" />
-                প্রিভিউ দেখুন
+                সাইটে দেখুন
               </Link>
             </Button>
           )}
@@ -168,20 +179,14 @@ export default function CreateBlogPostPage() {
               <Label htmlFor="content">
                 কন্টেন্ট (Markdown) <span className="text-destructive">*</span>
               </Label>
-              <Textarea
-                id="content"
+              <MarkdownEditor
                 value={formData.content}
-                onChange={(e) =>
-                  setFormData({ ...formData, content: e.target.value })
+                onChange={(value) =>
+                  setFormData({ ...formData, content: value })
                 }
                 placeholder="ব্লগ পোস্টের কন্টেন্ট লিখুন (Markdown ফরম্যাটে)..."
                 rows={15}
-                required
-                className="font-mono text-sm"
               />
-              <p className="text-xs text-muted-foreground">
-                Markdown ফরম্যাট সমর্থিত। আপনি সাধারণ টেক্সট এবং Markdown সিনট্যাক্স ব্যবহার করতে পারেন।
-              </p>
             </div>
           </CardContent>
         </Card>
@@ -219,15 +224,13 @@ export default function CreateBlogPostPage() {
 
             <div className="space-y-2">
               <Label htmlFor="contentEn">Content (Markdown)</Label>
-              <Textarea
-                id="contentEn"
+              <MarkdownEditor
                 value={formData.contentEn}
-                onChange={(e) =>
-                  setFormData({ ...formData, contentEn: e.target.value })
+                onChange={(value) =>
+                  setFormData({ ...formData, contentEn: value })
                 }
                 placeholder="Blog post content in English (Markdown format)..."
                 rows={15}
-                className="font-mono text-sm"
               />
             </div>
           </CardContent>
@@ -421,6 +424,12 @@ export default function CreateBlogPostPage() {
           </CardContent>
         </Card>
       </form>
+
+      <BlogPreview
+        open={showPreview}
+        onOpenChange={setShowPreview}
+        data={formData}
+      />
     </div>
   );
 }

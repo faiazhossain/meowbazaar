@@ -325,15 +325,18 @@ export async function getAllBlogPosts(options?: {
 
 /**
  * Get a single blog post by slug
- * @param slug - Blog post slug
+ * @param slug - Blog post slug (may be URL-encoded)
  * @returns Blog post
  */
 export async function getBlogPostBySlug(
   slug: string
 ): Promise<BlogPostResult | null> {
   try {
+    // Decode URL-encoded slug (handles Bengali characters)
+    const decodedSlug = decodeURIComponent(slug);
+
     const blogPost = await db.blogPost.findUnique({
-      where: { slug },
+      where: { slug: decodedSlug },
       include: {
         author: {
           select: {
@@ -449,5 +452,39 @@ export async function getFeaturedBlogPosts(limit: number = 6): Promise<BlogPostR
   } catch (error) {
     console.error("Get featured blog posts error:", error);
     return [];
+  }
+}
+
+/**
+ * Get a blog post by ID (admin only)
+ * @param id - Blog post ID
+ * @returns Blog post
+ */
+export async function getBlogPostById(
+  id: string
+): Promise<BlogPostResult | null> {
+  const session = await auth();
+  if (!session?.user?.id || session.user.role !== "ADMIN") {
+    return null;
+  }
+
+  try {
+    const blogPost = await db.blogPost.findUnique({
+      where: { id },
+      include: {
+        author: {
+          select: {
+            id: true,
+            name: true,
+            image: true,
+          },
+        },
+      },
+    });
+
+    return blogPost as BlogPostResult;
+  } catch (error) {
+    console.error("Get blog post by ID error:", error);
+    return null;
   }
 }

@@ -18,66 +18,19 @@ import {
 import { getActiveOffers } from "@/lib/actions/admin";
 import { useTranslation } from "@/lib/i18n/use-translation";
 import { Button } from "@/components/ui/button";
+import { getFeaturedBlogPosts } from "@/lib/actions/blog";
 
 // Force dynamic rendering to avoid database calls during build
 export const dynamic = "force-dynamic";
 
-// Static blog posts for homepage
-const blogPosts = [
-  {
-    id: "1",
-    title: "কুকুরের খাবার নির্বাচনের সম্পূর্ণ গাইড",
-    titleEn: "Complete Guide to Choosing Dog Food",
-    excerpt:
-      "আপনার কুকুরের বয়স, জাত এবং স্বাস্থ্য অনুযায়ী সঠিক খাবার বেছে নিন।",
-    excerptEn:
-      "Choose the right food based on your dog's age, breed and health.",
-    image:
-      "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400&h=300&fit=crop",
-    href: "/blog/dog-food-guide",
-    date: "২৫ ফেব্রুয়ারি, ২০২৬",
-    dateEn: "February 25, 2026",
-    petType: "dog",
-  },
-  {
-    id: "2",
-    title: "বিড়ালের খাবার নির্বাচনের গাইড",
-    titleEn: "Guide to Choosing Cat Food",
-    excerpt:
-      "আপনার বিড়ালের বয়স, স্বাস্থ্য এবং পছন্দ অনুযায়ী সঠিক খাবার নির্বাচন করুন।",
-    excerptEn:
-      "Choose the right food based on your cat's age, health and preferences.",
-    image:
-      "https://images.unsplash.com/photo-1573865526739-10659fec78a5?w=400&h=300&fit=crop",
-    href: "/blog/cat-food-guide",
-    date: "২০ ফেব্রুয়ারি, ২০২৬",
-    dateEn: "February 20, 2026",
-    petType: "cat",
-  },
-  {
-    id: "3",
-    title: "পোষা পাখির যত্ন ও খাওয়ানো",
-    titleEn: "Pet Bird Care and Feeding",
-    excerpt:
-      "বাজরিগার, ফিঞ্চ ও অন্যান্য পাখির সঠিক যত্ন এবং খাবারের নির্দেশিকা।",
-    excerptEn:
-      "Proper care and feeding guide for budgies, finches and other birds.",
-    image:
-      "https://images.unsplash.com/photo-1552728089-57bdde30beb3?w=400&h=300&fit=crop",
-    href: "/blog/bird-care-guide",
-    date: "১৫ ফেব্রুয়ারি, ২০২৬",
-    dateEn: "February 15, 2026",
-    petType: "bird",
-  },
-];
-
 export default async function HomePage() {
-  const [categoriesData, bestsellersData, newArrivalsData, activeOffers] =
+  const [categoriesData, bestsellersData, newArrivalsData, activeOffers, blogPosts] =
     await Promise.all([
       getCategories(),
       getBestsellers(4),
       getNewArrivals(4),
       getActiveOffers(),
+      getFeaturedBlogPosts(3),
     ]);
 
   // Transform categories for CategoryCard component
@@ -189,7 +142,29 @@ export default async function HomePage() {
           />
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {blogPosts.map((post) => (
-              <BlogCard key={post.id} post={post} />
+              <BlogCard
+                key={post.id}
+                post={{
+                  id: post.id,
+                  title: post.title,
+                  titleEn: post.titleEn,
+                  excerpt: post.excerpt,
+                  excerptEn: post.excerptEn,
+                  image: post.image,
+                  href: `/blog/${post.slug}`,
+                  date: new Intl.DateTimeFormat("bn-BD", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  }).format(post.createdAt),
+                  dateEn: new Intl.DateTimeFormat("en-US", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  }).format(post.createdAt),
+                  petType: post.petType,
+                }}
+              />
             ))}
           </div>
         </Section>
