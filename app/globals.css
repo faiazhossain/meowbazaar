@@ -138,6 +138,23 @@
   }
 }
 
+/* Prevent focus on non-interactive elements */
+@layer base {
+  *:not(a, button, input, textarea, select, [tabindex], details, summary) {
+    &:focus {
+      outline: none !important;
+    }
+  }
+
+  /* Remove cursor text from non-input areas */
+  div, section, article, aside, nav, main, header, footer {
+    &:not(.editable, [contenteditable], :has(input), :has(textarea), :has([contenteditable])) {
+      cursor: default !important;
+      user-select: text;
+    }
+  }
+}
+
 /* Container max-width fix for Tailwind CSS 4.x */
 @layer utilities {
   .container {
