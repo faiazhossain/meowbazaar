@@ -40,9 +40,7 @@ export function HeroBanner() {
                 variant="outline"
                 className="border-primary text-primary hover:bg-primary/5 px-6 sm:px-8 py-5 sm:py-6 text-base sm:text-lg cursor-pointer w-full sm:w-auto"
               >
-                <Link href="/products?category=food">
-                  {t("hero.viewPetFood")}
-                </Link>
+                <Link href="/account">{t("nav.account")}</Link>
               </Button>
             </div>
 
