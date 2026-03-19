@@ -140,7 +140,7 @@ export default async function HomePage() {
             href="/blog"
             linkTextKey="sections.viewAllPosts"
           />
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 auto-rows-fr">
             {blogPosts.map((post) => (
               <BlogCard
                 key={post.id}

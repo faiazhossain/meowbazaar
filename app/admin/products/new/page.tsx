@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { getAdminCategories } from "@/lib/actions/admin";
+import { getAdminBrands } from "@/lib/actions/admin";
 import { ProductForm } from "@/components/admin/product-form";
 
 export default async function NewProductPage() {
@@ -10,11 +11,14 @@ export default async function NewProductPage() {
     redirect("/auth/signin");
   }
 
-  const categories = await getAdminCategories();
+  const [categories, brands] = await Promise.all([
+    getAdminCategories(),
+    getAdminBrands(),
+  ]);
 
   return (
     <div className="p-6">
-      <ProductForm categories={categories} mode="create" />
+      <ProductForm categories={categories} brands={brands} mode="create" />
     </div>
   );
 }

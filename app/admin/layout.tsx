@@ -31,6 +31,7 @@ const sidebarLinks = [
   { href: "/admin/orders", label: "অর্ডার", icon: ShoppingCart },
   { href: "/admin/products", label: "পণ্য", icon: Package },
   { href: "/admin/categories", label: "ক্যাটাগরি", icon: FolderTree },
+  { href: "/admin/brands", label: "ব্র্যান্ড", icon: BarChart3 },
   { href: "/admin/inventory", label: "ইনভেন্টরি", icon: TrendingUp },
   { href: "/admin/blog", label: "ব্লগ", icon: FileText },
   { href: "/admin/reviews", label: "রিভিউ", icon: MessageSquare },

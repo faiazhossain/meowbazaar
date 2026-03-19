@@ -152,6 +152,155 @@ export async function deleteCategory(categoryId: string) {
   }
 }
 
+// ==================== BRAND ACTIONS ====================
+
+interface CreateBrandData {
+  name: string;
+  nameEn: string;
+  image?: string;
+}
+
+interface UpdateBrandData extends Partial<CreateBrandData> {
+  id: string;
+}
+
+// Get all brands with product count (Admin)
+export async function getAdminBrands() {
+  const session = await auth();
+  if (!session?.user?.id || session.user.role !== "ADMIN") {
+    return [];
+  }
+
+  const brands = await db.brand.findMany({
+    include: {
+      _count: {
+        select: { products: true },
+      },
+    },
+    orderBy: { createdAt: "desc" },
+  });
+
+  return brands;
+}
+
+// Get single brand
+export async function getBrandById(id: string) {
+  const session = await auth();
+  if (!session?.user?.id || session.user.role !== "ADMIN") {
+    return null;
+  }
+
+  const brand = await db.brand.findUnique({
+    where: { id },
+    include: {
+      _count: {
+        select: { products: true },
+      },
+    },
+  });
+
+  return brand;
+}
+
+// Create brand (Admin only)
+export async function createBrand(data: CreateBrandData) {
+  const session = await auth();
+  if (!session?.user?.id || session.user.role !== "ADMIN") {
+    return { success: false, error: "অনুমতি নেই" };
+  }
+
+  try {
+    const slug = generateSlug(data.nameEn) + "-" + Date.now();
+
+    const brand = await db.brand.create({
+      data: {
+        name: data.name,
+        nameEn: data.nameEn,
+        slug,
+        image: data.image,
+      },
+    });
+
+    revalidatePath("/admin/brands");
+    revalidatePath("/products");
+
+    return { success: true, brand };
+  } catch (error) {
+    console.error("Create brand error:", error);
+    return { success: false, error: "ব্র্যান্ড তৈরি করা যায়নি" };
+  }
+}
+
+// Update brand (Admin only)
+export async function updateBrand(data: UpdateBrandData) {
+  const session = await auth();
+  if (!session?.user?.id || session.user.role !== "ADMIN") {
+    return { success: false, error: "অনুমতি নেই" };
+  }
+
+  try {
+    const brand = await db.brand.update({
+      where: { id: data.id },
+      data: {
+        name: data.name,
+        nameEn: data.nameEn,
+        image: data.image,
+      },
+    });
+
+    revalidatePath("/admin/brands");
+    revalidatePath("/products");
+
+    return { success: true, brand };
+  } catch (error) {
+    console.error("Update brand error:", error);
+    return { success: false, error: "ব্র্যান্ড আপডেট করা যায়নি" };
+  }
+}
+
+// Delete brand (Admin only)
+export async function deleteBrand(brandId: string) {
+  const session = await auth();
+  if (!session?.user?.id || session.user.role !== "ADMIN") {
+    return { success: false, error: "অনুমতি নেই" };
+  }
+
+  try {
+    // Check if brand has products
+    const productCount = await db.product.count({
+      where: { brandId },
+    });
+
+    if (productCount > 0) {
+      return {
+        success: false,
+        error: `এই ব্র্যান্ডে ${productCount} টি পণ্য আছে। প্রথমে পণ্যগুলো সরান।`,
+      };
+    }
+
+    await db.brand.delete({
+      where: { id: brandId },
+    });
+
+    revalidatePath("/admin/brands");
+    revalidatePath("/products");
+
+    return { success: true };
+  } catch (error) {
+    console.error("Delete brand error:", error);
+    return { success: false, error: "ব্র্যান্ড ডিলিট করা যায়নি" };
+  }
+}
+
+// Get all brands (Public)
+export async function getBrands() {
+  const brands = await db.brand.findMany({
+    orderBy: { name: "asc" },
+  });
+
+  return brands;
+}
+
 // ==================== PRODUCT ACTIONS ====================
 
 interface CreateProductData {
@@ -163,6 +312,7 @@ interface CreateProductData {
   image: string;
   images?: string[];
   categoryId: string;
+  brandId?: string;
   stock: number;
   isNew?: boolean;
   hasCOD?: boolean;
@@ -209,6 +359,14 @@ export async function getAdminProducts(options?: {
             slug: true,
           },
         },
+        brand: {
+          select: {
+            id: true,
+            name: true,
+            nameEn: true,
+            slug: true,
+          },
+        },
       },
       orderBy: { createdAt: "desc" },
       take: options?.limit || 50,
@@ -232,6 +390,7 @@ export async function getProductById(id: string) {
       where: { id },
       include: {
         category: true,
+        brand: true,
       },
     });
 
@@ -266,6 +425,7 @@ export async function createProduct(data: CreateProductData) {
         image: data.image,
         images: data.images ? JSON.stringify(data.images) : null,
         categoryId: data.categoryId,
+        brandId: data.brandId || null,
         stock: data.stock,
         inStock: data.stock > 0,
         isNew: data.isNew ?? true,

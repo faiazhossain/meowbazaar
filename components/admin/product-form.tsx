@@ -35,6 +35,13 @@ interface Category {
   slug: string;
 }
 
+interface Brand {
+  id: string;
+  name: string;
+  nameEn: string;
+  slug: string;
+}
+
 interface Product {
   id: string;
   name: string;
@@ -56,11 +63,12 @@ interface Product {
 
 interface ProductFormProps {
   categories: Category[];
+  brands: Brand[];
   product?: Product | null;
   mode: "create" | "edit";
 }
 
-export function ProductForm({ categories, product, mode }: ProductFormProps) {
+export function ProductForm({ categories, brands, product, mode }: ProductFormProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
 
@@ -72,6 +80,7 @@ export function ProductForm({ categories, product, mode }: ProductFormProps) {
     price: string;
     mrp: string;
     categoryId: string;
+    brandId: string;
     stock: string;
     isNew: boolean;
     hasCOD: boolean;
@@ -84,6 +93,7 @@ export function ProductForm({ categories, product, mode }: ProductFormProps) {
     price: product?.price?.toString() || "",
     mrp: product?.mrp?.toString() || "",
     categoryId: product?.categoryId || "",
+    brandId: product?.brandId || "",
     stock: product?.stock?.toString() || "0",
     isNew: product?.isNew ?? true,
     hasCOD: product?.hasCOD ?? true,
@@ -133,6 +143,7 @@ export function ProductForm({ categories, product, mode }: ProductFormProps) {
         price: parseFloat(formData.price),
         mrp: formData.mrp ? parseFloat(formData.mrp) : undefined,
         categoryId: formData.categoryId,
+        brandId: formData.brandId === "others" ? undefined : (formData.brandId || undefined),
         stock: parseInt(formData.stock, 10) || 0,
         isNew: formData.isNew,
         hasCOD: formData.hasCOD,
@@ -275,6 +286,29 @@ export function ProductForm({ categories, product, mode }: ProductFormProps) {
                       {errors.categoryId}
                     </p>
                   )}
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="brandId">ব্র্যান্ড</Label>
+                  <Select
+                    value={formData.brandId}
+                    onValueChange={(value) =>
+                      setFormData({ ...formData, brandId: value })
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="ব্র্যান্ড নির্বাচন করুন" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="">ব্র্যান্ড নির্বাচন করুন</SelectItem>
+                      <SelectItem value="others">অন্যান্য</SelectItem>
+                      {brands.map((brand) => (
+                        <SelectItem key={brand.id} value={brand.id}>
+                          {brand.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
             </div>

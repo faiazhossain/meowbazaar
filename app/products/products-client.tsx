@@ -35,7 +35,12 @@ interface Category {
   slug: string;
 }
 
-const brands = ["Royal Canin", "Whiskas", "Me-O", "Kit Cat", "Fancy Feast"];
+interface Brand {
+  id: string;
+  name: string;
+  nameEn?: string;
+  slug: string;
+}
 
 const sortOptions = [
   { value: "newest", label: "products.sort.newest" },
@@ -48,6 +53,7 @@ const sortOptions = [
 interface ProductsClientProps {
   initialProducts: Product[];
   categories: Category[];
+  brands: Brand[];
   user?: {
     id: string;
     name?: string | null;
@@ -67,6 +73,7 @@ interface ProductsClientProps {
 export function ProductsClient({
   initialProducts,
   categories,
+  brands,
   user,
   cartCount,
   wishlistCount,
@@ -117,6 +124,17 @@ export function ProductsClient({
     filtered = filtered.filter(
       (p) => p.price >= priceRange[0] && p.price <= priceRange[1]
     );
+
+    // Filter by brand
+    if (selectedBrands.length > 0) {
+      const hasOthers = selectedBrands.includes("others");
+      const brandIds = selectedBrands.filter(b => b !== "others");
+
+      filtered = filtered.filter((p) => {
+        if (hasOthers && !p.brand) return true;
+        return brandIds.includes(p.brand || "");
+      });
+    }
 
     // Filter by stock
     if (inStockOnly) {
@@ -205,6 +223,7 @@ export function ProductsClient({
                   t={t}
                   locale={locale}
                   getLocalizedName={getLocalizedName}
+                  brands={brands}
                 />
               </div>
             </aside>
@@ -322,6 +341,7 @@ interface FilterSectionProps {
   t: any;
   locale: string;
   getLocalizedName: (name: string, nameEn?: string) => string;
+  brands: Brand[];
 }
 
 function FilterSection({
@@ -338,6 +358,7 @@ function FilterSection({
   t,
   locale,
   getLocalizedName,
+  brands,
 }: FilterSectionProps) {
   return (
     <div className="space-y-6">
@@ -393,24 +414,46 @@ function FilterSection({
           {t("products.brand")}
         </h4>
         <div className="space-y-2">
+          <label className="flex items-center gap-2 cursor-pointer">
+            <Checkbox
+              checked={selectedBrands.length === 0}
+              onCheckedChange={() => setSelectedBrands([])}
+            />
+            <span className="text-sm">{t("products.allBrands")}</span>
+          </label>
+          <label className="flex items-center gap-2 cursor-pointer">
+            <Checkbox
+              checked={selectedBrands.includes("others")}
+              onCheckedChange={(checked) => {
+                if (checked) {
+                  setSelectedBrands([...selectedBrands, "others"]);
+                } else {
+                  setSelectedBrands(
+                    selectedBrands.filter((b) => b !== "others")
+                  );
+                }
+              }}
+            />
+            <span className="text-sm">{t("products.otherBrands")}</span>
+          </label>
           {brands.map((brand) => (
             <label
-              key={brand}
+              key={brand.id}
               className="flex items-center gap-2 cursor-pointer"
             >
               <Checkbox
-                checked={selectedBrands.includes(brand)}
+                checked={selectedBrands.includes(brand.id)}
                 onCheckedChange={(checked) => {
                   if (checked) {
-                    setSelectedBrands([...selectedBrands, brand]);
+                    setSelectedBrands([...selectedBrands, brand.id]);
                   } else {
                     setSelectedBrands(
-                      selectedBrands.filter((b) => b !== brand)
+                      selectedBrands.filter((b) => b !== brand.id)
                     );
                   }
                 }}
               />
-              <span className="text-sm">{brand}</span>
+              <span className="text-sm">{getLocalizedName(brand.name, brand.nameEn)}</span>
             </label>
           ))}
         </div>

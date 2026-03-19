@@ -21,6 +21,7 @@ export const translations = {
       admin: "অ্যাডমিন",
       profileView: "প্রোফাইল দেখুন",
       trackOrders: "অর্ডার ট্র্যাক করুন",
+      brands: "ব্র্যান্ড",
     },
     // Mobile menu
     mobileMenu: {
@@ -147,6 +148,8 @@ export const translations = {
       price: "মূল্য:",
       category: "ক্যাটাগরি:",
       brand: "ব্র্যান্ড",
+      allBrands: "সব ব্র্যান্ড",
+      otherBrands: "অন্যান্য",
       reset: "রিসেট",
       clearFilters: "ফিল্টার রিসেট করুন",
       loadMore: "আরও দেখুন",
@@ -481,6 +484,17 @@ export const translations = {
         edit: "এডিট করুন",
         delete: "মুছে ফেলুন",
       },
+      brands: {
+        title: "ব্র্যান্ড ম্যানেজমেন্ট",
+        create: "ব্র্যান্ড যোগ করুন",
+        edit: "ব্র্যান্ড সম্পাদনা করুন",
+        delete: "ব্র্যান্ড ডিলিট করুন",
+        name: "ব্র্যান্ডের নাম",
+        nameEn: "ব্র্যান্ডের ইংরেজি নাম",
+        image: "ব্র্যান্ডের লোগো",
+        products: "পণ্য",
+        confirmDelete: "আপনি কি এই ব্র্যান্ড ডিলিট করতে চান?",
+      },
       orders: {
         title: "অর্ডার ম্যানেজমেন্ট",
         orderNumber: "অর্ডার নম্বর",
@@ -578,6 +592,7 @@ export const translations = {
       admin: "Admin",
       profileView: "View Profile",
       trackOrders: "Track Orders",
+      brands: "Brands",
     },
     // Mobile menu
     mobileMenu: {
@@ -704,6 +719,8 @@ export const translations = {
       price: "Price:",
       category: "Category:",
       brand: "Brand",
+      allBrands: "All Brands",
+      otherBrands: "Others",
       reset: "Reset",
       clearFilters: "Clear Filters",
       loadMore: "Load More",
@@ -1037,6 +1054,17 @@ export const translations = {
         actions: "Actions",
         edit: "Edit",
         delete: "Delete",
+      },
+      brands: {
+        title: "Brand Management",
+        create: "Add Brand",
+        edit: "Edit Brand",
+        delete: "Delete Brand",
+        name: "Brand Name",
+        nameEn: "Brand Name (English)",
+        image: "Brand Logo",
+        products: "Products",
+        confirmDelete: "Are you sure you want to delete this brand?",
       },
       orders: {
         title: "Order Management",

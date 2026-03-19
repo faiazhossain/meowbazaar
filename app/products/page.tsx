@@ -8,12 +8,13 @@ import { Spinner } from "@/components/ui/spinner";
 export const dynamic = "force-dynamic";
 
 async function getProductsData() {
-  const [products, categories] = await Promise.all([
+  const [products, categories, brands] = await Promise.all([
     db.product.findMany({
-      include: { category: true },
+      include: { category: true, brand: true },
       orderBy: { createdAt: "desc" },
     }),
     db.category.findMany(),
+    db.brand.findMany(),
   ]);
 
   return {
@@ -30,12 +31,20 @@ async function getProductsData() {
       isNew: p.isNew,
       hasCOD: p.hasCOD,
       category: p.category?.slug || "",
+      brand: p.brand?.id || null,
+      brandName: p.brand?.name || null,
     })),
     categories: categories.map((c) => ({
       id: c.id,
       name: c.name,
       nameEn: c.nameEn || undefined,
       slug: c.slug,
+    })),
+    brands: brands.map((b) => ({
+      id: b.id,
+      name: b.name,
+      nameEn: b.nameEn || undefined,
+      slug: b.slug,
     })),
   };
 }
@@ -79,7 +88,7 @@ function ProductsLoading() {
 }
 
 export default async function ProductsPage() {
-  const [{ products, categories }, { user, cartCount, wishlistCount }] =
+  const [{ products, categories, brands }, { user, cartCount, wishlistCount }] =
     await Promise.all([getProductsData(), getUserData()]);
 
   return (
@@ -87,6 +96,7 @@ export default async function ProductsPage() {
       <ProductsClient
         initialProducts={products}
         categories={categories}
+        brands={brands}
         user={user}
         cartCount={cartCount}
         wishlistCount={wishlistCount}
