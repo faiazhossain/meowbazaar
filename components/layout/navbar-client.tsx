@@ -13,6 +13,7 @@ import {
   Home,
   Heart,
   ShoppingBag,
+  BookOpenText,
   X,
   ChevronRight,
   PawPrint,
@@ -51,31 +52,10 @@ const navLinks = [
     count: 156,
   },
   {
-    href: "/products?pet=cat",
-    label: "বিড়াল",
-    labelEn: "Cats",
-    icon: "🐱",
-    count: 48,
-  },
-  {
-    href: "/products?pet=dog",
-    label: "কুকুর",
-    labelEn: "Dogs",
-    icon: "🐶",
-    count: 52,
-  },
-  {
-    href: "/products?pet=bird",
-    label: "পাখি",
-    labelEn: "Birds",
-    icon: "🐦",
-    count: 24,
-  },
-  {
-    href: "/products?pet=fish",
-    label: "মাছ",
-    labelEn: "Fish",
-    icon: "🐠",
+    href: "/blog",
+    label: "ব্লগ",
+    labelEn: "Blog",
+    icon: BookOpenText,
     count: 18,
   },
 ];
@@ -283,25 +263,6 @@ export function NavbarClient({
                         </SheetClose>
                       );
                     })}
-                  </div>
-
-                  {/* Pet Categories Pills */}
-                  <div className="px-4 py-2 bg-white">
-                    <h3 className="mb-2 px-2 text-xs font-semibold uppercase tracking-wider text-orange-600 flex items-center gap-2">
-                      <span className="w-1 h-4 bg-orange-500 rounded-full" />
-                      {t("mobileMenu.popularCategories")}
-                    </h3>
-                    <div className="flex flex-wrap gap-2">
-                      {petCategories.map((cat, idx) => (
-                        <span
-                          key={idx}
-                          className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm ${cat.color} border border-orange-200`}
-                        >
-                          <span>{cat.icon}</span>
-                          <span>{getPetCategoryLabel(cat)}</span>
-                        </span>
-                      ))}
-                    </div>
                   </div>
 
                   {/* Main Navigation with Solid Backgrounds */}
