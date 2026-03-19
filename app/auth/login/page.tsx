@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { NavbarClient } from "@/components/layout/navbar-client";
 import { Footer } from "@/components/layout/footer";
@@ -13,6 +14,9 @@ import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { getUserRole } from "@/lib/actions/auth";
 
 export default function LoginPage() {
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get("callbackUrl");
+  const { data: session } = useSession();
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
@@ -43,8 +47,15 @@ export default function LoginPage() {
         return;
       }
 
+      // Determine redirect path - use callbackUrl if available, otherwise default
+      let redirectPath = callbackUrl || "/account";
+
+      // For admin users, redirect to admin unless a specific callback URL is provided
+      if (roleResult?.role === "ADMIN" && !callbackUrl) {
+        redirectPath = "/admin";
+      }
+
       // Hard redirect to ensure middleware sees the new session
-      const redirectPath = roleResult?.role === "ADMIN" ? "/admin" : "/account";
       window.location.href = redirectPath;
     } catch {
       setError("কিছু ভুল হয়েছে। আবার চেষ্টা করুন।");
@@ -54,7 +65,7 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <NavbarClient />
+      <NavbarClient user={session?.user} />
 
       <main>
         <Section className="py-16">

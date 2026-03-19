@@ -18,7 +18,7 @@ import type { DeliveryFeeResult } from "@/lib/utils/delivery";
 
 export default function CartPage() {
   const router = useRouter();
-  const { status: sessionStatus } = useSession();
+  const { data: session, status: sessionStatus } = useSession();
   const {
     items,
     isLoading,
@@ -78,7 +78,7 @@ export default function CartPage() {
   if (isLoading || isSessionLoading) {
     return (
       <div className="min-h-screen bg-background">
-        <NavbarClient />
+        <NavbarClient user={session?.user} />
         <main className="min-h-[60vh] flex items-center justify-center">
           <CatLoader text="কার্ট লোড হচ্ছে..." size="lg" />
         </main>
@@ -91,7 +91,7 @@ export default function CartPage() {
   if (items.length === 0) {
     return (
       <div className="min-h-screen bg-background">
-        <NavbarClient />
+        <NavbarClient user={session?.user} />
         <main className="container mx-auto px-4 py-16">
           <div className="max-w-md mx-auto text-center">
             <div className="w-32 h-32 mx-auto mb-6 bg-muted rounded-full flex items-center justify-center">
@@ -117,7 +117,7 @@ export default function CartPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <NavbarClient />
+      <NavbarClient user={session?.user} />
 
       <main>
         <Section>

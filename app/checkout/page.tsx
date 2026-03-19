@@ -235,7 +235,7 @@ export default function CheckoutPage() {
   if (isLoading || addressesLoading) {
     return (
       <div className="min-h-screen bg-background">
-        <NavbarClient />
+        <NavbarClient user={session?.user} />
         <main className="min-h-[60vh] flex items-center justify-center">
           <CatLoader text="চেকআউট লোড হচ্ছে..." size="lg" />
         </main>
@@ -248,7 +248,7 @@ export default function CheckoutPage() {
   if (step === 4) {
     return (
       <div className="min-h-screen bg-background">
-        <NavbarClient />
+        <NavbarClient user={session?.user} />
         <main className="container mx-auto px-4 py-16">
           <div className="max-w-lg mx-auto text-center">
             <div className="w-20 h-20 mx-auto mb-6 bg-success/10 rounded-full flex items-center justify-center">
@@ -297,7 +297,7 @@ export default function CheckoutPage() {
   if (items.length === 0) {
     return (
       <div className="min-h-screen bg-background">
-        <NavbarClient />
+        <NavbarClient user={session?.user} />
         <main className="container mx-auto px-4 py-16">
           <div className="max-w-md mx-auto text-center">
             <div className="w-32 h-32 mx-auto mb-6 bg-muted rounded-full flex items-center justify-center">
@@ -323,7 +323,7 @@ export default function CheckoutPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <NavbarClient />
+      <NavbarClient user={session?.user} />
 
       <main>
         <Section>

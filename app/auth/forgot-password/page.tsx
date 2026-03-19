@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useSession } from "next-auth/react";
 import { NavbarClient } from "@/components/layout/navbar-client";
 import { Footer } from "@/components/layout/footer";
 import { Section } from "@/components/ui/section";
@@ -12,6 +13,7 @@ import { Loader2, Mail, ArrowLeft, CheckCircle } from "lucide-react";
 import { forgotPassword } from "@/lib/actions/auth";
 
 export default function ForgotPasswordPage() {
+  const { data: session } = useSession();
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [error, setError] = useState("");
@@ -35,7 +37,7 @@ export default function ForgotPasswordPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <NavbarClient />
+      <NavbarClient user={session?.user} />
 
       <main>
         <Section className="py-16">

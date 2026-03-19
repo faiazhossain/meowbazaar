@@ -4,6 +4,7 @@ import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 import { NavbarClient } from "@/components/layout/navbar-client";
 import { Footer } from "@/components/layout/footer";
 import { Section } from "@/components/ui/section";
@@ -15,6 +16,7 @@ import { resetPassword, validateResetToken } from "@/lib/actions/auth";
 
 function ResetPasswordContent() {
   const router = useRouter();
+  const { data: session } = useSession();
   const searchParams = useSearchParams();
 
   // Get token from URL hash fragment for security (instead of query parameter)
@@ -233,9 +235,10 @@ function ResetPasswordContent() {
 }
 
 export default function ResetPasswordPage() {
+  const { data: session } = useSession();
   return (
     <div className="min-h-screen bg-background">
-      <NavbarClient />
+      <NavbarClient user={session?.user} />
 
       <main>
         <Section className="py-16">

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { signIn } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 import { NavbarClient } from "@/components/layout/navbar-client";
 import { Footer } from "@/components/layout/footer";
 import { Section } from "@/components/ui/section";
@@ -13,6 +13,7 @@ import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { register } from "@/lib/actions/auth";
 
 export default function RegisterPage() {
+  const { data: session } = useSession();
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
@@ -73,7 +74,7 @@ export default function RegisterPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <NavbarClient />
+      <NavbarClient user={session?.user} />
 
       <main>
         <Section className="py-16">
