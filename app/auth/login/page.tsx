@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { signIn } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 import { NavbarClient } from "@/components/layout/navbar-client";
 import { Footer } from "@/components/layout/footer";
 import { Section } from "@/components/ui/section";
@@ -153,7 +153,7 @@ export default function LoginPage() {
                 </Button>
               </form>
 
-              <div className="mt-6 text-center">
+              <div className="mt-6 text-center space-y-2">
                 <p className="text-muted-foreground">
                   একাউন্ট নেই?{" "}
                   <Link
@@ -161,6 +161,15 @@ export default function LoginPage() {
                     className="text-primary hover:text-brand-orange-dark font-medium"
                   >
                     রেজিস্টার করুন
+                  </Link>
+                </p>
+                <p className="text-muted-foreground">
+                  ফস্টার হোম রেজিস্টার করতে চান?{" "}
+                  <Link
+                    href="/foster/register"
+                    className="text-primary hover:text-brand-orange-dark font-medium"
+                  >
+                    ফস্টার রেজিস্ট্রেশন
                   </Link>
                 </p>
               </div>

@@ -52,6 +52,13 @@ const navLinks = [
     count: 156,
   },
   {
+    href: "/foster",
+    label: "ফস্টার হোম",
+    labelEn: "Foster Homes",
+    icon: PawPrint,
+    count: 0,
+  },
+  {
     href: "/blog",
     label: "ব্লগ",
     labelEn: "Blog",
@@ -134,6 +141,7 @@ export function NavbarClient({
   };
 
   const isAdmin = user?.role === "ADMIN";
+  const isFosterOwner = user?.role === "FOSTER_OWNER";
 
   const isActiveLink = (href: string) => {
     if (href === pathname) return true;
@@ -394,6 +402,28 @@ export function NavbarClient({
                           </Link>
                         </SheetClose>
 
+                        {isFosterOwner && (
+                          <SheetClose asChild>
+                            <Link
+                              href="/foster/dashboard"
+                              className="flex items-center gap-3 rounded-xl px-4 py-3 bg-white text-gray-700 hover:bg-orange-100 hover:text-orange-600 transition-all active:scale-[0.98] group mb-2 border border-orange-200"
+                            >
+                              <div className="p-2 rounded-full bg-orange-100 group-hover:bg-orange-200 transition-colors">
+                                <PawPrint className="h-5 w-5 text-orange-500" />
+                              </div>
+                              <div className="flex flex-col flex-1">
+                                <span className="font-medium">
+                                  ফস্টার ড্যাশবোর্ড
+                                </span>
+                                <span className="text-xs text-gray-500">
+                                  Foster Dashboard
+                                </span>
+                              </div>
+                              <ChevronRight className="h-4 w-4 text-gray-400 group-hover:text-orange-500 group-hover:translate-x-1 transition-all" />
+                            </Link>
+                          </SheetClose>
+                        )}
+
                         {isAdmin && (
                           <SheetClose asChild>
                             <Link
@@ -630,6 +660,20 @@ export function NavbarClient({
                         {t("nav.orders")}
                       </Link>
                     </DropdownMenuItem>
+                    {isFosterOwner && (
+                      <>
+                        <DropdownMenuSeparator className="bg-orange-200" />
+                        <DropdownMenuItem asChild>
+                          <Link
+                            href="/foster/dashboard"
+                            className="cursor-pointer hover:text-orange-600 hover:bg-orange-50"
+                          >
+                            <PawPrint className="mr-2 h-4 w-4 text-orange-500" />
+                            ফস্টার ড্যাশবোর্ড / Foster Dashboard
+                          </Link>
+                        </DropdownMenuItem>
+                      </>
+                    )}
                     {isAdmin && (
                       <>
                         <DropdownMenuSeparator className="bg-orange-200" />

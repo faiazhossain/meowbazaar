@@ -7,10 +7,13 @@ export async function middleware(req: NextRequest) {
   const token = await getToken({ req, secret: process.env.AUTH_SECRET });
   const isLoggedIn = !!token;
   const isAdmin = token?.role === "ADMIN";
+  const isFosterOwner = token?.role === "FOSTER_OWNER";
 
   // Protected routes
   const isAccountRoute = nextUrl.pathname.startsWith("/account");
   const isAdminRoute = nextUrl.pathname.startsWith("/admin");
+  const isFosterRoute = nextUrl.pathname.startsWith("/foster/dashboard");
+  const isFosterRegisterRoute = nextUrl.pathname.startsWith("/foster/register");
   const isCheckoutRoute = nextUrl.pathname.startsWith("/checkout");
   const isAuthRoute = nextUrl.pathname.startsWith("/auth");
 
@@ -45,6 +48,23 @@ export async function middleware(req: NextRequest) {
     }
   }
 
+  // Protect foster dashboard routes
+  if (isFosterRoute) {
+    if (!isLoggedIn) {
+      return NextResponse.redirect(
+        new URL(`/auth/login?callbackUrl=${nextUrl.pathname}`, nextUrl)
+      );
+    }
+    if (!isFosterOwner && !isAdmin) {
+      return NextResponse.redirect(new URL("/foster/register", nextUrl));
+    }
+  }
+
+  // Protect foster register route (redirect if already has foster profile)
+  if (isFosterRegisterRoute && isLoggedIn && isFosterOwner) {
+    // We'll let the page handle the redirect based on profile status
+  }
+
   return NextResponse.next();
 }
 
@@ -52,6 +72,8 @@ export const config = {
   matcher: [
     "/account/:path*",
     "/admin/:path*",
+    "/foster/dashboard/:path*",
+    "/foster/register",
     "/checkout/:path*",
     "/auth/:path*",
   ],

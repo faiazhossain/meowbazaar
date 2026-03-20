@@ -18,6 +18,7 @@ import {
   TrendingUp,
   HelpCircle,
   Mail,
+  Shield,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -33,6 +34,7 @@ const sidebarLinks = [
   { href: "/admin/categories", label: "ক্যাটাগরি", icon: FolderTree },
   { href: "/admin/brands", label: "ব্র্যান্ড", icon: BarChart3 },
   { href: "/admin/inventory", label: "ইনভেন্টরি", icon: TrendingUp },
+  { href: "/admin/foster", label: "ফস্টার হোম", icon: Shield },
   { href: "/admin/blog", label: "ব্লগ", icon: FileText },
   { href: "/admin/reviews", label: "রিভিউ", icon: MessageSquare },
   { href: "/admin/offers", label: "অফার", icon: Gift },

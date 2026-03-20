@@ -20,3 +20,13 @@ export function generateSlug(text: string): string {
     .replace(/\s+/g, '-') // Replace spaces with hyphens
     .replace(/-+/g, '-'); // Replace multiple hyphens with single hyphen
 }
+
+/**
+ * Generate a unique order number
+ * @returns A unique order number string
+ */
+export function generateOrderNumber(): string {
+  const timestamp = Date.now();
+  const random = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
+  return `FO${timestamp.toString().slice(-6)}${random}`;
+}

@@ -23,8 +23,11 @@ model User {
   accounts        Account[]
   addresses       Address[]
   blogPosts       BlogPost[]
+  bookings        Booking[]
   cart            Cart?
   compareItems    CompareItem[]
+  fosterProfile   FosterProfile?
+  fosterReviews   FosterReview[]
   loginAttempts   LoginAttempt[]
   orders          Order[]
   reviews         Review[]
@@ -452,6 +455,157 @@ model ContactMessage {
   @@index([status])
 }
 
+model FosterProfile {
+  id                String       @id @default(cuid())
+  userId            String       @unique
+  businessName      String
+  businessNameEn    String?
+  description       String
+  descriptionEn     String?
+  address           String
+  division          String
+  area              String
+  phone             String
+  altPhone          String?
+  email             String
+  website           String?
+
+  // Capacity & Services
+  maxCapacity       Int          @default(5)
+  currentOccupancy  Int          @default(0)
+  acceptsKittens    Boolean      @default(false)
+  acceptsCats       Boolean      @default(true)
+  services          String?
+  facilities        String?
+
+  // Pricing
+  basePricePerDay   Float
+  kittenPricePerDay Float?
+  weekendPremium    Float        @default(0)
+  holidayPremium    Float        @default(0)
+
+  // Verification
+  status            FosterStatus @default(PENDING)
+  verified          Boolean      @default(false)
+  verificationDocs  String?
+  rating            Float        @default(0)
+  reviewCount       Int          @default(0)
+
+  // Media
+  coverImage        String?
+  galleryImages     String?
+  videoUrl          String?
+
+  // Schedule
+  availability      String?
+  bookingRules      String?
+
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+
+  user              User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  bookings          Booking[]
+  reviews           FosterReview[]
+
+  @@index([status])
+  @@index([division])
+  @@index([rating])
+}
+
+model Booking {
+  id              String       @id @default(cuid())
+  bookingNumber   String       @unique
+  userId          String
+  fosterId        String
+  petInfo         String
+  checkIn         DateTime
+  checkOut        DateTime
+  numberOfCats    Int
+
+  // Pricing
+  basePrice       Float
+  totalAmount     Float
+  commission      Float
+  fosterPayout    Float
+
+  // Add-ons
+  addOns          String?
+  addOnPrice      Float        @default(0)
+
+  // Status & Payment
+  status          BookingStatus @default(PENDING)
+  isPaid          Boolean      @default(false)
+  paymentMethod   String?
+
+  // Special Notes
+  specialNeeds    String?
+  feedingInstructions String?
+  emergencyContact String?
+
+  // Verification
+  dropOffPhoto    String?
+  pickUpPhoto     String?
+  dailyUpdates    String?
+
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+
+  user            User         @relation(fields: [userId], references: [id])
+  foster          FosterProfile @relation(fields: [fosterId], references: [id])
+  timeline        BookingTimeline[]
+  payments        FosterPayment[]
+  review          FosterReview?
+
+  @@index([userId, checkIn])
+  @@index([fosterId, checkIn])
+  @@index([status])
+  @@index([bookingNumber])
+}
+
+model BookingTimeline {
+  id          String   @id @default(cuid())
+  bookingId   String
+  status      String
+  note        String?
+  photoUrl    String?
+  createdAt   DateTime @default(now())
+  booking     Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+
+  @@index([bookingId])
+}
+
+model FosterPayment {
+  id          String   @id @default(cuid())
+  bookingId   String
+  amount      Float
+  commission  Float
+  netAmount   Float
+  status      String   @default("PENDING")
+  paidAt      DateTime?
+  createdAt   DateTime @default(now())
+  booking     Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+
+  @@index([status])
+}
+
+model FosterReview {
+  id          String   @id @default(cuid())
+  bookingId   String   @unique
+  fosterId    String
+  userId      String
+  rating      Int
+  comment     String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  foster      FosterProfile @relation(fields: [fosterId], references: [id], onDelete: Cascade)
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  booking     Booking      @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+
+  @@index([fosterId])
+  @@index([userId])
+}
+
 enum Role {
   CUSTOMER
   ADMIN
@@ -508,4 +662,25 @@ enum SettingType {
 enum FreeDeliveryType {
   FREE
   PERCENTAGE
+}
+
+enum FosterStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  SUSPENDED
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+  NO_SHOW
+}
+
+enum PetType {
+  CAT
+  KITTEN
 }
