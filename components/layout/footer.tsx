@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState, useEffect } from "react";
+import "../styles/footer.css";
 import {
   Facebook,
   Instagram,
@@ -133,6 +134,12 @@ export function Footer() {
             <p className="text-gray-400 text-sm leading-relaxed max-w-md">
               {t("footer.description")}
             </p>
+
+          <style jsx>{`
+            .prevent-auto-link span {
+              pointer-events: none;
+            }
+          `}</style>
 
             {/* Newsletter Signup */}
             <div className="space-y-3">

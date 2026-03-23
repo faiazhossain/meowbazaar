@@ -1,0 +1,4 @@
+/* Prevent automatic link creation in browser */
+.prevent-auto-link span {
+  pointer-events: none;
+}

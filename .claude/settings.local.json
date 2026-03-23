@@ -35,7 +35,8 @@
       "Bash(cd \"/d/My projects/catproject\" && npm run db:migrate dev --name add_foster_system)",
       "Bash(cd \"/d/My projects/catproject\" && npm run db:generate)",
       "Bash(cd \"/d/My projects/catproject\" && rm -rf .next && npm run build)",
-      "Bash(cd \"/d/My projects/catproject\" && rm -rf .next 2>/dev/null || true && npm run build)"
+      "Bash(cd \"/d/My projects/catproject\" && rm -rf .next 2>/dev/null || true && npm run build)",
+      "Bash(\"D:\\\\My projects\\\\catproject\\\\.env\")"
     ]
   }
 }

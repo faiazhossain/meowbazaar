@@ -609,6 +609,7 @@ model FosterReview {
 enum Role {
   CUSTOMER
   ADMIN
+  FOSTER_OWNER
 }
 
 enum OrderStatus {

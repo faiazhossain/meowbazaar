@@ -512,8 +512,13 @@ export function NavbarClient({
                   {/* Footer with bottom padding */}
                   <div className="border-t border-orange-200 bg-white p-6 text-center text-xs text-gray-600">
                     <p>
-                      &copy; 2024 PetBazaar. {t("mobileMenu.allRightsReserved")}
+                      &copy; {new Date().getFullYear()} PetBazaar. {t("mobileMenu.allRightsReserved")}
                     </p>
+                    <style jsx>{`
+                      .prevent-auto-link span {
+                        pointer-events: none;
+                      }
+                    `}</style>
                   </div>
                 </div>
               </SheetContent>
